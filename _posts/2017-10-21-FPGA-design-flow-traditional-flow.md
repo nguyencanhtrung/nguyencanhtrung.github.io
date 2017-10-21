@@ -1,11 +1,13 @@
 Design flow - Các bước thiết kế một IP core là kiến thức vô cùng quan trọng và CẦN phải được nắm vững bởi bất kỳ một FPGA developer nào. Bài viết này sẽ lần lượt phân tích các design flow đang được sử dụng, cũng như giải thích về sự ra đời của chúng.
 
 ##1.1. Traditional design flow
+
 Chúng ta sẽ bắt đầu từ "Traditional design flow" - chu trình thiết kế thông dụng nhất và được áp dụng phổ biến.
 
 Ảnh 1: Traditional design flow
 
 ###*Specification*
+
 Khi khách hàng A đặt công ty B thiết kế một IP core C, họ phải liệt kê những đặc tính của IP core đó và trao thông tin này cho công ty thiết kế. Những thông tin như vậy được gọi là "informal specification".
 Hãy lấy một ví dụ: công ty A muốn đặt một IP core giúp tính toán diện tích hình tròn. IP core đó có những đặc tính sau:
 
@@ -17,14 +19,17 @@ Latency < 10 ns
 Những gạch đầu dòng trên chính là informal specification dùng để thiết kế IP core.
 
 ###*Modeling*
+
 Từ "Informal specification", một mô hình (model) sẽ được xây dựng nhanh nhất có thể (bằng high-level language e.g. MATLAB, python ...) để đánh giá chức năng của IP core (chỉ kiểm tra functional behaviour, không quan tâm đến dạng biểu diễn của dữ liệu, không quan tâm tới timing). Bước này được gọi là "Functional Modeling", sản phẩm của quá trình mô phỏng là "floating-point model".
 
 Sau khi chức năng của IP core đã được kiểm tra, một model khác nên được xây dựng nhằm mục đích "kiểm tra dạng biểu diễn của dữ liệu". Nói cách khác, model này được dùng để mô phỏng dữ liệu vào-ra của IP cores (chỉ quan tâm đến dữ liệu INPUT và OUTPUT). Mục đích là tạo ra "stimulus và golden result" cho quá trình verification sau này. Sản phẩm của quá trình mô phỏng này là "Fixed-point/Bit true model". Nó cũng được viết bởi high-level language (e.g. C/C++)
 
 ###*RTL design*
+
 Khi chức năng của IP core và dạng biểu diễn dữ liệu đã được xác nhận, thì bước tiếp theo là "Dịch high-level (e.g. bit true, floating point) model ra RTL-level model". Quá trình dịch hoàn toàn manual ở design flow này, ngôn ngữ để mô tả model này là HDL (e.g. VHDL hoặc Verilog). Bước này có nhiều tên gọi một trong số đó là "RTL design". Để xác nhận chức năng của model này có khớp với high-level model hay không, developer phải thực hiện "behaviour simulation" ở bước này (cần cung cấp VHDL-based model + testbench + stimulus). Chú ý: timing ở giai đoạn simulation này không được guarantee. Việc IP core có hoạt động thực sự hay ko cũng không được guarantee.
 
 ###*Synthesize*
+
 Bước tiếp theo, VHDL code sẽ được compile và synthesize. Kết quả cuối cùng sẽ là gate netlist, quá trình này được làm hoàn toàn tự động bằng compiler và synthesis tools. Quá trình synthesis này có tên là RTL synthesis (or logic synthesis). Chúng ta sẽ tìm hiểu sâu về quá trình logic synthesis này ở một bài viết khác.
 Sau bước này, developer có thể thực hiện "post synthesis simulation" hay còn gọi là logic synthesis, lúc này stimulus sẽ được test trên gate netlist. Nếu bước này passed thì function của IP core đã được đảm bảo.
 
