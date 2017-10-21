@@ -1,3 +1,8 @@
+---
+layout: post
+title: FPGA traditional design flow
+permalink: /fpga/
+---
 Design flow - Các bước thiết kế một IP core là kiến thức vô cùng quan trọng và CẦN phải được nắm vững bởi bất kỳ một FPGA developer nào. Bài viết này sẽ lần lượt phân tích các design flow đang được sử dụng, cũng như giải thích về sự ra đời của chúng.
 
 ##1.1. Traditional design flow
