@@ -1,3 +1,12 @@
+/*=================================*/
+/*     Header' style definition    */
+/*=================================*/
+
+
+
+/*=================================*/
+/*     Class' style definition     */
+/*=================================*/
 body {
     margin: 60px auto;
     width: 70%;
@@ -28,8 +37,10 @@ p {
     font-size: 1.5em;
     line-height: 1.4em;
     color: #333;
+
 }
 footer {
+    clear: both;
     border-top: 1px solid #d5d5d5;
     font-size: .8em;
 }
@@ -42,3 +53,33 @@ ul.posts {
 ul.posts li {
     list-style: none;
 }
+/*=================================*/
+/*     Class' style definition     */
+/*=================================*/
+.vhdl_code {
+    background: #999;
+    font-family: 'Sans-Serif';
+}
+
+.learning_left_col {
+    background: #999;
+    float: left;
+    margin: 1%;
+    width: 20%;
+}
+
+.learning_right_col {
+    background: white;
+    float: left;
+    margin: 1%;
+    width: 77%;
+}
+
+/*=================================*/
+/*     ID' style definition        */
+/*=================================*/
+#special {
+    background: red;
+    color: white;
+}
+
