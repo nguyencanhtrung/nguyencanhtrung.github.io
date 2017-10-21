@@ -1,9 +1,29 @@
 /*=================================*/
 /*     Header' style definition    */
 /*=================================*/
+header {
+    background: #999;
+    color: white;
+    padding: 15px 15px 0 15px;
+}
 
+header title {
+    margin: 0;
+    display: inline;
+}
 
+nav ul {
+    font-family:'Helvetica', 'Arial', 'Sans-Serif';
+    padding: 0px;
+    list-style: none;
+    font-weight: bold;
+    display: inline;
+}
 
+nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+}
 /*=================================*/
 /*     Class' style definition     */
 /*=================================*/
@@ -12,16 +32,7 @@ body {
     width: 70%;
     font-family: arial;
 }
-nav ul, footer ul {
-    font-family:'Helvetica', 'Arial', 'Sans-Serif';
-    padding: 0px;
-    list-style: none;
-    font-weight: bold;
-}
-nav ul li, footer ul li {
-    display: inline;
-    margin-right: 20px;
-}
+
 a {
     text-decoration: none;
     color: #999;
@@ -43,6 +54,17 @@ footer {
     clear: both;
     border-top: 1px solid #d5d5d5;
     font-size: .8em;
+}
+
+footer ul {
+    font-family:'Helvetica', 'Arial', 'Sans-Serif';
+    padding: 0px;
+    list-style: none;
+    font-weight: bold;
+}
+footer ul li {
+    display: inline;
+    margin-right: 20px;
 }
 
 ul.posts { 
