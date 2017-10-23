@@ -1,94 +1,16 @@
-<!DOCTYPE html>
-  <html lang="en">
+{% include head.html %}
+<!-- ===================================================================== -->
+<!--  HEADER OF WEBSITE -->
+<!-- ===================================================================== -->
+{% include header.html %}
+<!-- ===================================================================== -->
+<!--  CONTENT OF WEBSITE -->
+<!-- ===================================================================== -->
+    <h1>{{ page.title }}</h1>
+    {{ content }}
 
-    <head>
-      <title>{{ page.title }}</title>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-
-      <meta name="description" content="Power is gained by sharing knowledge, not hoarding it">
-
-      <link rel="stylesheet" type="text/css" href="/css/main.css">
-      <link rel="canonical" href="http://localhost:4000/">
-      <link rel="alternate" type="application/rss+xml" title="Unicorn Snippets" href="/feed.xml">
-      <!-- link to main stylesheet -->
-    </head>
-
-    <body>
-      <!-- ===================================================================== -->
-      <!--  HEADER OF WEBSITE -->
-      <!-- ===================================================================== -->
-      <header class="site-header" role="banner">
-        <div class="wrapper">
-          <a class="site-title" href="/">Unicorn Snippets</a>
-          <nav class="site-nav">
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/about">About</a></li>
-              <li><a href="/works">My Work</a></li>
-              <li><a href="/learning">Learning</a></li>
-              <li><a href="/blog">Blog</a></li>
-              <li><a href="/fpga">Contact</a></li>
-          </ul> 
-          </nav>
-        </div>
-      </header>
-
-      <!-- ===================================================================== -->
-      <!--  CONTENT OF WEBSITE -->
-      <!-- ===================================================================== -->
-      <main class="page-content" aria-label="Content">
-        <div class="wrapper">
-          <div class="home">
-            <h1 class="page-heading">Posts</h1>
-            <ul class="post-list">
-              <li>
-                <span class="post-meta">Oct 22, 2017</span>
-                <h2>
-                  <a class="post-link" href="/jekyll/update/2017/10/22/welcome-to-jekyll.html">Welcome to Jekyll!</a>
-                </h2>
-              </li>
-              
-              <li>
-                <span class="post-meta">Oct 21, 2017</span>
-
-                <h2>
-                  <a class="post-link" href="/fpga/">FPGA traditional design flow</a>
-                </h2>
-              </li>
-    
-            </ul>
-
-            <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-          </div>
-
-        </div>
-      </main>
-
-      <!-- ===================================================================== -->
-      <!--  FOOTER OF WEBSITE -->
-      <!-- ===================================================================== -->
-      <footer class="site-footer">
-        <div class="wrapper">
-          <div class="footer-col-wrapper">
-            <div class="footer-col footer-col-1">
-              <ul class="contact-list">
-                <li>Unicorn Snippets</li>
-                <li><a href="mailto:nguyencanhtrung@me.com">nguyencanhtrung@me.com</a></li>
-              </ul>
-            </div>
-
-            <div class="footer-col footer-col-3">
-              <p>Power is gained by sharing knowledge, not hoarding it</p>
-            </div>
-          </div>
-
-        </div><!-- class=wrapper"> -->
-      </footer>
-    </body>
-  </html>
-
-
-  
+<!-- {% include nav.html %} -->
+<!-- ===================================================================== -->
+<!--  FOOTER OF WEBSITE -->
+<!-- ===================================================================== -->
+{% include footer.html %}

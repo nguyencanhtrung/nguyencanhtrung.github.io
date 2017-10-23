@@ -1,4 +1,5 @@
 ---
 # Theme: Trung C. Nguyen -- @2017
-layout: home
+layout: default
+title: Unicorn Snippets
 ---

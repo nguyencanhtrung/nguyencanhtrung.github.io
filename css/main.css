@@ -1,31 +1,49 @@
 /*=================================*/
 /*     Header' style definition    */
 /*=================================*/
-header {
+.site-header {
     background: #49ffa7;
     color: white;
-    padding: 15px 15px 5px 15px;
+    margin: 0;
+    padding: 15px 10px 0px 10px;
+    border-radius: 5px 5px 0px 0px;
 }
 
-header .wrapper .site_title {
-    color: white;
+.site-header .wrapper .site-title {
+    display: inline;
+    margin: 0;
+}
+
+.site-header .wrapper a.site-title {
+    color: green;
+    font-size: 120%;
+}
+
+.site-header .wrapper .site-nav {
     margin: 0;
     display: inline;
 }
 
-header .wrapper .site-nav ul {
+.site-header .wrapper .site-nav ul {
+    color: red;
     font-family:'Helvetica', 'Arial', 'Sans-Serif';
-    padding: 0px;
+    margin: 0;
+    padding: 0 0 0 15px;
     list-style: none;
     font-weight: bold;
     display: inline;
 }
 
-header .wrapper .site-nav ul li {
-    color: black;
+.site-header .wrapper .site-nav ul li {
+    background: yellow;
     display: inline-block;
-    margin-right: 20px;
+    padding: 5px 10px 2px 10px;
 }
+
+.site-header .wrapper .site-nav a:link {
+    color: red;
+}
+
 /*=================================*/
 /*     Class' style definition     */
 /*=================================*/
