@@ -269,7 +269,7 @@ header .logo a {
 /*    SCENE STYLE START            */
 /*=================================*/
 .cover-main {
-    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('{{ site.baseurl }}/assets/cover.jpg') center center;
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("/assets/cover.jpg") center center;
     background-repeat: no-repeat;
     background-size: cover;
     height: 100vh;
