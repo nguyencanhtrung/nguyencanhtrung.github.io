@@ -1,27 +1,55 @@
-
-<header class="site-header" role="banner">
-    <nav class="wrapper">
-        <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="/">{{ site.title }}</a>
+<section class="cover-main" id="home">
+<!-- ========================================================================== -->
+<!-- HEADER & NAVIGATOR DESIGN -->
+<!-- ========================================================================== -->
+    <header>
+        <nav class="nav-wrapper">
+            <div class="logo">
+                <a href="/">Unicorn Snippets</a>
             </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="/">Home</a></li>
+
+            <ul class="menu">
                 <li><a href="/about">About</a></li>
                 <li><a href="/works">My Work</a></li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="/learning">Learning
-                    <span class="caret"></span></a>
+                <!-- <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" href="/learning">Learning<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                      <li><a href="/learning/dsp">Digital Signal Processing</a></li>
-                      <li><a href="/learning/fpga">FPGA developer</a></li>
-                      <li><a href="/learning/finance">Finance</a></li>
-                      <li><a href="/learning/webdesign">Web Design</a></li>
+                        <li><a href="/learning/dsp">Digital Signal Processing</a></li>
+                        <li><a href="/learning/fpga">FPGA developer</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/learning/finance">Finance</a></li>
+                        <li><a href="/learning/webdesign">Web Design</a></li>
                     </ul>
-                </li>
+                </li> -->
                 <li><a href="/blog">Blog</a></li>
                 <li><a href="/contact">Contact</a></li>
             </ul>
-        </div>
-    </nav>  
-  </header>
+        </nav>
+    </header>
+
+
+<!-- ========================================================================== -->
+<!-- SCENE & COVER DESIGN WITH PARALLAX EFFECTS -->
+<!-- ========================================================================== -->
+    <div class="wrapper">
+        <ul id="scene"
+            data-invert-x="false" 
+            data-invert-y="false"
+            data-scalar-x="7"
+            data-scalar-y="7"
+            data-friction-x="0.1"
+            data-friction-y="0.1"
+            data-origin-x="0.5"
+            data-origin-y="0.5">
+
+            <li class="layer name" data-depth="0.90">Trung Canh Nguyen</li>
+            <li class="layer separator" data-depth="0.90">_____________</li>
+            <li class="layer quote" data-depth="0.50">FPGA Developer</li>
+
+            <li class="layer btn btn-main" data-depth="0.30">
+                <a class="portfolio-btn" href="#">View portfolio</a>
+                <a class="contact-btn" href="#">Contact Me</a>
+            </li>
+        </ul>
+    </div>
+  </section>

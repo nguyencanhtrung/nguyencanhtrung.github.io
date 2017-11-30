@@ -1,127 +1,339 @@
+/*RESET CSS BEGIN*/
+
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+    font-family: 'Montserrat', sans-serif;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+/*RESET CSS END*/
+
 /*=================================*/
 /*     Header' style definition    */
 /*=================================*/
-.site-header {
-    background: #49ffa7;
-    color: white;
-    margin: 0;
-    padding: 15px 10px 0px 10px;
-    border-radius: 5px 5px 0px 0px;
+/**
+ * PREDEFINED CLASSES
+ */
+img {
+  max-width: 100%;
 }
 
-.site-header .wrapper .site-title {
-    display: inline;
-    margin: 0;
+.alignLeft {
+    float: left;
 }
 
-.site-header .wrapper a.site-title {
-    color: green;
-    font-size: 120%;
+.alignRight {
+    float: right;
 }
 
-.site-header .wrapper .site-nav {
-    margin: 0;
-    display: inline;
+.no-margin-bottom {
+    margin-bottom: 0;
 }
 
-.site-header .wrapper .site-nav ul {
-    color: red;
-    font-family:'Helvetica', 'Arial', 'Sans-Serif';
-    margin: 0;
-    padding: 0 0 0 15px;
-    list-style: none;
-    font-weight: bold;
-    display: inline;
+.margin-bottom-10 {
+    margin-bottom: 10px;
 }
 
-.site-header .wrapper .site-nav ul li {
-    background: yellow;
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+.margin-bottom-30 {
+    margin-bottom: 30px;
+}
+
+strong,
+b {
+    font-weight: 700;
+}
+
+em,
+i {
+    font-style: italic;
+}
+
+p,
+ul li,
+ol li {
+    font-size: 16px;
+    line-height: 23px;
+    margin: 0 0 20px 0;
+}
+
+ul li,
+ol li {
+    margin-bottom: 10px;
+}
+
+/*HELPER CLASS END*/
+
+* {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    outline: 0;
+}
+
+
+/* NAVIGATION BAR + HEADER STYLE START */
+header {
+    background: transparent;
+    width: 100%;
+    position: relative;
+}
+
+header.sticky{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: green;
+    transform: translateY(-200%);
+    transition: 0.2s;
+}
+
+body.scroll header.sticky{
+    transform: translateY(0);
+}
+
+.nav-wrapper {
+    max-width: 1200px;
+    background: transparent;
+    width: 100%;
+
+    margin: auto;       /* Center position*/
+    position: relative;;
+    padding: 2.5vh 0 2vh 0;
+
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+nav ul li {
     display: inline-block;
-    padding: 5px 10px 2px 10px;
+    padding: 0 10px;
+    margin: 0;
 }
 
-.site-header .wrapper .site-nav a:link {
-    color: red;
-}
-
-/*=================================*/
-/*     Class' style definition     */
-/*=================================*/
-body {
-    margin: 60px auto;
-    width: 70%;
-    font-family: arial;
-}
-
-a {
+nav ul li a {
+    font-size: 17px;
+    line-height: 22px;
     text-decoration: none;
+    color: white;
+    cursor: pointer;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 3px;
+    transition: 0.3s;
+}
+
+nav ul li a:hover {
+    border-top: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+header .logo a {
+    max-width: 100px;
+    color: white;
+    cursor: pointer;
+}
+
+/*=================================*/
+/*    SCENE STYLE START            */
+/*=================================*/
+.cover-main {
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../assets/cover.jpg') center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+
+.wrapper {
+    background: transparent;
+}
+
+ul#scene {
+    width:100%;
+    background: transparent;
+    text-align: center;
+    padding-top: 40vh;
+}
+
+ul#scene li.name {
+    color: white;
+    font-size: 6vh;
+    text-align: center;
+    line-height: 8vh;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+
+ul#scene li.separator {
+    color: white;
+    font-size: 5vh;
+    text-align: center;
+    line-height: 6vh;
+    width: 100%;
+}
+
+ul#scene li.quote {
+    color: white;
+    font-size: 3vh;
+    text-align: center;
+    line-height: 5vh;
+    width: 100%;
+}
+
+.portfolio-btn,
+.contact-btn {
+    margin: 0 auto;
+    display: inline-block;
+    padding: 10px 20px;
+    border:1px solid white;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.portfolio-btn:hover,
+.contact-btn:hover {
+    background: white;
     color: black;
 }
-a:hover {
-    text-decoration: underline;
-}
-h1 {
-    font-size: 3em;
-    font-family:'Helvetica', 'Arial', 'Sans-Serif';
-}
-p {
-    font-size: 1.5em;
-    line-height: 1.4em;
-    color: #333;
 
-}
-footer {
-    clear: both;
-    border-top: 1px solid #d5d5d5;
-    font-size: .8em;
+.portfolio-btn {
+    margin-right: 30px;
 }
 
-footer ul {
-    font-family:'Helvetica', 'Arial', 'Sans-Serif';
-    padding: 0px;
-    list-style: none;
-    font-weight: bold;
+.contact-btn {
+    margin-left: 30px;
 }
-footer ul li {
-    display: inline;
-    margin-right: 20px;
-}
-
-ul.posts { 
-    margin: 20px auto 40px; 
-    font-size: 1.5em;
-}
-
-ul.posts li {
-    list-style: none;
-}
-/*=================================*/
-/*     Class' style definition     */
-/*=================================*/
-.vhdl_code {
-    background: #999;
-    font-family: 'Sans-Serif';
-}
-
-.learning_left_col {
-    background: #999;
-    float: left;
-    margin: 1%;
-    width: 20%;
-}
-
-.learning_right_col {
-    background: white;
-    float: left;
-    margin: 1%;
-    width: 77%;
-}
-
-/*=================================*/
-/*     ID' style definition        */
-/*=================================*/
-#special {
-    background: red;
-    color: white;
-}
-
