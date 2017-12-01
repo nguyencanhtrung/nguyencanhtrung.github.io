@@ -283,7 +283,7 @@ ul#scene {
     width:100%;
     background: transparent;
     text-align: center;
-    padding-top: 40vh;
+    padding-top: 55vh;
 }
 
 ul#scene li.name {
@@ -293,6 +293,7 @@ ul#scene li.name {
     line-height: 8vh;
     text-transform: uppercase;
     width: 100%;
+    padding-top: 0vh;
 }
 
 
@@ -302,6 +303,7 @@ ul#scene li.separator {
     text-align: center;
     line-height: 6vh;
     width: 100%;
+    margin-top: 60vh;
 }
 
 ul#scene li.quote {
@@ -310,6 +312,13 @@ ul#scene li.quote {
     text-align: center;
     line-height: 5vh;
     width: 100%;
+    margin-top: 66vh;
+}
+
+.btn {
+    width: 100%;
+    text-align: center;
+    margin-top: 73vh;
 }
 
 .portfolio-btn,
