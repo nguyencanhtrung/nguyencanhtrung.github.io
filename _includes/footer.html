@@ -1,27 +1,25 @@
-    <footer class="site-footer">
-        <ul class="social">
-            <li><a href="/facebook" target="_blank"><i class="fa fa-facebook"></i></a></li>
-            <li><a href="/google" target="_blank"><i class="fa fa-google-plus"></i></a></li>
-            <li><a href="/twiter" target="_blank"><i class="fa fa-twitter"></i></a></li>
-            <li><a href="/youtube" target="_blank"><i class="fa fa-youtube"></i></a></li>
-            <li><a href="/instagram" target="_blank"><i class="fa fa-instagram"></i></a></li>
-        </ul>
-        <!--- End Social section-->
+    {% if site.footer_fixed %}
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        &copy; Copyright {{ site.time | date: '%Y' }} {{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}. {{ site.footer_text }}
+        {%- if site.impressum_path -%}
+        <a href="{{ site.url }}{{ site.baseurl }}{{ site.impressum_path }}">Impressum</a>.
+        {%- endif -%}
+        {%- if site.last_updated -%}
+        Last updated: {{ "now" | date: '%B %d, %Y' }}.
+        {%- endif %}
+      </div>
     </footer>
-    <footer class="second">
-        <p>&copy; Trung C. Nguyen</p>
+    {%- else -%}
+    <footer class="sticky-bottom mt-5">
+      <div class="container">
+        &copy; Copyright {{ site.time | date: '%Y' }} {{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}. {{ site.footer_text }}
+        {%- if site.impressum_path -%}
+        <a href="{{ site.url }}{{ site.baseurl }}{{ site.impressum_path }}">Impressum</a>.
+        {%- endif -%}
+        {%- if site.last_updated -%}
+        Last updated: {{ "now" | date: '%B %d, %Y' }}.
+        {%- endif %}
+      </div>
     </footer>
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="{{ site.baseurl }}/js/parallax.min.js"></script>
-    <script src="{{ site.baseurl }}/js/bootstrap.min.js"></script>
-    <script src="{{ site.baseurl }}/js/main.js"></script>
-
-    <script>
-        var scene = document.getElementById('scene');
-        var parallax = new Parallax(scene);
-    </script>
-</body>
-</html>
+    {%- endif %}

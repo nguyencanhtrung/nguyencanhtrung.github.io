@@ -1,0 +1,120 @@
+- title: General Information
+  type: map
+  contents:
+    - name: Full Name
+      value: Trung Canh Nguyen
+    - name: Date of Birth
+      value: 30th December 1990
+    - name: Languages
+      value: Vietnamese, English
+
+- title: Experience
+  type: time_table
+  contents:
+    - title: Senior FPGA developer
+      institution: soc.one, start-up company working on RISC-V architecture and 5G testbed.
+      year: 2022 - NOW
+      description:
+        - Architecture AIO 5G testbed
+        - title: FPGA development
+          contents:
+            - Offloading L1 functions on Intel FPGA platform
+            - Interfaces integration including eCPRI and PCIe
+
+    - title: Senior Field Applications Engineer
+      institution: Avnet, Inc., Singapore
+      year: 2021-2022
+      description:
+        - Demand creation and providing technical support to customer in South-East Asia, focusing on AMD-Xilinx product lines
+        - Design and prototype AI vision application on Kria platform including Face Detection/ Recognition and ANPR.
+        - Providing technical support and training to customers.
+
+    - title: Senior FPGA developer
+      institution: Techvico, Hanoi, Vietnam.
+      year: 2021
+      description:
+        - title: Co-operating with Pinnacle ISP (USA) for designing and prototyping ISP accelerators.
+          contents:
+            - Implementing novel image processing algorithms on FPGA using Xilinx High Level Synthesis ﬂow.
+            - Building and prototyping a video streaming system which uses Techvico’s accelerators and Xilinx DPU as overlay. The system runs on Kria Starter Kit.
+
+    - title: FPGA developer
+      institution: Vinsmart, Vingroup Corp. , Hanoi, Vietnam
+      year: 2020 - 2021
+      description:
+        - title: 5G-RRU
+          contents:
+            - Developed 2 RRU vesions based on ADRV9025 and ADRV9009
+            - Completed Macrocell 8T8R with peak throughput 800 Mbps
+        - title: 5G-L1
+          contents:
+            - Lead a team of 3 engineers to develop PDSCH bit-processing (@300MHz). Total processing latency < 150 us (TBS max = 1.2 Megabits)
+
+    - title: FPGA developer
+      institution: Viettel High Technology Industries Corporation, Hanoi, Vietnam
+      year: 2017 - 2020
+      description:
+        - title: 5G-L1
+          contents:
+            - Lead a team of 5 engineers to design and implement L1 data channel PUSCH and control channel (PUCCH format 3) on Xilinx FPGA.
+        - title: Radio design
+          contents:
+            - Completed DFE implementation for 2T2R (support DPD, CFR, DUC operations - ACLR = 50 dbm, satisfying 3GPP requirement)
+
+    - title: Research assistant
+      institution: Microelectronics systems design research group, TU Kaiserslautern, Kaiserslautern, Germany
+      year: 2016 - 2017
+      description:
+        - Designed and prototyped an FPGA-based accelerator for computing intraday ﬁnancial correlation (the most time-consuming part of Risk Assesment process). Achieved a throughput of 1.087 cycle/ﬂoating point number and a 68x speedup in runtime (FPGA@100MHz)
+
+- title: Education
+  type: time_table
+  contents:
+    - title: Master of Science
+      institution: TU Kaiserslautern, Kaiserslautern, Germany
+      year: 2014-2017
+      description:
+        - Specilization | Embedded System
+        - Grade | 1.5 (∼ 92%)
+
+    - title: Bachelor of Engineer
+      institution: Hanoi University of Science and Technology (HUST), Hanoi, Vietnam
+      year: 2008-2013
+      description:
+        - Specilization | Electrical and Electronics Engineering
+        - Grade | 8.64 out of 10
+
+# - title: Open Source Projects
+#   type: time_table
+#   contents:
+#     - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
+#       year: 2015-now
+#       description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
+
+# - title: Honors and Awards
+#   type: time_table
+#   contents:
+#     - year: 1921
+#       items: 
+#         - Nobel Prize in Physics 
+#         - Matteucci Medal
+#     - year: 2029
+#       items: 
+#         - Max Planck Medal
+
+# - title: Academic Interests
+#   type: nested_list
+#   contents:
+#     - title: Topic 1.
+#       items: 
+#         - Description 1.
+#         - Description 2.
+#     - title: Topic 2.
+#       items:
+#         - Description 1.
+#         - Description 2.
+
+# - title: Other Interests
+#   type: list
+#   contents:
+#     - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
