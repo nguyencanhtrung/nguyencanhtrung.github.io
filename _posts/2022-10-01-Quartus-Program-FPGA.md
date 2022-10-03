@@ -1,10 +1,10 @@
 ---
 layout: distill
-title: PCIe 
-description: PCIe interface implementation
-date: 2022-09-28
-# tags: Intel Xilinx
-# categories: sample-posts
+title: Quartus - Program FPGA
+description: Describe how to program FPGA with Quartus
+date: 2022-10-01
+tags: introduction
+categories: Intel
 
 authors:
   - name: Nguyen Canh Trung
@@ -21,16 +21,9 @@ bibliography: 2018-12-22-distill.bib
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-  - name: Equations
-    # if a section has subsections, you can add them as follows:
-    # subsections:
-    #   - name: Example Child Subsection 1
-    #   - name: Example Child Subsection 2
-  - name: Citations
-  - name: Footnotes
-  - name: Code Blocks
-  - name: Layouts
-  - name: Other Typography?
+  - name: Architecture
+  - name: GUI approach
+  - name: Script approach
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -52,71 +45,97 @@ _styles: >
 
 ---
 
-## Equations
+## Architecture
 
-This theme supports rendering beautiful math in inline and display modes using [MathJax 3](https://www.mathjax.org/) engine.
-You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`.
-If you leave it inside a paragraph, it will produce an inline expression, just like $$ E = mc^2 $$.
 
-To use display mode, again surround your expression with `$$` and place it as a separate paragraph.
-Here is an example:
 
-$$
-\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
-$$
-
-Note that MathJax 3 is [a major re-write of MathJax](https://docs.mathjax.org/en/latest/upgrading/whats-new-3.0.html) that brought a significant improvement to the loading and rendering speed, which is now [on par with KaTeX](http://www.intmath.com/cg5/katex-mathjax-comparison.php).
+## GUI approach
 
 
 ***
 
-## Citations
+## Catapult flow (GUI flow)
 
-Citations are then used in the article body with the `<d-cite>` tag.
-The key attribute is a reference to the id provided in the bibliography.
-The key attribute can take multiple ids, separated by commas.
-
-The citation is presented inline like this: <d-cite key="gregor2015draw"></d-cite> (a number that displays more information on hover).
-If you have an appendix, a bibliography is automatically created and populated in it.
-
-Distill chose a numerical inline citation style to improve readability of citation dense articles and because many of the benefits of longer citations are obviated by displaying more information on hover.
-However, we consider it good style to mention author last names if you discuss something at length and it fits into the flow well — the authors are human and it’s nice for them to have the community associate them with their work.
-
-***
-
-## Footnotes
+### 1. Adding source code
+### 2. Platform setting
+### 3. Libraries
+### 4. Clock and reset setting
+### 5. Architectural setting
 
 Just wrap the text you would like to show up in a footnote in a `<d-footnote>` tag.
 The number of the footnote will be automatically generated.<d-footnote>This will become a hoverable footnote.</d-footnote>
 
-***
 
-## Code Blocks
 
-Syntax highlighting is provided within `<d-code>` tags.
-An example of inline code snippets: `<d-code language="html">let x = 10;</d-code>`.
-For larger blocks of code, add a `block` attribute:
+## Hot reset
 
-<d-code block language="javascript">
-  var x = 25;
-  function(x) {
-    return x * x;
-  }
+Resets in PCI express are a bit complex. There are two main types of resets - conventional reset, and function-level reset. There are also two types of conventional resets, fundamental resets and non-fundamental resets. See the PCI express specification for all of the details.
+
+A 'cold reset' is a fundamental reset that takes place after power is applied to a PCIe device. There appears to be no standard way of triggering a cold reset, save for turning the system off and back on again. On my machines, the `/sys/bus/pci/slots` directory is empty.
+
+A 'warm reset' is a fundamental reset that is triggered without disconnecting power from the device. There appears to be no standard way of triggering a warm reset.
+
+A 'hot reset' is a conventional reset that is triggered across a PCI express link. A hot reset is triggered either when a link is forced into electrical idle or by sending TS1 and TS2 ordered sets with the hot reset bit set. Software can initiate a hot reset by setting and then clearing the secondary bus reset bit in the bridge control register in the PCI configuration space of the bridge port upstream of the device.
+
+A 'function-level reset' (FLR) is a reset that affects only a single function of a PCI express device. It must not reset the entire PCIe device. Implementing function-level resets is not required by the PCIe specification. A function-level reset is initiated by setting the initiate function-level reset bit in the function's device control register in the PCI express capability structure in the PCI configuration space.
+
+Linux exposes the function-level reset functionality in the form of `/sys/bus/pci/devices/$dev/reset`. Writing a 1 to this file will initiate a function-level reset on the corresponding function. Note that this only affects that specific function of the device, not the whole device, and devices are not required to implement function-level resets as per the PCIe specification.
+
+I am not aware of any 'nice' method for triggering a hot reset (there is no sysfs entry for that). However, it is possible to use setpci to do so:
+
+<d-code block language="bash">
+  #!/bin/bash
+
+  dev=$1
+
+  if [ -z "$dev" ]; then
+      echo "Error: no device specified"
+      exit 1
+  fi
+
+  if [ ! -e "/sys/bus/pci/devices/$dev" ]; then
+      dev="0000:$dev"
+  fi
+
+  if [ ! -e "/sys/bus/pci/devices/$dev" ]; then
+      echo "Error: device $dev not found"
+      exit 1
+  fi
+
+  port=$(basename $(dirname $(readlink "/sys/bus/pci/devices/$dev")))
+
+  if [ ! -e "/sys/bus/pci/devices/$port" ]; then
+      echo "Error: device $port not found"
+      exit 1
+  fi
+
+  echo "Removing $dev..."
+
+  echo 1 > "/sys/bus/pci/devices/$dev/remove"
+
+  echo "Performing hot reset of port $port..."
+
+  bc=$(setpci -s $port BRIDGE_CONTROL)
+
+  echo "Bridge control:" $bc
+
+  setpci -s $port BRIDGE_CONTROL=$(printf "%04x" $(("0x$bc" | 0x40)))
+  sleep 0.01
+  setpci -s $port BRIDGE_CONTROL=$bc
+  sleep 0.5
+
+  echo "Rescanning bus..."
+
+  echo 1 > "/sys/bus/pci/devices/$port/rescan"
 </d-code>
 
-**Note:** `<d-code>` blocks do not look good in the dark mode.
-You can always use the default code-highlight using the `highlight` liquid tag:
+Ensure that all attached drivers are unloaded before running this script. This script will attempt to remove the PCIe device, then command the upstream switch port to issue a hot reset, then attempt to rescan the PCIe bus. This script has also only been tested on devices with a single function, so it may need some reworking for devices with multiple functions.
 
-{% highlight javascript %}
-var x = 25;
-function(x) {
-  return x * x;
-}
-{% endhighlight %}
+References <d-footnote> <a href="https://unix.stackexchange.com/questions/73908/how-to-reset-cycle-power-to-a-pcie-device/474378#474378"> Link </a> </d-footnote>
 
 ***
 
-## Layouts
+## Conclusion
 
 The main text column is referred to as the body.
 It is the assumed layout of any direct descendants of the `d-article` element.
