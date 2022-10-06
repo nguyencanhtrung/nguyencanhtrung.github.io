@@ -1,0 +1,237 @@
+I"a(<h2 id="1-overview">1. Overview</h2>
+
+<p>Ma trận cơ sở B là một trong những thông tin cần phải được hiểu rõ trong khi tìm hiểu giải thuật mã hóa và giải mã LDPC. Ma trận này khi được triển khai trên FPGA sẽ được lưu dưới dạng ROM, hay nói cách khác chúng sẽ được tính toán trước (pre-computed) thay vì tính toán on-fly. Phần dưới đây sẽ mô tả các đặc tính của một ma trận cơ sở cũng như cách chúng được xây dựng.</p>
+
+<h2 id="2-base-matrix-b-and-parity-check-matrix-h">2. Base matrix (B) and parity check matrix (H)</h2>
+
+<p><b>Ma trận cơ sở B</b> là một ma trận có kích thước như sau:</p>
+<ul>
+  <li>Base graph 1: 46 hàng x 68 cột</li>
+  <li>Base graph 2: 42 hàng x 52 cột</li>
+</ul>
+
+<p><b>Ma trận H</b> được tạo thành từ việc thay thế các phần tử của ma trận cơ sở B, bằng các ma trận có kích thước Zc x Zc. Cụ thể, các phần tử của ma trận cơ sở sẽ có một trong các giá trị sau và tương ứng là ma trận kích thước ZcxZc</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><b>Giá trị</b></th>
+      <th style="text-align: center"><b>Ý nghĩa</b></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">-1</td>
+      <td style="text-align: center">Ignore &lt;=&gt; Ma trận 0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">Ma trận I (Identity matrix)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">\(Zc &gt; a &gt; 0\)</td>
+      <td style="text-align: center">Ma trận I được shift phải \(a\) lần</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+Hình dưới đây là một ví dụ. Với expansion factor = 5 hay Zc = 5 (Một số tài liệu họ gọi là lifting factor hay có thể ký hiệu là Z). Chi tiết về Zc có thể xem tại <a href="">đây</a>.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/1-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/1-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/1-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/221006_ldpc_basematrix/1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" data-zoomable="" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<h2 id="3-base-matrix-structure">3. Base matrix structure</h2>
+
+<p>Ma trận cơ sở có kích thước khác nhau ứng với mỗi loại base graph. Tuy nhiên, chúng đều có chung một cấu trúc như sau:</p>
+
+\[B =  
+\left[\begin{array}{cc} 
+A  &amp; E  &amp; O \\
+C_1 &amp; C_2 &amp; I
+\end{array}\right]\]
+
+<p>Trong đó, kích thước của từng ma trận sẽ là:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><b>Ma trận</b></th>
+      <th style="text-align: center"><b>Base graph 1</b></th>
+      <th style="text-align: center"><b>Base graph 2</b></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">A</td>
+      <td style="text-align: center">4 x 22</td>
+      <td style="text-align: center">4 x 10</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">E</td>
+      <td style="text-align: center">4 x 4</td>
+      <td style="text-align: center">4 x 4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">\(C_1\)</td>
+      <td style="text-align: center">4 x 42</td>
+      <td style="text-align: center">4 x 38</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">\(C_2\)</td>
+      <td style="text-align: center">42 x 22</td>
+      <td style="text-align: center">38 x 10</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">O</td>
+      <td style="text-align: center">42 x 4</td>
+      <td style="text-align: center">38 x 10</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">I</td>
+      <td style="text-align: center">42 x 42</td>
+      <td style="text-align: center">38 x 38</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Ma trận \(A, E\) được sử dụng để tính 4 parity bit đầu tiên (Ký hiệu: \(p_a\)).</p>
+
+<p>Ma trận \(C_1, C_2\) được sử dụng cùng với 4 parity bit đầu tiên {\(p_{a_1}, p_{a_2}, p_{a_3}, p_{a_4}\)} để tính các parity bit còn lại (Ký hiệu: \(p_c\)).</p>
+
+<p>Ma trận \(O, I\) có thể bỏ qua trong quá trình tính toán.</p>
+
+<p>Để dễ hiểu hơn, ta có thể nhìn vào hình sau:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/4-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/4-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/4-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/221006_ldpc_basematrix/4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" data-zoomable="" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<p>Ma trận \(E\) là một ma trận đặc biệt có tên gọi “Ma trận đường chéo đôi” (Double diagonal matrix). Đặc tính của ma trận này, giúp việc tính toán 4 parity bits (\(p_a\)) trở lên đơn giản và hiệu quả hơn. Cụ thể, quá trình tính toán sẽ được mô tả ở bài viết <a href="www.bobibo.one">5G LDPC encoder</a>.</p>
+
+<h2 id="4-how-to-construct-5g-ldpc-base-matrices">4. How to construct 5G LDPC base matrices</h2>
+<p>Ma trận cơ sở B sẽ được xây dựng dựa trên ba tham số { <b><code class="language-plaintext highlighter-rouge">NBG</code>, \(i_{LS}\), \(Z_{c}\)</b> }</p>
+
+<p>Từ tham số <code class="language-plaintext highlighter-rouge">NBG</code> và \(i_{LS}\), ta sử dụng bảng 5.3.2-2 và 5.3.2-3 trong 3GPP-38.212 (Section 5.3.2) để xây dựng lên base matrix cho giá trị \(Z_c\) lớn nhất.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/2-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/2-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/2-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/221006_ldpc_basematrix/2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" data-zoomable="" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<p><b>Ví dụ</b></p>
+
+<p>NBG = 2 (Base graph 2), \(i_{LS} = 6\). Tra theo bảng 5.3.2-3</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/3-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/3-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/3-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/221006_ldpc_basematrix/3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" data-zoomable="" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<p>Ta sẽ có base matrix của \(Z_c = 208\) sẽ là:</p>
+
+\[B =  
+\left[\begin{array}{cc} 
+143 &amp; 19 &amp; 176 &amp; 165 &amp; -1 &amp; -1  &amp; 196 &amp; -1 &amp; -1 &amp; 13  &amp; 0  &amp; 0 &amp; -1 &amp; -1 &amp; -1 &amp; ... \\
+18  &amp; -1 &amp; -1  &amp; 27  &amp;  3 &amp; 102 &amp; 185 &amp; 17 &amp; 14 &amp; 180 &amp; -1 &amp; 0 &amp; 0  &amp; -1 &amp; -1 &amp; ... \\
+...
+\end{array}\right]\]
+
+<p>Với các trường hợp còn lại của \(Z_c = 13, 26, 52, 104\) ứng với \(i_{LS} = 6\). Giá trị của mỗi element sẽ được tính theo công thức:</p>
+
+\[b = a \bmod Zc\]
+
+<p>Trong đó:</p>
+<ul>
+  <li>a là giá trị của element trong ma trận B ứng với \(Z_c\) lớn nhất</li>
+  <li>b là giá trị của element của ma trận B ứng với \(Z_c\) cần tính</li>
+</ul>
+
+<p>Khi \(Z_c = 13\) thì ma trận B sẽ trở thành:</p>
+
+\[B =  
+\left[\begin{array}{cc} 
+0  &amp; 6 &amp; 7 &amp; 9 &amp; -1 &amp; -1  &amp; 1 &amp; -1 &amp; -1 &amp; 0  &amp; 0  &amp; 0 &amp; -1 &amp; -1 &amp; -1 &amp; ... \\
+5 &amp; -1 &amp; -1  &amp; 1  &amp;  3 &amp; 11 &amp; 3 &amp; 4 &amp; 1 &amp; 11 &amp; -1 &amp; 0 &amp; 0  &amp; -1 &amp; -1 &amp; ... \\
+...
+\end{array}\right]\]
+
+<p><b>Kết luận</b></p>
+<ul>
+  <li>Có 51 giá trị \(Z_c\), tương ứng sẽ có 51 ma trận cơ sở B với mỗi Base Graph. Do đó, 5G LDPC sẽ có tổng cộng 102 ma trận cơ sở. Việc thiết kế FPGA sẽ cần phải tối ưu việc lưu trữ các ma trận này để đảm bảo tiết kiệm tài nguyên nhớ và không bị “nghẽn cổ chai” khi thực thi việc mã hóa và giải mã.</li>
+</ul>
+
+<h2 id="5-precomputed-base-matrices">5. Precomputed base matrices</h2>
+
+<p>102 ma trận cơ sở của 5G LDPC có thể xem tại <a href="www.bobibo.one">đây</a></p>
+
+<h2 id="6-references">6. References</h2>
+<p><a href="https://panel.castle.cloud/view_spec/38212-f11/">3GPP - 38.212 - section 5.3.2</a></p>
+:ET

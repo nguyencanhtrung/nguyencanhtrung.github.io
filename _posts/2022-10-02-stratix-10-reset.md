@@ -4,7 +4,7 @@ title: Stratix 10 - Reset release IP
 description: Describe how to do proper reset for user logic in Stratix 10
 date: 2022-10-01
 tags: introduction stratix
-categories: Intel
+categories: intel
 
 authors:
   - name: Nguyen Canh Trung

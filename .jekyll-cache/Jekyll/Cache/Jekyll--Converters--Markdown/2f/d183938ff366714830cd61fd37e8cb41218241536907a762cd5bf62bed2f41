@@ -1,0 +1,102 @@
+I"l<h2 id="tổng-quan">Tổng quan</h2>
+
+<hr />
+<h2 id="base-matrix-b-and-parity-check-matrix-h">Base matrix (B) and parity check matrix (H)</h2>
+
+<p>Ma trận cơ sở B là một ma trận có kích thước như sau:</p>
+<ul>
+  <li>Base graph 1: 46 hàng x 68 cột</li>
+  <li>Base graph 2: 42 hàng x 52 cột</li>
+</ul>
+
+<p>Ma trận H được tạo thành từ việc thay thế các phần tử của ma trận cơ sở B, bằng các ma trận có kích thước Zc x Zc. Cụ thể, các phần tử của ma trận cơ sở sẽ có một trong các giá trị sau và tương ứng là ma trận ZcxZc</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Giá trị</th>
+      <th> </th>
+      <th style="text-align: right">Ý nghĩa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">-1</td>
+      <td> </td>
+      <td style="text-align: right">Ma trận 0</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">0</td>
+      <td> </td>
+      <td style="text-align: right">Ma trận I (Identity matrix)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">a &gt; 0</td>
+      <td> </td>
+      <td style="text-align: right">Ma trận I được shift phải x lần</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+Chú ý: Giá trị của x sẽ được tính bằng</p>
+
+\[x = a \bmod Zc\]
+
+<p><br /></p>
+
+<p>Hình dưới đây là một ví dụ. Với expansion factor = 5 hay Zc = 5 (Một số tài liệu họ gọi là lifting factor hay có thể ký hiệu là Z). Chi tiết về Zc có thể xem tại <a href="">đây</a>.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/1-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/1-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/1-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/221006_ldpc_basematrix/1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" data-zoomable="" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<hr />
+<h2 id="base-matrix-structure">Base matrix structure</h2>
+
+<hr />
+<h2 id="how-to-construct-5g-ldpc-base-matrix">How to construct 5G LDPC base matrix</h2>
+<p>Ma trận cơ sở B</p>
+
+<hr />
+<h2 id="matlab-code">Matlab code</h2>
+
+<hr />
+<h2 id="references">References</h2>
+<p><a href="https://panel.castle.cloud/view_spec/38212-f11/">3GPP - 38.212 - section 5.3.2</a></p>
+
+<p>This theme supports rendering beautiful math in inline and display modes using <a href="https://www.mathjax.org/">MathJax 3</a> engine. You just need to surround your math expression with <code class="language-plaintext highlighter-rouge">$$</code>, like <code class="language-plaintext highlighter-rouge">$$ E = mc^2 $$</code>. If you leave it inside a paragraph, it will produce an inline expression, just like \(E = mc^2\).</p>
+
+<p>To use display mode, again surround your expression with <code class="language-plaintext highlighter-rouge">$$</code> and place it as a separate paragraph. Here is an example:</p>
+
+\[\sum_{k=1}^\infty |\langle x, e_k \rangle|^2 \leq \|x\|^2\]
+
+<p>You can also use <code class="language-plaintext highlighter-rouge">\begin{equation}...\end{equation}</code> instead of <code class="language-plaintext highlighter-rouge">$$</code> for display mode math.
+MathJax will automatically number equations:</p>
+
+<p>\begin{equation}
+\label{eq:cauchy-schwarz}
+\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
+\end{equation}</p>
+
+<p>and by adding <code class="language-plaintext highlighter-rouge">\label{...}</code> inside the equation environment, we can now refer to the equation using <code class="language-plaintext highlighter-rouge">\eqref</code>.</p>
+
+<p>Note that MathJax 3 is <a href="https://docs.mathjax.org/en/latest/upgrading/whats-new-3.0.html">a major re-write of MathJax</a> that brought a significant improvement to the loading and rendering speed, which is now <a href="http://www.intmath.com/cg5/katex-mathjax-comparison.php">on par with KaTeX</a>.</p>
+:ET
