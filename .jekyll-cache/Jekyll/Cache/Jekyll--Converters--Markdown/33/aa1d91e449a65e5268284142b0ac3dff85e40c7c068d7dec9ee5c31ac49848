@@ -1,14 +1,0 @@
-I"<p>Hello, this is Nguyen Canh Trung. You can call me “Trung”.</p>
-
-<p>I am an FPGA developer who works mainly in 5G communication sector. I had spent the first 3-years to work as a system integration for 5G-RRU (Remote Radio Unit) which focusing on high-speed interfaces such as <code class="language-plaintext highlighter-rouge">JESD204B</code>, <code class="language-plaintext highlighter-rouge">eCPRI</code> and <code class="language-plaintext highlighter-rouge">PCIe</code>. The other part of the job was to integrate <code class="language-plaintext highlighter-rouge">DPD</code>, <code class="language-plaintext highlighter-rouge">CFR</code> and <code class="language-plaintext highlighter-rouge">LOW PHY</code> solutions into fabric.</p>
-
-<p>Later on, my works was focusing on designing and implementing IP cores for Xilinx and Intel platforms which includes 5G-NR Layer 1 and ISP accelerators.</p>
-
-<p>Currently, I am participating in a project to design a “5G-verification system” (5G testbed). I am proficient at both <code class="language-plaintext highlighter-rouge">Traditional RTL design flow</code> and <code class="language-plaintext highlighter-rouge">High Level Synthesis design flow</code>.</p>
-
-<p>During my working time, I realize that I need a space to summarize what I have learned. It can also be a place that I can share my knowledge and experience to someone that may need. This website is a result of the process.</p>
-
-<p>I hope you can find something interesting here. Feel free to drop me a line via email!</p>
-
-<p>Thank you!</p>
-:ET
