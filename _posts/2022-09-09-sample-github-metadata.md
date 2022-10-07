@@ -43,7 +43,6 @@ Then, go ahead and run `bundle install`
 ## Example MetaData
 * Host Name : {{ site.github.hostname }}
 * URL : {{ site.github.url }}
-* BaseURL : {{ site.github.baseurl }}
 * Archived : {{ site.github.archived}}
 * Contributors :
 {% for contributor in site.github.contributors %}
