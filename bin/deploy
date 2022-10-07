@@ -105,6 +105,8 @@ rm -R _site/
 # Create `.nojekyll` file (bypass GitHub Pages Jekyll processing)
 touch .nojekyll
 
+echo bobibo.one > CNAME
+
 # Push to DEPLOY_BRANCH
 git add -fA
 git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci skip]"
