@@ -1,0 +1,71 @@
+I"�<h2 id="rescan">Rescan</h2>
+
+<h2 id="hot-reset">Hot reset</h2>
+
+<p>Resets in PCI express are a bit complex. There are two main types of resets - conventional reset, and function-level reset. There are also two types of conventional resets, fundamental resets and non-fundamental resets. See the PCI express specification for all of the details.</p>
+
+<p>A ‘cold reset’ is a fundamental reset that takes place after power is applied to a PCIe device. There appears to be no standard way of triggering a cold reset, save for turning the system off and back on again. On my machines, the <code class="language-plaintext highlighter-rouge">/sys/bus/pci/slots</code> directory is empty.</p>
+
+<p>A ‘warm reset’ is a fundamental reset that is triggered without disconnecting power from the device. There appears to be no standard way of triggering a warm reset.</p>
+
+<p>A ‘hot reset’ is a conventional reset that is triggered across a PCI express link. A hot reset is triggered either when a link is forced into electrical idle or by sending TS1 and TS2 ordered sets with the hot reset bit set. Software can initiate a hot reset by setting and then clearing the secondary bus reset bit in the bridge control register in the PCI configuration space of the bridge port upstream of the device.</p>
+
+<p>A ‘function-level reset’ (FLR) is a reset that affects only a single function of a PCI express device. It must not reset the entire PCIe device. Implementing function-level resets is not required by the PCIe specification. A function-level reset is initiated by setting the initiate function-level reset bit in the function’s device control register in the PCI express capability structure in the PCI configuration space.</p>
+
+<p>Linux exposes the function-level reset functionality in the form of <code class="language-plaintext highlighter-rouge">/sys/bus/pci/devices/$dev/reset</code>. Writing a 1 to this file will initiate a function-level reset on the corresponding function. Note that this only affects that specific function of the device, not the whole device, and devices are not required to implement function-level resets as per the PCIe specification.</p>
+
+<p>I am not aware of any ‘nice’ method for triggering a hot reset (there is no sysfs entry for that). However, it is possible to use setpci to do so:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nv">dev</span><span class="o">=</span><span class="nv">$1</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$dev</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Error: no device specified"</span>
+    <span class="nb">exit </span>1
+<span class="k">fi
+
+if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-e</span> <span class="s2">"/sys/bus/pci/devices/</span><span class="nv">$dev</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nv">dev</span><span class="o">=</span><span class="s2">"0000:</span><span class="nv">$dev</span><span class="s2">"</span>
+<span class="k">fi
+
+if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-e</span> <span class="s2">"/sys/bus/pci/devices/</span><span class="nv">$dev</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Error: device </span><span class="nv">$dev</span><span class="s2"> not found"</span>
+    <span class="nb">exit </span>1
+<span class="k">fi
+
+</span><span class="nv">port</span><span class="o">=</span><span class="si">$(</span><span class="nb">basename</span> <span class="si">$(</span><span class="nb">dirname</span> <span class="si">$(</span><span class="nb">readlink</span> <span class="s2">"/sys/bus/pci/devices/</span><span class="nv">$dev</span><span class="s2">"</span><span class="si">)))</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-e</span> <span class="s2">"/sys/bus/pci/devices/</span><span class="nv">$port</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Error: device </span><span class="nv">$port</span><span class="s2"> not found"</span>
+    <span class="nb">exit </span>1
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"Removing </span><span class="nv">$dev</span><span class="s2">..."</span>
+
+<span class="nb">echo </span>1 <span class="o">&gt;</span> <span class="s2">"/sys/bus/pci/devices/</span><span class="nv">$dev</span><span class="s2">/remove"</span>
+
+<span class="nb">echo</span> <span class="s2">"Performing hot reset of port </span><span class="nv">$port</span><span class="s2">..."</span>
+
+<span class="nv">bc</span><span class="o">=</span><span class="si">$(</span>setpci <span class="nt">-s</span> <span class="nv">$port</span> BRIDGE_CONTROL<span class="si">)</span>
+
+<span class="nb">echo</span> <span class="s2">"Bridge control:"</span> <span class="nv">$bc</span>
+
+setpci <span class="nt">-s</span> <span class="nv">$port</span> <span class="nv">BRIDGE_CONTROL</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%04x"</span> <span class="k">$((</span><span class="s2">"0x</span><span class="nv">$bc</span><span class="s2">"</span> <span class="o">|</span> <span class="m">0</span>x40<span class="k">))</span><span class="si">)</span>
+<span class="nb">sleep </span>0.01
+setpci <span class="nt">-s</span> <span class="nv">$port</span> <span class="nv">BRIDGE_CONTROL</span><span class="o">=</span><span class="nv">$bc</span>
+<span class="nb">sleep </span>0.5
+
+<span class="nb">echo</span> <span class="s2">"Rescanning bus..."</span>
+
+<span class="nb">echo </span>1 <span class="o">&gt;</span> <span class="s2">"/sys/bus/pci/devices/</span><span class="nv">$port</span><span class="s2">/rescan"</span>
+</code></pre></div></div>
+
+<p>Ensure that all attached drivers are unloaded before running this script. This script will attempt to remove the PCIe device, then command the upstream switch port to issue a hot reset, then attempt to rescan the PCIe bus. This script has also only been tested on devices with a single function, so it may need some reworking for devices with multiple functions.</p>
+
+<p>References <d-footnote> <a href="https://unix.stackexchange.com/questions/73908/how-to-reset-cycle-power-to-a-pcie-device/474378#474378"> Link </a> </d-footnote></p>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+:ET

@@ -66,7 +66,7 @@ Ma trận cơ sở B là một trong những thông tin cần phải được hi
 | $$ Zc > a > 0 $$| Ma trận I được shift phải $$ a $$ lần|
 
 <br />
-Hình dưới đây là một ví dụ. Với expansion factor = 5 hay Zc = 5 (Một số tài liệu họ gọi là lifting factor hay có thể ký hiệu là Z). Chi tiết về Zc có thể xem tại <a href="">đây</a>.
+Hình dưới đây là một ví dụ. Với expansion factor = 5 hay Zc = 5 (Một số tài liệu họ gọi là lifting factor hay có thể ký hiệu là Z). Chi tiết về Zc có thể xem tại <a href="https://bobibo.one/blog/2022/ldpc-lifting-factor/">đây</a>.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">

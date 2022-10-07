@@ -3,87 +3,96 @@ layout: post
 title: 5G LDPC - Lifting factor Zc
 date: 2022-10-06
 description: Describing 5G LDPC lifting factor and how to calculate it
-tags: ldpc
-categories: algorithm
+tags: 5g
+categories: algorithm vi
 ---
 
-## Tổng quan
+## Overview
 
+Lifting factor hay expansion factor $$ Z_c $$ (có nhiều tài liệu ký hiệu là $$Z$$) là tham số được sử dụng để quyết định kích thước của ma trận cơ sở ($$B$$) sẽ được mở rộng bao nhiêu lần. Việc sử dụng <a href="https://bobibo.one/blog/2022/ldpc-base-matrix/">ma trận cơ sở $$B$$</a> để mô tả parity check matrices là một phương pháp hiệu quả giúp giảm tài nguyên nhớ. Về mặt lý thuyết, phương pháp này giảm được $$Z^2_c$$ phần tử nhớ (trong thực tế, tài nguyên nhớ sử dụng còn tiếp tục được tối ưu hơn nữa, do việc tính toán chỉ cần sử dụng một phần của ma trận cơ bản bao gồm ma trận $$A, E, C_1, C_2$$).
+
+Phần sau sẽ mô tả cách tính $$Z_c$$ được mô tả trong tài liệu 3GPP.
 
 ***
-## Base matrix (B) and parity check matrix (H)
-
-Ma trận cơ sở B là một ma trận có kích thước như sau:
-* Base graph 1: 46 hàng x 68 cột
-* Base graph 2: 42 hàng x 52 cột
-
-Ma trận H được tạo thành từ việc thay thế các phần tử của ma trận cơ sở B, bằng các ma trận có kích thước Zc x Zc. Cụ thể, các phần tử của ma trận cơ sở sẽ có một trong các giá trị sau và tương ứng là ma trận ZcxZc
-
-
-| Giá trị       | 	   |   Ý nghĩa 						|
-|:--------------|------|-------------:					|
-| -1         	|      | Ma trận 0						|
-| 0      		|      | Ma trận I (Identity matrix)	|
-| a > 0  		|      | Ma trận I được shift phải x lần|
-
-<br />
-Chú ý: Giá trị của x sẽ được tính bằng 
-
-$$ 
-x = a \bmod Zc 
-$$
-
-<br />
-
-Hình dưới đây là một ví dụ. Với expansion factor = 5 hay Zc = 5 (Một số tài liệu họ gọi là lifting factor hay có thể ký hiệu là Z). Chi tiết về Zc có thể xem tại <a href="">đây</a>.
+## Compute $$Z_c$$
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/01.blogs/221006_ldpc_basematrix/1.png" class="img-fluid rounded z-depth-1" zoomable=true %}
+        {% include figure.html path="assets/img/01.blogs/221006_ldpc_basematrix/2.png" class="img-fluid rounded z-depth-1" zoomable=true %}
     </div>
 </div>
+<br/>
+Mỗi $$i_{LS}$$ index sẽ có nhiều giá trị có thể có của $$Z_c$$.
 
+Việc tính toán các giá trị của $$Z_c$$ cho mỗi $$i_{LS}$$ index được thự hiện như sau:
 
+|Tham số| ----- |----- |----- |----- |----- |----- |----- |----- |
+|:-----:|:-:|:-:|:-:|:-:|:-:|:-: |:-: |:-:|
+|$$i_{LS}$$  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7|
+|$$a$$  | 2 | 3 | 5 | 7 | 9 | 11 | 13 | 15|
+|$$J_a$$| 7 | 7 | 6 | 5 | 5 | 5  | 4  | 4 |
 
+<br/>
+Bảng trên được hiểu như sau: 
+
+* Với index 0, trong đó $$a = 2$$ thì $$J_a = 0, 1, 2, ..., 7$$
+
+* Với index 1, trong đó $$a = 5$$ thì $$J_a = 0, 1, 2, ..., 6$$
+...
+
+Với mỗi giá trị $$a$$ hay với mỗi index $$i_{LS}$$, thì:
+
+$$
+	Z_c = a * 2^{j_a}
+$$ 
+
+Như vậy table 5.3.2-1 đang mô tả các giá trị của $$Z_c$$ ứng với mỗi index, nhưng bản chất nó là tập các giá trị của $$Z_c$$ ứng với một giá trị của $$a$$. Sau cùng, chúng ta sẽ chỉ quan tâm đến các giá trị của $$Z_c$$ mà thôi.
 
 ***
-## Base matrix structure
+## $$Z_c$$ selection
 
+Việc lựa chọn $$Z_c$$ phụ thuộc vào <b>độ dài của thông tin cần mã hóa</b> (theo đơn vị bit). Nó được mô tả ở phần `Matlab code` dưới đây.
 
-***
-## How to construct 5G LDPC base matrix
-Ma trận cơ sở B
+Với mỗi $$Z_c$$, ma trận cơ sở B sẽ có những ràng buộc sau đây:
 
+* Giá trị của elements trong ma trận có giá trị $$[-1, 0, .. Z_c-1]$$
+* Các ma trận expansion thay thế cho các elements trong ma trận cơ sở sẽ luôn có kích thước Zc x Zc
+* -1: tương ứng ma trận 0 kích thước Zc x Zc
+* 0 : tương ứng với ma trận Identity kích thước Zc x Zc
+* Các giá trị a lớn hơn 0: tương ứng với ma trận Identity được shift phải a lần
 
 ***
 ## Matlab code
 
-***
-## References
-<a href="https://panel.castle.cloud/view_spec/38212-f11/">3GPP - 38.212 - section 5.3.2</a>
+{% highlight matlab linenos %}
 
+% Find the minimum value of Z in all sets of lifting sizes in 38.212
+%  Table 5.3.2-1, denoted as Zc, such that Kb*Zc>=KdE1_CB
+%  Step 1: Determine Kb
+%  Step 2: Determine minimum value of Zc
 
+% Kb is number of columns carrying actual information bit (no filler bits) in base matrix
+if NBG == 1
+    Kb = 22;
+else
+    if B > 640
+        Kb = 10;
+    elseif B > 560
+        Kb = 9;
+    elseif B > 192
+        Kb = 8;
+    else
+        Kb = 6;
+    end
+end
 
+Zlist = [2:16 18:2:32 36:4:64 72:8:112 120 128 144 160:16:256 288 320 352 384];
 
+% Kd is length of each codeblock (excluding filler bits)
+for Zc = Zlist
+    if Kb*Zc >= Kd
+        break;
+    end
+end
 
-
-
-This theme supports rendering beautiful math in inline and display modes using [MathJax 3](https://www.mathjax.org/) engine. You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`. If you leave it inside a paragraph, it will produce an inline expression, just like $$ E = mc^2 $$.
-
-To use display mode, again surround your expression with `$$` and place it as a separate paragraph. Here is an example:
-
-$$
-\sum_{k=1}^\infty |\langle x, e_k \rangle|^2 \leq \|x\|^2
-$$
-
-You can also use `\begin{equation}...\end{equation}` instead of `$$` for display mode math.
-MathJax will automatically number equations:
-
-\begin{equation}
-\label{eq:cauchy-schwarz}
-\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
-\end{equation}
-
-and by adding `\label{...}` inside the equation environment, we can now refer to the equation using `\eqref`.
-
-Note that MathJax 3 is [a major re-write of MathJax](https://docs.mathjax.org/en/latest/upgrading/whats-new-3.0.html) that brought a significant improvement to the loading and rendering speed, which is now [on par with KaTeX](http://www.intmath.com/cg5/katex-mathjax-comparison.php).
+{% endhighlight %}
