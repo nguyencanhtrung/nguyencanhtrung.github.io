@@ -1,0 +1,515 @@
+I"�p<h2 id="scalar-data-types">Scalar data types</h2>
+
+<p>Objectives:</p>
+<ul>
+  <li>Use approriate data types when declaring ports and signals</li>
+  <li>List legal values of std_logic data types</li>
+  <li>Create scalar data types</li>
+</ul>
+
+<h3 id="data-types">Data types</h3>
+
+<ul>
+  <li>A data type in VHDL is a name that has been associated with a set of values and a set of operations.</li>
+  <li>A wide range of available data types provides flexibility in hardware modeling and built-in error checking to ensure signal compatibility in large, complex models.</li>
+  <li>Each object (<code class="language-plaintext highlighter-rouge">signal</code>, <code class="language-plaintext highlighter-rouge">variable</code>, <code class="language-plaintext highlighter-rouge">constant</code>, or <code class="language-plaintext highlighter-rouge">port</code>) must have its type defined when it is declared.</li>
+  <li>A given data type allows only values within its range to be applied</li>
+  <li>Since VHDL is a strongly typed language, the connected data objects must be of the same type. For example, a signal with the ‘bit’ data type must be connected to another signal with the same <code class="language-plaintext highlighter-rouge">bit</code> type.</li>
+</ul>
+
+<p>Though VHDL has a limited number of “buld-in” data types, libraries in VHDL extend this number.</p>
+
+<h3 id="scalar-data-types-1">Scalar data types</h3>
+
+<p>Scalar data types in VHDL represent single values. These includes:</p>
+<ul>
+  <li>bit</li>
+  <li>boolean</li>
+  <li>std_logic</li>
+  <li>integer</li>
+  <li>real</li>
+  <li>character</li>
+  <li>Physical concepts and amounts</li>
+  <li>Enumerated types for immediate recognition</li>
+</ul>
+
+<h3 id="1-bit--boolean">1. Bit &amp; boolean</h3>
+
+<p><strong>BIT</strong></p>
+
+<ul>
+  <li>Built-in data type</li>
+  <li>Takes values 0 and 1.</li>
+  <li>It executes quickly in simulation as there are only two states.</li>
+  <li>This data type is concise for modeling logic, but it does not adequately model hardware.</li>
+  <li>Hardly used for synthesis and has been essentially replaced by <code class="language-plaintext highlighter-rouge">std_logic</code></li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>architecture Behavioral of mux is
+signal A, B, SEL, Z : bit;
+begin
+    Z &lt;= A when (SEL = '1') else B;
+end Behavioral;
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">A</code>,<code class="language-plaintext highlighter-rouge">B</code>, <code class="language-plaintext highlighter-rouge">SEL</code>, and <code class="language-plaintext highlighter-rouge">Z</code> declared with the bit data type. It executes a simple multiplexer behavior.</p>
+
+<p><strong>Boolean</strong></p>
+
+<ul>
+  <li>Frequently used in behavioral modeling.</li>
+  <li>Takes the values True or False.</li>
+  <li>It is useful for modeling at a more abstract level.</li>
+  <li>Synthesizable; it is frequently seen in testbenches</li>
+</ul>
+
+<p>Both the data type declarations are taken from library <code class="language-plaintext highlighter-rouge">STD</code> and the package <code class="language-plaintext highlighter-rouge">Standard</code>. These are predefined and implicit for every VHDL model and, therefore, no explicit library declaration is ever required.</p>
+
+<h3 id="2-std_ulogic--std_logic">2. std_ulogic &amp; std_logic</h3>
+
+<p><strong> std_ulogic </strong></p>
+
+<p><code class="language-plaintext highlighter-rouge">std_ulogic</code> was developed from the Multi-Value Logic (MVD) system. It provides a detailed hardware modeling option</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">u</code> in <code class="language-plaintext highlighter-rouge">std_ulogic</code> means unresolved.</p>
+
+<p>This indicates that a function, at some point after the initial compilation, returns to a resolve state.</p>
+
+<p><code class="language-plaintext highlighter-rouge">std_ulogic</code> takes values as shown in the example here:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">U</code> means uninitialized</li>
+  <li><code class="language-plaintext highlighter-rouge">X</code> means forcing Unknown</li>
+  <li><code class="language-plaintext highlighter-rouge">0</code> means forcing Zero</li>
+  <li><code class="language-plaintext highlighter-rouge">1</code> means forcing One</li>
+  <li><code class="language-plaintext highlighter-rouge">Z</code> means high impedance</li>
+  <li><code class="language-plaintext highlighter-rouge">W</code> weak unknown</li>
+  <li><code class="language-plaintext highlighter-rouge">L</code> weak zero</li>
+  <li><code class="language-plaintext highlighter-rouge">H</code> weak one</li>
+  <li><code class="language-plaintext highlighter-rouge">-</code> don’t care condition</li>
+</ul>
+
+<p>It supports different signal strengths, don’t care conditions, and tristate drivers.</p>
+
+<p>It is defined in the package <code class="language-plaintext highlighter-rouge">std_logic_1164</code> of <code class="language-plaintext highlighter-rouge">IEEE</code>.</p>
+
+<p><strong> std_ulogic </strong></p>
+
+<p><code class="language-plaintext highlighter-rouge">std_logic</code> is the resolved form of <code class="language-plaintext highlighter-rouge">std_ulogic</code> and is more commonly used.</p>
+
+<p>It takes the same nine values as <code class="language-plaintext highlighter-rouge">std_ulogic</code>.</p>
+
+<p>The table shown here is called the resolution table used for the <code class="language-plaintext highlighter-rouge">std_logic</code> data type. 
+This table resolves the question of which value is to be assigned when multiple values are assigned to the same signal.</p>
+
+<p>Both the <code class="language-plaintext highlighter-rouge">std_logic</code> and <code class="language-plaintext highlighter-rouge">std_ulogic</code> types are actually enumerated types and their values must always be capitalized</p>
+
+<h4 id="std_ulogic-vs-std_logic">std_ulogic vs std_logic</h4>
+
+<p>Both the <code class="language-plaintext highlighter-rouge">std_logic</code> and <code class="language-plaintext highlighter-rouge">std_ulogic</code> data types have same set of values. The difference is implementation.</p>
+
+<p>If a user wants to drive two or more signals to a common output</p>
+
+<ul>
+  <li>
+    <p>if this common output has the <code class="language-plaintext highlighter-rouge">std_ulogic</code> data type, then this issue throws an error and will not be
+resolved. <code class="language-plaintext highlighter-rouge">std_ulogic</code> does provide a built-in means of error checking for inadvertent multiple drivers.</p>
+  </li>
+  <li>
+    <p>in the case of the <code class="language-plaintext highlighter-rouge">std_logic</code> type, it provides some form of a resolution function for the multiple drivers issue.</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>architecture rtl of example is
+signal OUT_1: std_ulogic;
+signal A, B, C, RES_OUT: std_logic;
+
+begin
+    OUT_1 &lt;= A;
+    OUT_1 &lt;= B;
+    OUT_1 &lt;= C;
+    
+    RES_OUT &lt;= A;
+    RES_OUT &lt;= B;
+    RES_OUT &lt;= C;
+end architecture;
+</code></pre></div></div>
+
+<p>For example, the OUT_1 signal will give an error here, whereas the RES_OUT signal with the <code class="language-plaintext highlighter-rouge">std_logic</code> type will make it through compile but will not often make it through implementation due to multiple drivers.</p>
+
+<h4 id="signal-resolution">Signal resolution</h4>
+
+<p>How do we resolve the multiple drivers issue?</p>
+
+<p>It can be resolved by using the tristate buffer modeling technique.</p>
+
+<ul>
+  <li>First, the RES_OUT signal should have the <code class="language-plaintext highlighter-rouge">std logic</code> type</li>
+  <li>Then the tristate buffer is implemented using a conditional signal statement.</li>
+</ul>
+
+<p>Atthe board level, these signals are combined via open-drain or open-collector outputs-in which case, <code class="language-plaintext highlighter-rouge">std_logic</code> weak high (H) and weak low (1) could be used to model</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signal A, B, C, RES_OUT: std_logic;
+RES_OUT &lt;= A when EN0 = '1' else 'Z';
+RES_OUT &lt;= B when EN1 = '1' else 'Z';
+RES_OUT &lt;= C when EN2 = '1' else 'Z';
+</code></pre></div></div>
+
+<h2 id="integer-and-real">Integer and Real</h2>
+
+<h3 id="integer">Integer</h3>
+
+<ul>
+  <li>Allows for flexible, intuitive quantities values.</li>
+  <li>Specifying the range of any integer has significant impact during synthesis.</li>
+  <li>Without specifying a range, the compiler defaults to the maximum range.</li>
+  <li>Total range of the type integer is somewhat compiler dependent;</li>
+  <li>However, it defaults to the range -2E31+1 to 2E31-1, which implies a 32-bit value.</li>
+</ul>
+
+<p>The syntax and an example of the type integer is shown here</p>
+
+<p><strong>Syntax</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type integer is range ...
+</code></pre></div></div>
+
+<p><strong>Example</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signal A: integer range 0 to 7;
+signal B: integer range 15 downto 0;
+</code></pre></div></div>
+
+<h3 id="real">Real</h3>
+
+<ul>
+  <li>Allows users to use floating-point values in the range of +1e38 to -1e38</li>
+  <li>Used to scale and offset physical data types</li>
+  <li>Used for purely Mathematical purposes</li>
+  <li>Used with physical constants (such as Time or Voltage) within simulation environments.</li>
+  <li>Real type can also be used in synthesizable code if the results they produce are resolvable during synthesis.</li>
+</ul>
+
+<p><strong>Syntax</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type real is range ...
+</code></pre></div></div>
+
+<p><strong>Example</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type CAPACITY is range -25.0 to 25.0;
+signal SIG_1: CAPACITY := 3.0;
+</code></pre></div></div>
+
+<h3 id="what-can--cannot-be-done-with-integers--reals">What can &amp; cannot be done with Integers &amp; Reals</h3>
+
+<ul>
+  <li>In general, all forms of comparisons (&gt;, &lt;, &gt;=, &lt;=, =, /=) are legal in integer and real.</li>
+  <li>Caution needs to be taken if real numbers are tested for equality as the test is not reliable.</li>
+  <li>Comparisons should either be done on
+    <ul>
+      <li>integer against integer</li>
+      <li>real against real</li>
+    </ul>
+  </li>
+  <li>Users can perform type conversion or casts to make the ‘type’ same.</li>
+  <li>The basic math functions (<code class="language-plaintext highlighter-rouge">+, -, *, /, mod, rem</code>) can be performed on <code class="language-plaintext highlighter-rouge">integer</code> and <code class="language-plaintext highlighter-rouge">real</code></li>
+  <li>Care needs to be taken as some of these operations can cause problems during synthesis but not during simulation.</li>
+</ul>
+
+<h2 id="data-type-conversion">Data Type Conversion</h2>
+
+<p>Since VHDL is a strongly typed language by its nature, assigning one type to another is illegal. Performing this change requires a conversion mechanism.</p>
+
+<p>The conversion processes in VHDL are:</p>
+
+<ul>
+  <li>Casting</li>
+  <li>Conversion function</li>
+</ul>
+
+<h3 id="type-casting">Type casting</h3>
+
+<ul>
+  <li>Used to move between the <code class="language-plaintext highlighter-rouge">std_logic_vector</code> =&gt;  <code class="language-plaintext highlighter-rouge">signed</code> and <code class="language-plaintext highlighter-rouge">unsigned</code> types.</li>
+  <li>Type cast between <code class="language-plaintext highlighter-rouge">std_logic_vector</code> and <code class="language-plaintext highlighter-rouge">signed</code> or <code class="language-plaintext highlighter-rouge">unsigned</code> can be used as long as the original and destination signals have the same bit width.</li>
+</ul>
+
+<p>For example:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signal ex1 : std_logic_vector(3 downto 0);
+signal ex2 : signed(3 downto 0);
+signal ex3 : unsigned(3 downto 0);
+
+ex2 &lt;= signed(ex1);
+ex3 &lt;= unsigned(ex1);
+ex1 &lt;= std_logic_vector(ex2);
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ex2 &lt;= signed(ex1)</code> The first example type casts a signal of <code class="language-plaintext highlighter-rouge">std_logic_vector</code> type (ex1) to <code class="language-plaintext highlighter-rouge">signed</code> type and stores it in ex2 which is of <code class="language-plaintext highlighter-rouge">signed</code> type as well.</li>
+  <li><code class="language-plaintext highlighter-rouge">ex3 &lt;= unsigned(ex1)</code> Similarly, the second example type casts a signal of <code class="language-plaintext highlighter-rouge">std_logic_vector</code> type (ex1) to <code class="language-plaintext highlighter-rouge">unsigned</code> type</li>
+  <li><code class="language-plaintext highlighter-rouge">ex1 &lt;= std_logic_vector(ex2)</code> Third example type casts a signal of singed type (ex2) to <code class="language-plaintext highlighter-rouge">std_logic_vector</code> type.</li>
+</ul>
+
+<h3 id="conversion-function">Conversion function</h3>
+
+<ul>
+  <li>Used to move between <code class="language-plaintext highlighter-rouge">signed</code> and <code class="language-plaintext highlighter-rouge">unsigned</code> =&gt; <code class="language-plaintext highlighter-rouge">integer</code>.</li>
+  <li>Integers do not have a set bit width, which is why the conversion function from <code class="language-plaintext highlighter-rouge">integer</code> to <code class="language-plaintext highlighter-rouge">signed/unsigned</code> includes a specification of the intended bit width.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signal ex1: signed(3 downto 0);
+signal ex2: integer;
+
+ex1 &lt;= to_signed (ex2, ex1'length);
+ex2 &lt;= to_integer(ex1);
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ex1 &lt;= to_signed (ex2, ex1'length)</code> The first example here converts an integer (ex2) to signed type using <code class="language-plaintext highlighter-rouge">to_signed</code> conversion function, available in <code class="language-plaintext highlighter-rouge">numeric_std</code> package and stores the result in <code class="language-plaintext highlighter-rouge">ex1</code> which is of <code class="language-plaintext highlighter-rouge">singed</code> type.</li>
+  <li><code class="language-plaintext highlighter-rouge">ex2 &lt;= to_integer(ex1)</code> Similarly, the <code class="language-plaintext highlighter-rouge">to_integer</code> conversion function converts a <code class="language-plaintext highlighter-rouge">signed</code> type to <code class="language-plaintext highlighter-rouge">integer</code> type in the second example.</li>
+</ul>
+
+<h2 id="data-type-conversion-1">Data Type Conversion</h2>
+
+<p>Since VHDL is a strongly typed language by its nature, assigning one type to another is illegal. Performing this change requires a conversion mechanism.</p>
+
+<p>The conversion processes in VHDL are:</p>
+
+<ul>
+  <li>Casting</li>
+  <li>Conversion function</li>
+</ul>
+
+<h3 id="type-casting-1">Type casting</h3>
+
+<ul>
+  <li>Used to move between the <code class="language-plaintext highlighter-rouge">std_logic_vector</code> =&gt;  <code class="language-plaintext highlighter-rouge">signed</code> and <code class="language-plaintext highlighter-rouge">unsigned</code> types.</li>
+  <li>Type cast between <code class="language-plaintext highlighter-rouge">std_logic_vector</code> and <code class="language-plaintext highlighter-rouge">signed</code> or <code class="language-plaintext highlighter-rouge">unsigned</code> can be used as long as the original and destination signals have the same bit width.</li>
+</ul>
+
+<p>For example:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signal ex1 : std_logic_vector(3 downto 0);
+signal ex2 : signed(3 downto 0);
+signal ex3 : unsigned(3 downto 0);
+
+ex2 &lt;= signed(ex1);
+ex3 &lt;= unsigned(ex1);
+ex1 &lt;= std_logic_vector(ex2);
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ex2 &lt;= signed(ex1)</code> The first example type casts a signal of <code class="language-plaintext highlighter-rouge">std_logic_vector</code> type (ex1) to <code class="language-plaintext highlighter-rouge">signed</code> type and stores it in ex2 which is of <code class="language-plaintext highlighter-rouge">signed</code> type as well.</li>
+  <li><code class="language-plaintext highlighter-rouge">ex3 &lt;= unsigned(ex1)</code> Similarly, the second example type casts a signal of <code class="language-plaintext highlighter-rouge">std_logic_vector</code> type (ex1) to <code class="language-plaintext highlighter-rouge">unsigned</code> type</li>
+  <li><code class="language-plaintext highlighter-rouge">ex1 &lt;= std_logic_vector(ex2)</code> Third example type casts a signal of singed type (ex2) to <code class="language-plaintext highlighter-rouge">std_logic_vector</code> type.</li>
+</ul>
+
+<h3 id="conversion-function-1">Conversion function</h3>
+
+<ul>
+  <li>Used to move between <code class="language-plaintext highlighter-rouge">signed</code> and <code class="language-plaintext highlighter-rouge">unsigned</code> =&gt; <code class="language-plaintext highlighter-rouge">integer</code>.</li>
+  <li>Integers do not have a set bit width, which is why the conversion function from <code class="language-plaintext highlighter-rouge">integer</code> to <code class="language-plaintext highlighter-rouge">signed/unsigned</code> includes a specification of the intended bit width.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>signal ex1: signed(3 downto 0);
+signal ex2: integer;
+
+ex1 &lt;= to_signed (ex2, ex1'length);
+ex2 &lt;= to_integer(ex1);
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ex1 &lt;= to_signed (ex2, ex1'length)</code> The first example here converts an integer (ex2) to signed type using <code class="language-plaintext highlighter-rouge">to_signed</code> conversion function, available in <code class="language-plaintext highlighter-rouge">numeric_std</code> package and stores the result in <code class="language-plaintext highlighter-rouge">ex1</code> which is of <code class="language-plaintext highlighter-rouge">singed</code> type.</li>
+  <li><code class="language-plaintext highlighter-rouge">ex2 &lt;= to_integer(ex1)</code> Similarly, the <code class="language-plaintext highlighter-rouge">to_integer</code> conversion function converts a <code class="language-plaintext highlighter-rouge">signed</code> type to <code class="language-plaintext highlighter-rouge">integer</code> type in the second example.</li>
+</ul>
+
+<h3 id="std_logic_vector-tofrom-integer">std_logic_vector to/from integer</h3>
+
+<p>Common conversions required in VHDL are</p>
+
+<ul>
+  <li>From <code class="language-plaintext highlighter-rouge">std_logic_vector</code> to <code class="language-plaintext highlighter-rouge">integer</code></li>
+  <li>From <code class="language-plaintext highlighter-rouge">integer</code> to <code class="language-plaintext highlighter-rouge">std_logic_vector</code></li>
+</ul>
+
+<p>To convert from std logic_vector to integer:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>integer_value &lt;= to_integer( unsigned(slv_value));
+</code></pre></div></div>
+
+<p>To convert from integer to std_logic_vector:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>slv_value &lt;= std_logic_vector(to_unsigned( integer_value, n ));
+</code></pre></div></div>
+
+<h3 id="types--subtypes">Types &amp; subtypes</h3>
+
+<h4 id="types">Types</h4>
+
+<ul>
+  <li>Defines a set of values.</li>
+  <li>STD package defines a specific collection of types such as <code class="language-plaintext highlighter-rouge">integer</code>, <code class="language-plaintext highlighter-rouge">real</code>, <code class="language-plaintext highlighter-rouge">bit</code>, etc.</li>
+  <li>A new type can be created using enumeration arrays, records, etc.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type mem_array is array (integer range 0 to 1023) of std_logic_vector(15 downto 0);
+</code></pre></div></div>
+<p>The example shown here creates a new type called <code class="language-plaintext highlighter-rouge">mem_array</code>. Once created, this mem array becomes a full-blown type that a new signal or variable may be defined as. In this example, the created type is an array of <code class="language-plaintext highlighter-rouge">std_logic_vector</code> with length of 16 bits. The array has 1024 elements.</p>
+
+<h4 id="subtypes">Subtypes</h4>
+
+<ul>
+  <li>Provide a mechanism for limiting the range of a type.</li>
+  <li>Used in simulation to do boundary checking.</li>
+  <li>Boundary checking in hardware does not exist and hence subtypes only reduce the number of bits required to describe a signal or variable, which consequently reduces the number of unescessary warnings.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subtype &lt;new subtype name&gt; is &lt;type or subtype name&gt;;
+
+subtype ROM_MEMORY_RANGE is integer range 0 to 255;
+</code></pre></div></div>
+
+<p>The syntax always has a pre-defined type as subtype only refines the use of a previously defined type or subtype by further limiting its scope.</p>
+
+<p>The example shown here creats a subtype <code class="language-plaintext highlighter-rouge">ROM_MEMORY_RANGE</code> that limits the integer range (by default, a minimum of 32 bits) to 8 bits.</p>
+
+<h3 id="characters--strings">Characters &amp; Strings</h3>
+
+<h4 id="characters">Characters</h4>
+
+<ul>
+  <li>VHDL supports character type.</li>
+  <li>Characters are written in single quotes.</li>
+  <li>Character types are synthesizable.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type character is (nul, sol, stx, ...);
+
+constant MY_CHAR : character := 'Q';
+</code></pre></div></div>
+
+<p>The constant <code class="language-plaintext highlighter-rouge">MY_CHAR</code> is of the character type and has been assigned a value equal to ‘Q.</p>
+
+<h4 id="strings">Strings</h4>
+
+<ul>
+  <li>Strings are arrays of characters</li>
+  <li>Enclosed within double quotes</li>
+  <li>Once defined, cannot be changed
+    <ul>
+      <li>Once the string size is fixed or defined, it cannot be changed, even if a new string value is smaller than the defined size. The remaining space will contain remnants of the previous value.</li>
+      <li>String size always starts from 1. Since it is <code class="language-plaintext highlighter-rouge">postive range&lt;&gt;</code></li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type string is array (positive range &lt;&gt;) of character;
+constant msg: string (1 to 10) := "setup time";
+</code></pre></div></div>
+
+<p>A constant <code class="language-plaintext highlighter-rouge">msg</code> of string type with the range equal to ten characters. It has been assigned a value of “setup time”.</p>
+
+<h3 id="physical">Physical</h3>
+
+<ul>
+  <li>Used to quantify real-world physical concepts and amounts, such as <code class="language-plaintext highlighter-rouge">mass</code>, <code class="language-plaintext highlighter-rouge">length</code>, <code class="language-plaintext highlighter-rouge">time</code> etc.</li>
+  <li><code class="language-plaintext highlighter-rouge">time</code> is the only pre-defined physical type</li>
+  <li>Other physical types my be hand rolled or explicitly loaded from IEEE libraries</li>
+  <li>Generally not synthesizable.</li>
+  <li>A physical type must be defined in terms of its primary unit. Any secondary unit must be in multiples of the primary unit. * It is to noted that the units must be of the integer type and not real</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type time is range -2147483647 to 2147483647
+units
+fs;
+ps = 1000 fs;
+ns = 1000 ps;
+us = 1000 ns;
+ms = 1000 us;
+...
+end units;
+</code></pre></div></div>
+<ul>
+  <li>A syntax for <code class="language-plaintext highlighter-rouge">time</code>, defined in IEEE, is shown onscreen with its range.</li>
+  <li>Here, fs is the primary unit, and all secondary units are defined using fs.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>constant TPD : time := 3 ns;
+...
+Z &lt;= A after TPD;
+</code></pre></div></div>
+
+<p>In the example here, a constant <code class="language-plaintext highlighter-rouge">TPD</code> is of the type time and has been initialized with a 3ns value.</p>
+
+<h3 id="enumerated-types">Enumerated types</h3>
+
+<ul>
+  <li>Lists a set of names or values defining a new type.</li>
+  <li>Use values immediately recognizable and intuitively relevant to the operation of the model.</li>
+  <li>Make the code more readable, especially when describing state machines and complex systems.</li>
+</ul>
+
+<p>The syntax for this enumerated type is for this enumerated type is given onscreen:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type &lt;new type name&gt; is (&lt;list of items&gt;);
+</code></pre></div></div>
+
+<ul>
+  <li>Where a <new type="" name=""> is any legal identifier</new></li>
+  <li>
+    <list of="" items=""> is a list of items, separated by commas that have the form of any legal identifier.
+</list>
+  </li>
+  <li>By default, enumerated values are sequentially encoded from left to right within the parentheses.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type MY STATE is (RST, LOAD, FETCH, STORE, SHIFT);
+...
+signal STATE, NEXT STATE: MY STATE;
+...
+
+case (STATE) is
+    when LOAD =&gt;
+        if COND_A and COND B then
+            NEXT STATE &lt;= FETCH;
+        else
+            NEXT_STATE &lt;= STORE;
+        ...
+</code></pre></div></div>
+<p>In this example,</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">MY_STATE</code> is of the enumerated type</li>
+  <li>Takes values
+    <ul>
+      <li>“000” = RST</li>
+      <li>“001” = LOAD</li>
+      <li>“010” = FETCH</li>
+      <li>“011” = STORE</li>
+      <li>“100” = SHIFT</li>
+    </ul>
+  </li>
+  <li>
+    <p>Different synthesis tools may apply a different encoding scheme based on technology-specific optimization algorithms or other proprietary factors.</p>
+  </li>
+  <li>Caution needs to be taken while handling enumerated types
+    <ul>
+      <li>Although VHDL is a case-insensitive language, enumerated types are case sensitive</li>
+      <li>Enumerated types enclosed in single quotes</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type rx_states is (IDLE, START, DATA, PARITY, STOP);
+type tx_states is (IDLE, START, DATA, PARITY, STOP);
+
+signal rx_states: rx states := IDLE;
+signal tx_states: tx states := IDLE;
+</code></pre></div></div>
+
+<p>Consider an example of a UART transmitter and receiver. Here, <code class="language-plaintext highlighter-rouge">rx_states</code> and <code class="language-plaintext highlighter-rouge">tx_states</code> are of the enumerated type.</p>
+
+<ul>
+  <li>Even though the state names of rx_states and tx_states are identical, “IDLE” as defined in rx_states is not the same as the “IDLE” defined in tx_states.</li>
+  <li>These states may be coded differently during synthesis, but they are considered to be completely different types.</li>
+</ul>
+
+<p>For ease of understanding, the states list in <code class="language-plaintext highlighter-rouge">rx_states</code> can be considered as rx_states.IDLE, rx_States.START etc. Similarly, the states in <code class="language-plaintext highlighter-rouge">tx_states</code> can be considered as tx_states.IDLE, tx_states.START, etc</p>
+:ET

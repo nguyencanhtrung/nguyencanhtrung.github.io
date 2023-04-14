@@ -1,0 +1,31 @@
+I"L<h2 id="map-c-arrays-to-memories">Map C++ arrays to memories</h2>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cp">#include</span> <span class="cpf">"test.h"</span><span class="cp">
+#include</span> <span class="cpf">&lt;mc_scverify.h&gt;</span><span class="cp">
+</span>
+<span class="cp">#pragma hls_design top
+</span><span class="kt">void</span> <span class="nf">CCS_BLOCK</span><span class="p">(</span><span class="n">test</span><span class="p">)(</span><span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">&gt;</span> <span class="o">&gt;</span>      <span class="o">&amp;</span><span class="n">data_in</span><span class="p">,</span> 
+                     <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">7</span><span class="o">&gt;</span>                    <span class="n">coeffs</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span> <span class="c1">// array is mem interface not ac_channel</span>
+                     <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">coeff_addr</span><span class="p">,</span> 
+                     <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">19</span><span class="o">&gt;</span> <span class="o">&gt;</span>      <span class="o">&amp;</span><span class="n">result</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">static</span> <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">&gt;</span> <span class="n">regs</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span> <span class="c1">// shift register</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">19</span><span class="o">&gt;</span> <span class="n">acc</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">coeff_addr</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+<span class="cp">#pragma unroll yes
+</span>  <span class="nl">SHIFT:</span><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">regs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_in</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">regs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">regs</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="nl">MAC:</span><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">acc</span> <span class="o">+=</span> <span class="n">regs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">addr</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="n">result</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">acc</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+:ET

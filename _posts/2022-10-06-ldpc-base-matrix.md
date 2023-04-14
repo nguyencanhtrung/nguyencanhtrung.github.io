@@ -94,9 +94,9 @@ Trong đó, kích thước của từng ma trận sẽ là:
 |:-------------:|:-----------------:|:-----------------:|
 | A          	| 4 x 22 			| 4 x 10 			|
 | E     		| 4 x 4 			| 4 x 4 			|
-| $$ C_1 $$		| 4 x 42 			| 4 x 38 			|
-| $$ C_2 $$		| 42 x 22 			| 38 x 10 			|
-| O 			| 42 x 4 			| 38 x 10 			|
+| $$ C_1 $$		| 42 x 22 			| 38 x 10 			|
+| $$ C_2 $$		| 42 x 4 			| 38 x 4 			|
+| O 			| 4 x 42 			| 4 x 38 			|
 | I 			| 42 x 42 			| 38 x 38 			|
 
 Ma trận $$A, E$$ được sử dụng để tính 4 parity bit đầu tiên (Ký hiệu: $$p_a$$).
@@ -150,7 +150,7 @@ $$
 Với các trường hợp còn lại của $$ Z_c = 13, 26, 52, 104 $$ ứng với $$ i_{LS} = 6 $$. Giá trị của mỗi element sẽ được tính theo công thức:
 
 $$ 
-b = a \bmod Zc 
+b = a \bmod Zc      (1)
 $$
 
 Trong đó:
@@ -172,6 +172,8 @@ $$
 
 <b>Kết luận</b>
 * Có 51 giá trị $$Z_c$$, tương ứng sẽ có 51 ma trận cơ sở B với mỗi Base Graph. Do đó, 5G LDPC sẽ có tổng cộng 102 ma trận cơ sở. Việc thiết kế FPGA sẽ cần phải tối ưu việc lưu trữ các ma trận này để đảm bảo tiết kiệm tài nguyên nhớ và không bị "nghẽn cổ chai" khi thực thi việc mã hóa và giải mã.
+* Trong thực tế, không cần phải lưu trữ hết 102 ma trận cơ sở, thay vào đó chỉ cần lưu trữ 16 ma trận cơ sở ứng với mỗi một index $$i_{LS}$$ ( mỗi một base graph có 8 ma trận dạng này). Ma trận này là ma trận cơ sở của $$Z_c$$ lớn nhất trong mỗi index. Các ma trận cơ sở khác sẽ được tính toán “on-fly” dựa trên công thức. Điều này giúp giảm tài nguyên nhớ sử dụng.
+* Để giảm hơn nữa tài nguyên nhớ, như đã phân tích ở trên, thực hiện mã hóa thông tin chỉ cần 4 thành phần của ma trận cơ sở là $$A, E, C_1, C_2$$. Do đó, chỉ cần lưu trữ 4 ma trận thành phần trong một ma trận cơ sở mà thôi.
 
 ## 5. Precomputed base matrices
 

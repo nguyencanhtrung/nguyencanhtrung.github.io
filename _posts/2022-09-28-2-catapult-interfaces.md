@@ -21,18 +21,10 @@ bibliography: 2018-12-22-distill.bib
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-  - name: FIR implementation
-  - name: C/C++ modeling
-  - name: Catapult flow (GUI flow)
-    subsections:
-     - name: 1. Adding source code
-     - name: 2. Platform setting
-     - name: 3. Libraries
-     - name: 4. Clock and reset setting
-     - name: 5. Architectural setting
+  - name: Catapult IOs
+  - name: AXI4 Stream interface
+  - name: AXI4 Lite interface
 
-  - name: Scripting and shell flow
-  - name: Conclusion
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -54,226 +46,87 @@ _styles: >
 
 ---
 
-## FIR implementation
+## Catapult IO components
 
-This theme supports rendering beautiful math in inline and display modes using [MathJax 3](https://www.mathjax.org/) engine.
-You just need to surround your math expression with `$$`, like `$$ E = mc^2 $$`.
-If you leave it inside a paragraph, it will produce an inline expression, just like $$ E = mc^2 $$.
+This part is a mess for me at the beginning actually at the moment also, but I will try to make more experiment. I do not really know why they have to make it so compilcated. As mentioned in the userguide, they provides 20 types of IOs (10 for Input and 10 for Output)
 
-To use display mode, again surround your expression with `$$` and place it as a separate paragraph.
-Here is an example:
+|<b>Input</b>           | <b>Output</b>       |
+| ccs_in               | ccs_out              |    
+| ccs_in_rdy           | ccs_out_prereg       |           
+| ccs_in_rdy_coupled   | ccs_out_prereg_vld   |               
+| ccs_in_vld           | ccs_out_rdy          |        
+| ccs_in_wait          | ccs_out_vld          |        
+| ccs_in_pipe          | ccs_out_wait         |         
+| ccs_in_buf_wait      | ccs_out_pipe         |         
+| ccs_ctrl_in_buf_wait | ccs_out_buf_wait     |             
+| ccs_in_wait_coupled  | ccs_out_skidbuf_wait |                 
+| ccs_in_wait_szchan   | ccs_stallbuf         |         
 
-$$
-\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
-$$
+Based on userguide, it describes:
+* Having VALID or READY signal or not. 
+  * `_rdy` ready signal is available
+  * `vld` valid signal is available
+  * `wait` `pipe` both ready and valid is available
+* Data registerd in IO component or not
+* Handshaking signals registered in the IO component or not
+* Process registerd in the main process ot not
 
-Note that MathJax 3 is [a major re-write of MathJax](https://docs.mathjax.org/en/latest/upgrading/whats-new-3.0.html) that brought a significant improvement to the loading and rendering speed, which is now [on par with KaTeX](http://www.intmath.com/cg5/katex-mathjax-comparison.php).
+What are IO component and main process?
 
-
-
-## C/C++ modeling
-
-Citations are then used in the article body with the `<d-cite>` tag.
-The key attribute is a reference to the id provided in the bibliography.
-The key attribute can take multiple ids, separated by commas.
-
-The citation is presented inline like this: <d-cite key="gregor2015draw"></d-cite> (a number that displays more information on hover).
-If you have an appendix, a bibliography is automatically created and populated in it.
-
-Distill chose a numerical inline citation style to improve readability of citation dense articles and because many of the benefits of longer citations are obviated by displaying more information on hover.
-However, we consider it good style to mention author last names if you discuss something at length and it fits into the flow well — the authors are human and it’s nice for them to have the community associate them with their work.
-
-
-***
-
-## Catapult flow (GUI flow)
-
-### 1. Adding source code
-### 2. Platform setting
-### 3. Libraries
-### 4. Clock and reset setting
-### 5. Architectural setting
-
-Just wrap the text you would like to show up in a footnote in a `<d-footnote>` tag.
-The number of the footnote will be automatically generated.<d-footnote>This will become a hoverable footnote.</d-footnote>
+Cai User guide nhi shit
 
 
 
-## Scripting and shell flow
 
-Syntax highlighting is provided within `<d-code>` tags.
-An example of inline code snippets: `<d-code language="html">let x = 10;</d-code>`.
-For larger blocks of code, add a `block` attribute:
+## Wait Controller
 
-<d-code block language="javascript">
-  var x = 25;
-  function(x) {
-    return x * x;
-  }
-</d-code>
+Mỗi IO component có đuôi `_wait` handshake khi compile ra RTL sẽ sinh ra một khối `Wait Controller`. Tương ứng với IO components ta sẽ có 2 loại `Wait Controller`: Input và Output
 
-**Note:** `<d-code>` blocks do not look good in the dark mode.
-You can always use the default code-highlight using the `highlight` liquid tag:
+Trong RTL, netlist, các khối `Wait Controller` sẽ được mô tả với đuôi `*:rsci` và `staller`
 
-{% highlight javascript %}
-var x = 25;
-function(x) {
-  return x * x;
-}
+
+### Input wait controller
+
+
+### Output wait controller 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## AXI4 Stream interface
+
+In order for Catapult recognizes `_TLAST` and `_TUSER` correctly, it is required to declare `Stream_t` in the following order:
+
+{% highlight c++ %}
+
+struct Stream_t {
+  uint128 TDATA;
+  bool    TUSER;
+  bool    TLAST;
+};
+
 {% endhighlight %}
 
-***
-
-## Conclusion
-
-The main text column is referred to as the body.
-It is the assumed layout of any direct descendants of the `d-article` element.
-
-<div class="fake-img l-body">
-  <p>.l-body</p>
-</div>
-
-For images you want to display a little larger, try `.l-page`:
-
-<div class="fake-img l-page">
-  <p>.l-page</p>
-</div>
-
-All of these have an outset variant if you want to poke out from the body text a little bit.
-For instance:
-
-<div class="fake-img l-body-outset">
-  <p>.l-body-outset</p>
-</div>
-
-<div class="fake-img l-page-outset">
-  <p>.l-page-outset</p>
-</div>
-
-Occasionally you’ll want to use the full browser width.
-For this, use `.l-screen`.
-You can also inset the element a little from the edge of the browser by using the inset variant.
-
-<div class="fake-img l-screen">
-  <p>.l-screen</p>
-</div>
-<div class="fake-img l-screen-inset">
-  <p>.l-screen-inset</p>
-</div>
-
-The final layout is for marginalia, asides, and footnotes.
-It does not interrupt the normal flow of `.l-body` sized text except on mobile screen sizes.
-
-<div class="fake-img l-gutter">
-  <p>.l-gutter</p>
-</div>
-
-***
-
-## Other Typography?
-
-Emphasis, aka italics, with *asterisks* (`*asterisks*`) or _underscores_ (`_underscores_`).
-
-Strong emphasis, aka bold, with **asterisks** or __underscores__.
-
-Combined emphasis with **asterisks and _underscores_**.
-
-Strikethrough uses two tildes. ~~Scratch this.~~
-
-1. First ordered list item
-2. Another item
-⋅⋅* Unordered sub-list. 
-1. Actual numbers don't matter, just that it's a number
-⋅⋅1. Ordered sub-list
-4. And another item.
-
-⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
-
-⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
-⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
-⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
-
-* Unordered list can use asterisks
-- Or minuses
-+ Or pluses
-
-[I'm an inline-style link](https://www.google.com)
-
-[I'm an inline-style link with title](https://www.google.com "Google's Homepage")
-
-[I'm a reference-style link][Arbitrary case-insensitive reference text]
-
-[I'm a relative reference to a repository file](../blob/master/LICENSE)
-
-[You can use numbers for reference-style link definitions][1]
-
-Or leave it empty and use the [link text itself].
-
-URLs and URLs in angle brackets will automatically get turned into links. 
-http://www.example.com or <http://www.example.com> and sometimes 
-example.com (but not on Github, for example).
-
-Some text to show that the reference links can follow later.
-
-[arbitrary case-insensitive reference text]: https://www.mozilla.org
-[1]: http://slashdot.org
-[link text itself]: http://www.reddit.com
-
-Here's our logo (hover to see the title text):
-
-Inline-style: 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
-
-Reference-style: 
-![alt text][logo]
-
-[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
-
-Inline `code` has `back-ticks around` it.
-
-```javascript
-var s = "JavaScript syntax highlighting";
-alert(s);
-```
- 
-```python
-s = "Python syntax highlighting"
-print s
-```
- 
-```
-No language indicated, so no syntax highlighting. 
-But let's throw in a <b>tag</b>.
-```
-
-Colons can be used to align columns.
-
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
-
-There must be at least 3 dashes separating each header cell.
-The outer pipes (|) are optional, and you don't need to make the 
-raw Markdown line up prettily. You can also use inline Markdown.
-
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
-
-> Blockquotes are very handy in email to emulate reply text.
-> This line is part of the same quote.
-
-Quote break.
-
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote. 
+`_TLAST` must be in the last.
 
 
-Here's a line for us to start with.
+Catapult <b>does not support byte positioning</b>, thereforem it requires
 
-This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
+* `_TSTRB`, `_TKEEP` of input are all `1s`, if not it will assert `WARNING` when running RTL simulation.
 
-This line is also a separate paragraph, but...
-This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
+On the other hand, developers cannot assign value for `_TSTRB` or `_TKEEP`, they are assigned to `1s` at output by default.
+
+
+## AXI4 Lite interface
+
