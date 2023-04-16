@@ -24,10 +24,6 @@ toc:
   - name: 1. Workflow với docker
   - name: 2. Các trạng thái của một container
   - name: 3. Docker commands
-    subsections:
-    - name: a. std logic vector
-    - name: b. signed and unsigned 
-    - name: c. What can and cannot be done with std_logic?
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -66,9 +62,20 @@ Một container luôn có hệ điều hành giống như một máy ảo, tuy n
 
 Trạng thái của một container có thể được quan sát với câu lệnh `docker ps -a`
 
+* `Created` Container được khởi tạo mới bằng câu lệnh `docker run`
 * `up` container đang ở trạng thái hoạt động (active) 
 * `paused` trạng thái tạm ngưng, đóng băng
 * `Exited` trạng thái off
+
+```
+    $docker ps -a
+
+    CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS                    PORTS     NAMES
+    71e7c47685f2   bi             "/bin/bash"   48 minutes ago   Up 48 minutes                       bo
+    6a04fd311401   63878e911300   "/bin/bash"   4 hours ago      Up 4 hours                          kind_lamport
+    4fc3ae93bff1   63878e911300   "/bin/bash"   4 hours ago      Exited (1) 4 hours ago              compassionate_aryabhata
+    b58f67683814   centos         "-it"         3 months ago     Created                             centos
+```
 
 ## 3. Docker commands
 
@@ -87,7 +94,8 @@ Trạng thái của một container có thể được quan sát với câu lệ
 * `docker commit`
 
 
-### $docker run
+### -----------
+### a. $docker run
 
 `docker run` tạo một container mới dựa trên `image` được cung cấp. Container mới này được định danh bởi `container name` và `containter id`.
 
@@ -131,13 +139,44 @@ Giải nghĩa: `docker run` khởi chạy một `container` với các cờ sau
 
 Khi chạy câu lệnh trên: Docker sẽ tạo một container mới có tên là `bi` từ image `ubuntu:20.04` và cho phép chạy GUI từ container, cũng như cho phép tương tác với bash shell bên trong container.
 
+### -----------
+### b. $docker start
 
-### $docker start
+Docker start được sử dụng để khởi chạy một container đang trong trạng thái `exited`.
 
-Một 
+```
+docker start <ten_container>
+```
 
+Có thể sử dụng container name hoặc container ID 
 
-### $docker ps
+```
+CONTAINER ID   IMAGE          COMMAND       CREATED       STATUS                     PORTS     NAMES
+71e7c47685f2   bi             "/bin/bash"   2 weeks ago   Exited (2) 4 seconds ago             bo
+6a04fd311401   63878e911300   "/bin/bash"   2 weeks ago   Exited (129) 2 weeks ago             kind_lamport
+```
+
+Chạy container `bo` bằng cách:
+
+`$ docker start bo`
+
+### -----------
+### c. $docker attach
+
+Sau khi khởi chạy một container, truy cập vào môi trường của container bằng câu lệnh sau:
+
+```
+docker attach <ten container>
+```
+
+Có thể sử dụng container name hoặc container ID 
+
+Truy cập môi trường container `bo` bằng cách:
+
+`$docker attach bo`
+
+### -----------
+### d. $docker ps
 
 `docker ps` được sử dụng với các cờ khác nhau và có chức năng khác nhau như bảng mô tả sau đây
 
@@ -177,7 +216,7 @@ Một
     c5e156ba746f   feb5d9fea6a5   "/hello"      3 months ago     Exited (0) 3 months ago             eloquent_merkle
 ```
 
-`docker ps -l`: Liệt kê container chạy ở cuối cùng
+`docker ps -l`: Liệt kê container chạy ở lần cuối cùng
 
 ```
     $docker ps -l
@@ -186,7 +225,8 @@ Một
     71e7c47685f2   bi        "/bin/bash"   49 minutes ago   Up 49 minutes             bo
 ```
 
-### $docker rm
+### -----------
+### e. $docker rm
 
 Như đã thấy ở danh sách `docker ps -a`, có rất nhiều containers không được dùng mà vẫn tồn tại trên hệ thống. Ta có thể loại bỏ chúng bằng câu lệnh `docker rm`
 
@@ -200,7 +240,8 @@ Tương đương với
 docker rm c5e156ba746f
 ```
 
-### $docker images 
+### -----------
+### f. $docker images 
 
 Liệt kê tất cả các images có trên hệ thống
 
@@ -213,7 +254,8 @@ ubuntu       20.04     1c5c8d0b973a   3 weeks ago   72.8MB
 
 ```
 
-### $docker rmi
+### -----------
+### g. $docker rmi
 
 Để gỡ docker images, trước tiên phải gỡ bỏ toàn bộ các container được tạo bởi image cần xóa bằng câu lệnh `docker rm <container-name>`. Sau đó, dùng câu lệnh `docker rmi`
 

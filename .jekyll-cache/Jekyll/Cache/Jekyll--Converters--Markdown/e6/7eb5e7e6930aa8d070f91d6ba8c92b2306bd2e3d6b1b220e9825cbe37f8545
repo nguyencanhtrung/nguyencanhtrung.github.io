@@ -1,0 +1,206 @@
+I"|A<h2 id="1-workflow-với-docker">1. Workflow với docker</h2>
+
+<p>Step 1: Pull image về máy với <code class="language-plaintext highlighter-rouge">docker pull</code>. Tương tự như file cài đặt.</p>
+
+<p>Step 2: Khởi tạo và chạy một container với image được kéo về ở bước 1.</p>
+
+<p>Step 3: Cài đặt tools trong container và làm các tác vụ cần thiết với container này. Có thể <code class="language-plaintext highlighter-rouge">stop</code> container, <code class="language-plaintext highlighter-rouge">exit</code> container …</p>
+
+<p>Step 4: Commit để lưu thành 1 images mới chứa bộ tools đã được cài đặt cũng như tất cả dữ liệu khi thực hiện các tác vụ với <code class="language-plaintext highlighter-rouge">docker commit</code>. Images này có thể dùng ở các máy khác nhau với toàn bộ tools cũng như dữ liệu tại thời điểm thực hiện commit.</p>
+
+<p>Một container có thể hiểu như là một phần mềm đã được cài đặt từ bộ cài <code class="language-plaintext highlighter-rouge">image</code>. Có một điều khác biệt căn bản ở so sánh trên là: một bộ cài chỉ cài được duy nhất 1 phần mềm trên 1 máy tính, nhưng với docker, một image có thể tạo được không giới hạn các container trên cùng một máy tính.</p>
+
+<p>Một container luôn có hệ điều hành giống như một máy ảo, tuy nhiên nó có thể sử dụng được toàn bộ sức mạnh phần cứng của host, không phải phân chia core hay ram như một máy ảo.</p>
+
+<h2 id="2-các-trạng-thái-của-một-container">2. Các trạng thái của một container</h2>
+
+<p>Trạng thái của một container có thể được quan sát với câu lệnh <code class="language-plaintext highlighter-rouge">docker ps -a</code></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">up</code> container đang ở trạng thái hoạt động (active)</li>
+  <li><code class="language-plaintext highlighter-rouge">paused</code> trạng thái tạm ngưng, đóng băng</li>
+  <li><code class="language-plaintext highlighter-rouge">Exited</code> trạng thái off</li>
+</ul>
+
+<h2 id="3-docker-commands">3. Docker commands</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">docker run</code> : Docker sẽ tạo một container mới và khởi chạy container. Container này sẽ chưa tồn tại trên hệ thống trước đó.</li>
+  <li><code class="language-plaintext highlighter-rouge">docker ps</code> : Liệt kê trạng thái các container đang ở trạng thái <code class="language-plaintext highlighter-rouge">active</code> or <code class="language-plaintext highlighter-rouge">up</code>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">docker ps -a</code>: Liệt kê tất cả các container đã tồn tại trên hệ thống và trạng thái của nó</li>
+      <li><code class="language-plaintext highlighter-rouge">docker ps -l</code>: Liệt kê container chạy ở lần cuối</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">docker start</code>: Khởi chạy một container đã tồn tại trên hệ thống</li>
+  <li><code class="language-plaintext highlighter-rouge">docker attach</code>: Truy cập trực tiếp vào container đang ‘active’</li>
+  <li><code class="language-plaintext highlighter-rouge">ctrl+p then ctrl+q</code>: Thoát khỏi container đang chạy tuy nhiên không thay đổi trạng thái ‘active’ của container</li>
+  <li><code class="language-plaintext highlighter-rouge">exit</code>: Thoát khỏi container và chuyển container về trạng thái ‘exited’</li>
+  <li><code class="language-plaintext highlighter-rouge">docker rm</code></li>
+  <li><code class="language-plaintext highlighter-rouge">docker rename</code></li>
+  <li><code class="language-plaintext highlighter-rouge">docker images</code>: list các docker image trên hệ thống</li>
+  <li><code class="language-plaintext highlighter-rouge">docker rmi</code>: dùng để gỡ bỏ docker image</li>
+  <li><code class="language-plaintext highlighter-rouge">docker commit</code></li>
+</ul>
+
+<p>===========================================</p>
+
+<h3 id="docker-run">$docker run</h3>
+
+<p><code class="language-plaintext highlighter-rouge">docker run</code> tạo một container mới dựa trên <code class="language-plaintext highlighter-rouge">image</code> được cung cấp. Container mới này được định danh bởi <code class="language-plaintext highlighter-rouge">container name</code> và <code class="language-plaintext highlighter-rouge">containter id</code>.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">docker run</code> chỉ cần chạy <code class="language-plaintext highlighter-rouge">docker run</code> một lần duy nhất.</li>
+  <li><code class="language-plaintext highlighter-rouge">container name</code>: mỗi một <code class="language-plaintext highlighter-rouge">container</code> được tạo ra sẽ có một tên do hệ thống tự tạo ra. Ta có thể chủ động đặt tên cho <code class="language-plaintext highlighter-rouge">container</code> bằng <code class="language-plaintext highlighter-rouge">--name=&lt;ten&gt;</code>
+    <ul>
+      <li>Có thể rename cho một container bằng <code class="language-plaintext highlighter-rouge">docker rename old_name new_name</code></li>
+      <li>Loại bỏ container bằng <code class="language-plaintext highlighter-rouge">docker rm name</code> hoặc <code class="language-plaintext highlighter-rouge">docker rm &lt;container-id&gt;</code></li>
+    </ul>
+  </li>
+  <li>Các cờ quan trọng
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-it</code> : viết tắt của interactive và terminal: cho phép người dùng container được tương tác với terminal của container</li>
+      <li><code class="language-plaintext highlighter-rouge">--name</code>: đặt tên cho container khi khởi tạo</li>
+      <li><code class="language-plaintext highlighter-rouge">--env</code>: thiết lập biến môi trường cho container</li>
+      <li><code class="language-plaintext highlighter-rouge">--net</code>: thiết lập network mode của container</li>
+      <li><code class="language-plaintext highlighter-rouge">-v</code>: mounting volume cho container</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="example-1">Example 1</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run --name=bi -it ubuntu:20.04 /bin/bash
+</code></pre></div></div>
+<p>Giải nghĩa: <code class="language-plaintext highlighter-rouge">docker run</code> khởi chạy một <code class="language-plaintext highlighter-rouge">container</code> với các cờ sau</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">--name</code>: đặt tên cho container là <code class="language-plaintext highlighter-rouge">bi</code></li>
+  <li><code class="language-plaintext highlighter-rouge">-it</code>: là một tổ hợp cờ bao gồm cờ <code class="language-plaintext highlighter-rouge">-i</code> interactive mode và cờ <code class="language-plaintext highlighter-rouge">-t</code> terminal. Cờ <code class="language-plaintext highlighter-rouge">-it</code> cho phép host tương tác với <code class="language-plaintext highlighter-rouge">container</code> terminal (shell)</li>
+  <li><code class="language-plaintext highlighter-rouge">ubuntu:20.04</code>: images để tạo container là images chứa OS ubuntu 20.04</li>
+  <li><code class="language-plaintext highlighter-rouge">bin/bash</code>: là câu lệnh ta muốn chạy trong container. Trong trường hợp này ta gọi bash shell của container.</li>
+</ul>
+
+<p>Khi ta chạy câu lệnh trên: Docker sẽ tạo một container mới có tên là <code class="language-plaintext highlighter-rouge">bi</code> từ <code class="language-plaintext highlighter-rouge">image</code> <code class="language-plaintext highlighter-rouge">ubuntu:20.04</code> và cho phép bạn tương tác với terminal bên trong container’s bash shell</p>
+
+<h4 id="example-2">Example 2</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run --name=bi -it --env="DISPLAY" --net="host" ubuntu:20.04 /bin/bash
+</code></pre></div></div>
+
+<p>Giải nghĩa: <code class="language-plaintext highlighter-rouge">docker run</code> khởi chạy một <code class="language-plaintext highlighter-rouge">container</code> với các cờ sau</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">--env="DISPLAY"</code>  set biến môi trường <code class="language-plaintext highlighter-rouge">DISPLAY</code> trong container bằng giá trị của X11 display của máy host. Cờ này sẽ giúp chạy các ứng dụng yêu cầu GUI trong container.</li>
+  <li><code class="language-plaintext highlighter-rouge">--net="host"</code> set network mode của container về giá trị <code class="language-plaintext highlighter-rouge">host</code>, nó cho phép sử dụng host network stack. Cờ này là cần thiết giúp container kết nối với X11 server ở host.</li>
+</ul>
+
+<p>Khi chạy câu lệnh trên: Docker sẽ tạo một container mới có tên là <code class="language-plaintext highlighter-rouge">bi</code> từ image <code class="language-plaintext highlighter-rouge">ubuntu:20.04</code> và cho phép chạy GUI từ container, cũng như cho phép tương tác với bash shell bên trong container.</p>
+
+<h3 id="docker-start">$docker start</h3>
+
+<p>Docker start được sử dụng để khởi chạy một container đang trong trạng thái <code class="language-plaintext highlighter-rouge">exited</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker start &lt;ten_container&gt;
+</code></pre></div></div>
+
+<p>Có thể sử dụng container name hoặc container ID</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CONTAINER ID   IMAGE          COMMAND       CREATED       STATUS                     PORTS     NAMES
+71e7c47685f2   bi             "/bin/bash"   2 weeks ago   Exited (2) 4 seconds ago             bo
+6a04fd311401   63878e911300   "/bin/bash"   2 weeks ago   Exited (129) 2 weeks ago             kind_lamport
+</code></pre></div></div>
+
+<p>Chạy container <code class="language-plaintext highlighter-rouge">bo</code> bằng cách:</p>
+
+<p><code class="language-plaintext highlighter-rouge">$ docker start bo</code></p>
+
+<h3 id="docker-attach">$docker attach</h3>
+
+<p>Sau khi khởi chạy một container, truy cập vào môi trường của container bằng câu lệnh sau:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker attach &lt;ten container&gt;
+</code></pre></div></div>
+
+<p>Có thể sử dụng container name hoặc container ID</p>
+
+<p>Truy cập môi trường container <code class="language-plaintext highlighter-rouge">bo</code> bằng cách:</p>
+
+<p><code class="language-plaintext highlighter-rouge">$docker attach bo</code></p>
+
+<h3 id="docker-ps">$docker ps</h3>
+
+<p><code class="language-plaintext highlighter-rouge">docker ps</code> được sử dụng với các cờ khác nhau và có chức năng khác nhau như bảng mô tả sau đây</p>
+
+<p><code class="language-plaintext highlighter-rouge">docker ps</code> liệt kê active containers.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    $docker ps
+
+    CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          PORTS     NAMES
+    71e7c47685f2   bi             "/bin/bash"   43 minutes ago   Up 43 minutes             bo
+    6a04fd311401   63878e911300   "/bin/bash"   4 hours ago      Up 4 hours                kind_lamport
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">docker ps -a</code>: Liệt kê tất cả các container đã tồn tại trên hệ thống và trạng thái của nó</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    $docker ps -a
+
+    CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS                    PORTS     NAMES
+    71e7c47685f2   bi             "/bin/bash"   48 minutes ago   Up 48 minutes                       bo
+    6a04fd311401   63878e911300   "/bin/bash"   4 hours ago      Up 4 hours                          kind_lamport
+    4fc3ae93bff1   63878e911300   "/bin/bash"   4 hours ago      Exited (1) 4 hours ago              compassionate_aryabhata
+    787633e9ba6b   b1aca4e283c3   "/bin/bash"   4 hours ago      Exited (1) 4 hours ago              friendly_lalande
+    da5542d0afe9   b1aca4e283c3   "/bin/bash"   4 hours ago      Exited (0) 4 hours ago              stoic_sammet
+    ddee01f20648   ubuntu:20.04   "/bin/bash"   4 hours ago      Exited (0) 4 hours ago              hopeful_galileo
+    ffd04bafba30   ubuntu:20.04   "/bin/bash"   4 hours ago      Exited (1) 4 hours ago              sad_pike
+    c9b722c07457   ubuntu:20.04   "/bin/bash"   4 hours ago      Exited (0) 4 hours ago              vigorous_swirles
+    a7f42806d870   ubuntu         "/bin/bash"   5 hours ago      Exited (0) 5 hours ago              fervent_solomon
+    a0c13546b00c   1c5c8d0b973a   "/bin/bash"   5 hours ago      Exited (0) 5 hours ago              blissful_easley
+    191e06db8539   ubuntu:20.04   "/bin/bash"   5 hours ago      Exited (0) 5 hours ago              festive_shtern
+    3212c599efc1   centos         "/bin/bash"   3 months ago     Exited (0) 3 months ago             catapult
+    23716beeda73   centos         "/bin/bash"   3 months ago     Exited (0) 3 months ago             kind_hertz
+    e8ddaa72a7ec   centos         "/bin/bash"   3 months ago     Exited (0) 3 months ago             centos7
+    b58f67683814   centos         "-it"         3 months ago     Created                             centos
+    78409755de36   feb5d9fea6a5   "/hello"      3 months ago     Exited (0) 3 months ago             boring_shaw
+    c5e156ba746f   feb5d9fea6a5   "/hello"      3 months ago     Exited (0) 3 months ago             eloquent_merkle
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">docker ps -l</code>: Liệt kê container chạy ở lần cuối cùng</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    $docker ps -l
+
+    CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS          PORTS     NAMES
+    71e7c47685f2   bi        "/bin/bash"   49 minutes ago   Up 49 minutes             bo
+</code></pre></div></div>
+
+<h3 id="docker-rm">$docker rm</h3>
+
+<p>Như đã thấy ở danh sách <code class="language-plaintext highlighter-rouge">docker ps -a</code>, có rất nhiều containers không được dùng mà vẫn tồn tại trên hệ thống. Ta có thể loại bỏ chúng bằng câu lệnh <code class="language-plaintext highlighter-rouge">docker rm</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker rm eloquent_merkle
+</code></pre></div></div>
+
+<p>Tương đương với</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker rm c5e156ba746f
+</code></pre></div></div>
+
+<h3 id="docker-images">$docker images</h3>
+
+<p>Liệt kê tất cả các images có trên hệ thống</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+bi           latest    9b486bf052eb   6 hours ago   1.14GB
+ubuntu       latest    08d22c0ceb15   3 weeks ago   77.8MB
+ubuntu       20.04     1c5c8d0b973a   3 weeks ago   72.8MB
+
+</code></pre></div></div>
+
+<h3 id="docker-rmi">$docker rmi</h3>
+
+<p>Để gỡ docker images, trước tiên phải gỡ bỏ toàn bộ các container được tạo bởi image cần xóa bằng câu lệnh <code class="language-plaintext highlighter-rouge">docker rm &lt;container-name&gt;</code>. Sau đó, dùng câu lệnh <code class="language-plaintext highlighter-rouge">docker rmi</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker rmi 08d22c0ceb15
+</code></pre></div></div>
+:ET
