@@ -1,4 +1,4 @@
-I"²7<h2 id="1-requirements">1. Requirements</h2>
+I"\><h2 id="1-requirements">1. Requirements</h2>
 
 <p>You need 3 things to setup a license server:</p>
 
@@ -13,6 +13,8 @@
 <p>Catapult uses FLEXlm daemon to run license server. Firstly, you need to download <code class="language-plaintext highlighter-rouge">License Server</code> from Mentor <a href="https://account.mentor.com/licenses/download">website</a>.</p>
 
 <p>The FlexNet software includes <code class="language-plaintext highlighter-rouge">lmgrd</code> deamon, <code class="language-plaintext highlighter-rouge">lmutil</code> and etc.</p>
+
+<p>If already installed Catapult software, just need to go to <code class="language-plaintext highlighter-rouge">&lt;path_to_installation&gt;/Mgc_home/pkgs/</code> to get the above software.</p>
 
 <h3 id="mac-changer">MAC changer</h3>
 
@@ -66,7 +68,7 @@
 Status: inactive
 </code></pre></div></div>
 
-<p>Using this <a href="https://www.cyberciti.biz/faq/how-to-open-firewall-port-on-ubuntu-linux-12-04-14-04-lts/">instruction</a> to open a port dedicated to license server.</p>
+<p>If firewall is enable, using this <a href="https://www.cyberciti.biz/faq/how-to-open-firewall-port-on-ubuntu-linux-12-04-14-04-lts/">instruction</a> to open a port dedicated to license server.</p>
 
 <h2 id="2-modifying-license-file">2. Modifying license file</h2>
 
@@ -79,6 +81,12 @@ DAEMON mgcld &lt;PATH to mgcld inside license server package&gt;
 <p>Here is my setting</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SERVER tesla 0020000410AC 1718
 DAEMON mgcld /home/tesla/license/catapult/mgls_v9-23_5-6-0.aol/lib/mgcld
+</code></pre></div></div>
+
+<p><strong> If installing Catapult version 2023.1 or later, it uses <code class="language-plaintext highlighter-rouge">SALTD</code> instead of <code class="language-plaintext highlighter-rouge">MGCLD</code>, so just need to replace <code class="language-plaintext highlighter-rouge">mglcd</code> by <code class="language-plaintext highlighter-rouge">saltd</code> as the following</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SERVER tesla 0020000410AC 1718
+DAEMON saltd /opt/Siemens/Catapult/2023.1/Mgc_home/pkgs/FlexNet-11-19-0/Lnx64_x86-64/saltd
 </code></pre></div></div>
 
 <h2 id="3-create-scripting-file">3. Create scripting file</h2>
@@ -100,6 +108,17 @@ macchanger <span class="nt">-s</span> eno2
 <p>The fourth command is <code class="language-plaintext highlighter-rouge">PATH</code> to executable files which contains the program in the last command.</p>
 
 <p>The last command is to run license deamon.</p>
+
+<p>Note: You can get export <code class="language-plaintext highlighter-rouge">lmgrd</code> from installation path of Catapult like following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Change MAC</span>
+macchanger <span class="nt">-s</span> eno2
+<span class="nb">sudo </span>macchanger <span class="nt">-m</span> 00:20:00:04:10:AC eno2 
+<span class="c"># Start licenser</span>
+<span class="nb">export </span><span class="nv">LM_LICENSE_FILE</span><span class="o">=</span>/home/tesla/license/catapult/catapult.txt
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"/opt/Siemens/Catapult/2023.1/Mgc_home/bin"</span>:<span class="nv">$PATH</span>
+/opt/Siemens/Catapult/2023.1/Mgc_home/bin/lmgrd
+</code></pre></div></div>
 
 <p>Then, running</p>
 

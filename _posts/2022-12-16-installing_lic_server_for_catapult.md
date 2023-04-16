@@ -66,6 +66,8 @@ Catapult uses FLEXlm daemon to run license server. Firstly, you need to download
 
 The FlexNet software includes `lmgrd` deamon, `lmutil` and etc.
 
+If already installed Catapult software, just need to go to `<path_to_installation>/Mgc_home/pkgs/` to get the above software. 
+
 ### MAC changer 
 
 You can install `macchanger` to change your MAC address.
@@ -124,7 +126,7 @@ $ sudo ufw status verbose
 Status: inactive
 ```
 
-Using this [instruction](https://www.cyberciti.biz/faq/how-to-open-firewall-port-on-ubuntu-linux-12-04-14-04-lts/) to open a port dedicated to license server.
+If firewall is enable, using this [instruction](https://www.cyberciti.biz/faq/how-to-open-firewall-port-on-ubuntu-linux-12-04-14-04-lts/) to open a port dedicated to license server.
 
 ## 2. Modifying license file
 
@@ -141,6 +143,15 @@ Here is my setting
 SERVER tesla 0020000410AC 1718
 DAEMON mgcld /home/tesla/license/catapult/mgls_v9-23_5-6-0.aol/lib/mgcld
 ```
+
+<strong> If installing Catapult version 2023.1 or later, it uses `SALTD` instead of `MGCLD`, so just need to replace `mglcd` by `saltd` as the following</strong>
+
+```bash
+SERVER tesla 0020000410AC 1718
+DAEMON saltd /opt/Siemens/Catapult/2023.1/Mgc_home/pkgs/FlexNet-11-19-0/Lnx64_x86-64/saltd
+```
+
+
 
 ## 3. Create scripting file
 
@@ -162,6 +173,19 @@ The third command is the pointer to license file.
 The fourth command is `PATH` to executable files which contains the program in the last command.
 
 The last command is to run license deamon.
+
+Note: You can get export `lmgrd` from installation path of Catapult like following:
+
+
+```bash
+# Change MAC
+macchanger -s eno2
+sudo macchanger -m 00:20:00:04:10:AC eno2 
+# Start licenser
+export LM_LICENSE_FILE=/home/tesla/license/catapult/catapult.txt
+export PATH="/opt/Siemens/Catapult/2023.1/Mgc_home/bin":$PATH
+/opt/Siemens/Catapult/2023.1/Mgc_home/bin/lmgrd
+```
 
 Then, running
 
