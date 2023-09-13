@@ -114,7 +114,8 @@
 #         - Description 1.
 #         - Description 2.
 
-# - title: Other Interests
-#   type: list
-#   contents:
-#     - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+- title: Other Interests
+  type: list
+  contents:
+    <iframe height='160' width='300' frameborder='0' allowtransparency='true' scrolling='no' src='https://www.strava.com/athletes/22612828/activity-summary/017d7247afec2c4a2a872b4fc7cb2cc0225babf3'></iframe>
+    <iframe allowtransparency frameborder='0' height='160' scrolling='no' src='https://www.strava.com/clubs/1153760/latest-rides/f7dc9ddb4ae043e538cedf1001bebfd362d0c30e?show_rides=false' width='300'></iframe>

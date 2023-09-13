@@ -1,0 +1,146 @@
+I"�&<h2 id="1-giới-thiệu">1. Giới thiệu</h2>
+
+<p>Pipeline handshaking protocol giúp tối ưu throughout của hệ thống. Tuy nhiên, việc thiết kế một kiến trúc pipeline vẫn đảm bảo được đặc tính của handshaking protocol đôi khi trở lên phức tạp quá mức (ít nhất là đối với cá nhân tôi trong thời gian đầu làm việc với RTL design, tôi đã thiết kế một Moore FSM gồm 8 states chỉ để xử lý backpressure từ TREADY và cắt được critical path từ tín hiệu này). Blog này sẽ mô tả một cách chi tiết vấn đề và cách giải quyết.</p>
+
+<h2 id="2-axis-protocol-và-pipelining">2. AXIS protocol và pipelining</h2>
+
+<h3 id="a-nguyên-lý-của-axis">a. Nguyên lý của AXIS</h3>
+
+<p>Dạng đơn giản nhất của AXIS bao gồm 3 tín hiệu <code class="language-plaintext highlighter-rouge">DATA</code> <code class="language-plaintext highlighter-rouge">VALID</code> và <code class="language-plaintext highlighter-rouge">READY</code>. Với thiết kế <code class="language-plaintext highlighter-rouge">single cycle data transfer</code>, <code class="language-plaintext highlighter-rouge">DATA</code> được lấy mẫu và chuyển tiếp ra output thành công khi và chỉ khi:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">S_AXIS_TVALID = 1</code></li>
+  <li>Và, <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = 1</code></li>
+</ul>
+
+<p>Tại thời điểm lấy mẫu của hệ thống (sườn lên hoặc sườn xuống của clock)</p>
+
+<p>Thiết kế này sẽ có hai dạng thiết kế như ở hình dưới:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<p>Với thiết kế bên tay trái, hệ thống sẽ chuyển tiếp dữ liệu từ <code class="language-plaintext highlighter-rouge">input</code> sang <code class="language-plaintext highlighter-rouge">output</code> khi và chỉ khi <code class="language-plaintext highlighter-rouge">consumer</code> tại output sẵn sàng nhận dữ liệu. Với thiết kế này <code class="language-plaintext highlighter-rouge">invalid</code> <code class="language-plaintext highlighter-rouge">input</code> cũng sẽ được chuyển tiếp, trong một pipeline, việc chuyển tiếp <code class="language-plaintext highlighter-rouge">invalid data</code> vào trong pipe là hiện tượng hình thành bubble.</p>
+
+<p>Thiết kế bên tay phải, giống với thiết kế tay trái, tuy nhiên nó ưu việt hơn do nó có khả năng loại bỏ bubble trong pipeline. Việc loại bỏ bubble xảy ra khi:</p>
+<ul>
+  <li>Bubble trong pipe được phát hiện <code class="language-plaintext highlighter-rouge">m_axis_tvalid = '0'</code></li>
+  <li>Và, <code class="language-plaintext highlighter-rouge">valid input</code> xuất hiện ở đầu vào <code class="language-plaintext highlighter-rouge">s_axis_tvalid = '1'</code></li>
+</ul>
+
+<p>Khi đó hệ thống cho phép dữ liệu được chuyển tiếp dù <code class="language-plaintext highlighter-rouge">consumer</code> vẫn chưa sẵn sàng nhận dữ liệu. Bubble lúc này sẽ được loại bỏ bằng <code class="language-plaintext highlighter-rouge">valid</code> data.</p>
+
+<p>Tuy nhiên, hai thiết kế trên có một nhược điểm rất lớn đó là <code class="language-plaintext highlighter-rouge">critical path</code> sẽ được hình thành trên tín hiệu <code class="language-plaintext highlighter-rouge">m_axis_tready</code> làm giảm tần số hoạt động của hệ thống.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/5.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<h3 id="b-giải-pháp-registering-tready">b. Giải pháp registering <code class="language-plaintext highlighter-rouge">TREADY</code></h3>
+
+<p>Dưới đây là một phương pháp chèn <code class="language-plaintext highlighter-rouge">register</code> vào đường <code class="language-plaintext highlighter-rouge">TREADY</code>. <code class="language-plaintext highlighter-rouge">S_AXIS_TREADY</code> chậm hơn <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY</code> 1 chu kỳ clock, do đó ngay tại chu kỳ <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>, dữ liệu đang có ở register sẽ không được lấy mấu ở output (vì <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>). Tuy nhiên, dữ liệu kế tiếp từ input vẫn được chuyển tiếp vào <code class="language-plaintext highlighter-rouge">register</code> và ghi đè vào giá trị chưa được lấy mẫu ở trên. Để giải quyết vấn đề trên, kiến trúc này sử dụng thêm một lớp <code class="language-plaintext highlighter-rouge">expansion registers</code> để lưu trữ giá trị chưa được lấy mẫu khi <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>, dữ liệu input kế tiếp sẽ vẫn tiếp tục lưu trữ vào lớp <code class="language-plaintext highlighter-rouge">primary registers</code> như cũ.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>always_ff @(posedge clk) 
+begin
+    if (s_axis_tready == 1'b1) begin
+        primary_data_reg        &lt;= s_axis_tdata;
+        primary_valid_reg       &lt;= s_axis_tvalid;
+        if (m_axis_tready == 1'b0) begin
+            expansion_data_reg  &lt;= primary_data_reg;
+            expansion_valid_reg &lt;= primary_valid_reg;
+        end
+    end
+end
+</code></pre></div></div>
+
+<p>Tại chu kỳ <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '1'</code>, lúc này <code class="language-plaintext highlighter-rouge">S_AXIS_TREADY = '0'</code> do chậm 1 chu kỳ, dữ liệu sẽ được <code class="language-plaintext highlighter-rouge">consumer</code> lấy từ lớp <code class="language-plaintext highlighter-rouge">expansion registers</code> trước, sau đó là từ lớp <code class="language-plaintext highlighter-rouge">primary registers</code>.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+
+<h3 id="c-thiết-kế-rtl">c. Thiết kế RTL</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>logic [WIDTH-1:0]   expansion_data_reg;
+logic               expansion_valid_reg;
+logic [WIDTH-1:0]   primary_data_reg;
+logic               primary_valid_reg;
+
+always_ff @(posedge clk) 
+begin
+    if (s_axis_tready == 1'b1) begin
+        primary_data_reg        &lt;= s_axis_tdata;
+        primary_valid_reg       &lt;= s_axis_tvalid;
+        if (m_axis_tready == 1'b0) begin
+            expansion_data_reg  &lt;= primary_data_reg;
+            expansion_valid_reg &lt;= primary_valid_reg;
+        end
+    end
+    if (m_axis_tready == 1'b1) begin
+        expansion_valid_reg     &lt;= 1'b0;
+    end
+end
+
+assign s_axis_tready = !(expansion_valid_reg); 
+assign m_axis_tvalid = (expansion_valid_reg) ? 
+                            expansion_valid_reg : 
+                            primary_valid_reg;
+assign m_axis_tdata  = (expansion_valid_reg) ? 
+                            expansion_data_reg : 
+                            primary_data_reg;
+</code></pre></div></div>
+
+<p>Thiết kế được viết bằng <code class="language-plaintext highlighter-rouge">SystemVerilog</code> và được mô tả cụ thể ở <a href="https://github.com/nguyencanhtrung/systemverilog_axis/blob/master/rtl/axis_reg.sv"><code class="language-plaintext highlighter-rouge">axis_reg.sv</code></a></p>
+:ET

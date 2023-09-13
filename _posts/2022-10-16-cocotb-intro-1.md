@@ -23,10 +23,13 @@ bibliography: 2018-12-22-distill.bib
 toc:
   - name: Overview
   - name: Installation
+    subsections:
+    - name: Python installation
+    - name: Cocotb packages installation
+    - name: Icarus Verilog installation
+    - name: Questasim
   - name: My Hello World with cocotb
-  - name: Code Blocks
-  - name: Layouts
-  - name: Other Typography?
+  - name: Cocotb with Questasim
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -103,7 +106,7 @@ which python3
 New environment for cocotb is activated.
 
 
-### Cocotb packages installations
+### Cocotb packages installation
 
 ```bash
 pip install cocotb pytest cocotb-bus cocotb-coverage
@@ -129,12 +132,24 @@ export PATH=/home/tesla/.local/bin:$PATH
 Checking whether it is successfull or not by typing `cocotb-config`
 
 
-### Icarus installation
+### Icarus Verilog installation
+
+Cocotb supports the following RTL simulators: Synopsys VCS, Intel Questa and Icarus Verilog. Icarus Verilog is free and can be obtained from <a href="https://github.com/steveicarus/iverilog">https://github.com/steveicarus/iverilog</a>. To install Icarus Verilog, follow the instructions from the git repository, or simply:
 
 ```bash
 sudo apt install iverilog
 ```
 
+Another way to install iverilog is to recompile and install from source code by following steps. I recommend this way to get the lastest version.
+
+```bash
+git clone https://github.com/steveicarus/iverilog
+cd iverilog
+sh ./autoconf.sh
+./configure
+make
+sudo make install
+```
 
 ### Questasim
 
@@ -148,14 +163,6 @@ Need to export the `LM_LICENSE_FILE` of Quartus package before running `cocotb`
 
 Note that: the questasim here is Intel version. I have not make `cocotb` worked with `Mentor Questasim` yet.
 
-
-### AXI Stream packages
-
- pip install wheel
- pip install cocotb-test
-
-
-***
 
 ## My Hello World with cocotb
 
@@ -186,7 +193,7 @@ Concurrent Execution
 - fork() se bi loai bo
 
 
-## cocotb with Questa
+## Cocotb with Questa
 
 ### Enable GUI and Waveform
 

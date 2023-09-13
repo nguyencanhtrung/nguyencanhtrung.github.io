@@ -2,10 +2,10 @@ github_users:
   - nguyencanhtrung
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - nguyencanhtrung/systemverilog_axis
+  - nguyencanhtrung/SystemVerilog-Practice
+  - nguyencanhtrung/Catapult-HLS-practice
+  - enjoy-digital/litex
+  - lowRISC/ibex
+  - ZipCPU/interpolation
+  - nguyencanhtrung/cocotb

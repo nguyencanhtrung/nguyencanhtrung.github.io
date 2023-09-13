@@ -1,0 +1,162 @@
+I"Y <h2 id="overview">Overview</h2>
+
+<p>Want to learn</p>
+<ul>
+  <li>Cocotb framework using python</li>
+  <li>web development</li>
+  <li>Telegram bot</li>
+  <li>Trading bot</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<p>The current stable version 1.7.1 of cocotb requires:</p>
+<ul>
+  <li>Python 3.6+</li>
+  <li>GNU Make 3+</li>
+  <li>A Verilog or VHDL simulator, depending on your RTL source code</li>
+</ul>
+
+<h3 id="python-installation">Python installation</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get <span class="nb">install </span>make python3 python3-pip
+</code></pre></div></div>
+
+<p>We can use the global python installation for <code class="language-plaintext highlighter-rouge">cocotb</code>. However, the better way is to create a separated environment for <code class="language-plaintext highlighter-rouge">cocotb</code> to prevent any corruption on main python installation.</p>
+
+<p>Here, we create our own python env inside the <code class="language-plaintext highlighter-rouge">cocotb</code> working directory.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$PATH_TO_YOUR_COCOTB_WS</span>
+python3 <span class="nt">-m</span> venv venv
+</code></pre></div></div>
+
+<p>It creates the <code class="language-plaintext highlighter-rouge">venv</code> directory. Now, check the current environment</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>which python3
+</code></pre></div></div>
+
+<p>You will notice that it still uses the global environment <code class="language-plaintext highlighter-rouge">usr/bin/python3</code></p>
+
+<p>Lets activate the working environment</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source </span>venv/bin/active
+</code></pre></div></div>
+
+<p>Now, check the current environment</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>which python3
+</code></pre></div></div>
+
+<p>New environment for cocotb is activated.</p>
+
+<h3 id="cocotb-packages-installation">Cocotb packages installation</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>cocotb pytest cocotb-bus cocotb-coverage
+</code></pre></div></div>
+
+<p>Make sure <code class="language-plaintext highlighter-rouge">pip</code> version <code class="language-plaintext highlighter-rouge">3.x</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nt">-V</span>
+</code></pre></div></div>
+
+<p>Otherwise, using <code class="language-plaintext highlighter-rouge">pip3</code> instead.</p>
+
+<p>The packages are installed in <code class="language-plaintext highlighter-rouge">venv/lib/python3.x/site-packages</code></p>
+
+<p>You may need to add to <code class="language-plaintext highlighter-rouge">PATH</code> and add this line into your <code class="language-plaintext highlighter-rouge">.bashrc</code> file</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/home/tesla/.local/bin:<span class="nv">$PATH</span>
+</code></pre></div></div>
+
+<p>Checking whether it is successfull or not by typing <code class="language-plaintext highlighter-rouge">cocotb-config</code></p>
+
+<h3 id="icarus-verilog-installation">Icarus Verilog installation</h3>
+
+<p>Cocotb supports the following RTL simulators: Synopsys VCS, Intel Questa and Icarus Verilog. Icarus Verilog is free and can be obtained from <a href="https://github.com/steveicarus/iverilog">https://github.com/steveicarus/iverilog</a>. To install Icarus Verilog, follow the instructions from the git repository, or simply:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>iverilog
+</code></pre></div></div>
+
+<p>Another way to install iverilog is to recompile and install from source code by following steps. I recommend this way to get the lastest version.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/steveicarus/iverilog
+<span class="nb">cd </span>iverilog
+sh ./autoconf.sh
+./configure
+make
+<span class="nb">sudo </span>make <span class="nb">install</span>
+</code></pre></div></div>
+
+<h3 id="questasim">Questasim</h3>
+
+<p>If using Questasim, just need to add the Questasim installation path</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">MODELSIM_BIN_DIR</span><span class="o">=</span><span class="s2">"/opt/Intel/questa_fe/bin"</span>
+</code></pre></div></div>
+
+<p>Need to export the <code class="language-plaintext highlighter-rouge">LM_LICENSE_FILE</code> of Quartus package before running <code class="language-plaintext highlighter-rouge">cocotb</code></p>
+
+<p>Note that: the questasim here is Intel version. I have not make <code class="language-plaintext highlighter-rouge">cocotb</code> worked with <code class="language-plaintext highlighter-rouge">Mentor Questasim</code> yet.</p>
+
+<h2 id="my-hello-world-with-cocotb">My Hello World with cocotb</h2>
+
+<h3 id="makefile">Makefile</h3>
+
+<h3 id="important-concepts">Important concepts</h3>
+
+<ul>
+  <li>
+    <p>Use the <code class="language-plaintext highlighter-rouge">@cocotb.test()</code> decorator to mark the test function to be run.</p>
+  </li>
+  <li>
+    <p>Use <code class="language-plaintext highlighter-rouge">.value = value</code> to assign a value to a signal.</p>
+  </li>
+  <li>
+    <p>Use <code class="language-plaintext highlighter-rouge">.value</code> to get a signal’s current value.</p>
+  </li>
+</ul>
+
+<p>============
+Learning to write python testbenches</p>
+
+<p>Concurrent Execution</p>
+
+<ul>
+  <li>Coroutines can be scheduled for concurrent execution with fork(), start(), and start_soon()</li>
+  <li>Su khac nhau giua start() va start_soon() la gi</li>
+  <li>fork() se bi loai bo</li>
+</ul>
+
+<h2 id="cocotb-with-questa">Cocotb with Questa</h2>
+
+<h3 id="enable-gui-and-waveform">Enable GUI and Waveform</h3>
+
+<p>Adding <code class="language-plaintext highlighter-rouge">GUI=1</code> and <code class="language-plaintext highlighter-rouge">WAVES=1</code> in the Makefiles. Or typing following command</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make <span class="nv">GUI</span><span class="o">=</span>1 <span class="nv">WAVES</span><span class="o">=</span>1
+</code></pre></div></div>
+
+<h3 id="gui-exits-after-simulation-done">GUI exits after simulation done</h3>
+
+<p><a href="https://github.com/cocotb/cocotb/issues/3046">Reference</a></p>
+
+<p>Switching from GUI=0 to GUI=1 and vice versa requires cleaning sim_build folder by</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$PATH_TO_TEST_DIR</span>
+make clean
+
+make <span class="nv">GUI</span><span class="o">=</span>1
+</code></pre></div></div>
+
+<p>Reason: For Questa, runsim.do file is generated based on the value of the GUI parameter. But if the file has been generated once, its contents is not updated unless one deletes the file. <a href="URL">https://github.com/cocotb/cocotb/issues/2734</a></p>
+
+<h3 id="script_file">SCRIPT_FILE</h3>
+
+<p>For Questa/Modelsim, the SCRIPT_FILE is currently run before the simulation is initialized using the vsim command. In the common case where SCRIPT_FILE=wave.do, a file that sets up traces in the GUI, these traces fail to initialize since the underlying signals don’t exist yet.</p>
+
+<p>This commit runs the SCRIPT_FILE before the vsim command, allowing traces to be set up properly.</p>
+
+<h3 id="adding-different-libraries-in-questa">Adding different libraries in Questa</h3>
+
+<p><a href="https://github.com/cocotb/cocotb/issues/2785">URL</a></p>
+:ET

@@ -4,7 +4,7 @@ title: Docker - Quick start
 description: Learn Docker
 date: 2023-03-30
 tags: docker
-categories: en
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung
