@@ -3,7 +3,7 @@ layout: distill
 title: Pipeline AXIS bus with registered ready signals
 description: Kỹ thuật chèn register trên đường tín hiệu READY của AXI4 Stream
 date: 2023-09-13
-tags: RTL-design
+tags: core
 categories: vn
 
 authors:
