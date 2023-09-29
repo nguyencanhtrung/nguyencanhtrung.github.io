@@ -1,0 +1,125 @@
+I"ú%<h2 id="1-what-is-iommu">1. What is IOMMU?</h2>
+
+<p>IOMMU stands for Input-Output Memory Management Unit. It is a hardware component in a computer system, typically integrated into the chipset or CPU, that plays a crucial role in managing memory addressing and data transfers between the CPU and peripheral devices, including those connected via PCIe (Peripheral Component Interconnect Express).</p>
+
+<p>What IOMMU does and why itâ€™s important:</p>
+
+<p><strong>Memory Address Translation:</strong> One of the primary functions of the IOMMU is to translate memory addresses between the CPU and peripheral devices. When a device wants to read from or write to memory, it specifies a memory address. The IOMMU translates this address to ensure that the device can access the correct portion of system memory. This translation is essential for security and protection, as it prevents devices from accessing arbitrary memory locations.</p>
+
+<p><strong>Memory Isolation:</strong> IOMMU provides memory isolation, which means it can allocate specific regions of memory exclusively to certain devices or virtual machines. This ensures that devices or virtual machines cannot access memory outside their designated regions, enhancing system security and stability.</p>
+
+<p><strong>PCIe Passthrough:</strong> IOMMU is crucial for PCIe passthrough, a technology that allows a virtual machine to have direct access to a physical PCIe device, such as a graphics card or network adapter. Without IOMMU support, it would be challenging to securely and efficiently share these devices between the host and virtual machines.</p>
+
+<p><strong>Virtualization:</strong> In virtualized environments, IOMMU enables efficient memory mapping between virtual machines and physical hardware. It allows virtual machines to have their own memory address spaces, reducing overhead and improving performance.</p>
+
+<p><strong>DMA (Direct Memory Access):</strong> Devices, such as GPUs and network cards, often use DMA to access system memory directly without CPU intervention. IOMMU ensures that DMA operations are properly translated and controlled, preventing unauthorized access to memory.</p>
+
+<p><strong>Security:</strong> IOMMU enhances system security by preventing devices or malicious software from accessing memory outside their authorized regions. It helps mitigate certain types of attacks that rely on memory manipulation.</p>
+
+<p><strong>Performance:</strong> While IOMMU adds a layer of address translation, it is designed to do so efficiently, minimizing performance overhead. In fact, for some workloads like GPU passthrough for gaming in virtual machines, IOMMU support can improve performance by providing direct access to the GPU.</p>
+
+<h2 id="2-enable-iommu-and-passthrough-with-vfio-pci-driver-for-xilinx-au200-card">2. Enable IOMMU and passthrough with <code class="language-plaintext highlighter-rouge">vfio-pci</code> driver for Xilinx AU200 card</h2>
+
+<h3 id="1-enable-iommu">1. Enable IOMMU</h3>
+
+<ol>
+  <li>Open the grub configuration file:</li>
+</ol>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/default/grub
+</code></pre></div></div>
+
+<ol>
+  <li>Add the <code class="language-plaintext highlighter-rouge">amd_iommu=on</code> or <code class="language-plaintext highlighter-rouge">intel_iommu=on</code> flags to the <code class="language-plaintext highlighter-rouge">GRUB_CMDLINE_LINUX</code> variable:</li>
+</ol>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">"quiet intel_iommu=on"</span>
+</code></pre></div></div>
+
+<p>We can identify the pci.ids using the below command.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>lspci <span class="nt">-nn</span> | <span class="nb">grep</span> <span class="s2">"Xilinx"</span>
+
+01:00.0 Processing accelerators <span class="o">[</span>1200]: Xilinx Corporation Device <span class="o">[</span>10ee:5000]
+01:00.1 Processing accelerators <span class="o">[</span>1200]: Xilinx Corporation Device <span class="o">[</span>10ee:5001]
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>Update grub:</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">sudo </span>update-grub
+</code></pre></div>    </div>
+
+    <p>or</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">sudo </span>grub-mkconfig <span class="nt">-o</span> /boot/grub/grub.cfg
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Check the new content of Grub by</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /proc/cmdline
+
+<span class="nv">BOOT_IMAGE</span><span class="o">=</span>/boot/vmlinuz-5.15.0-acso <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>2006ace4-1a9a-4d7f-aa7c-685cae3abe4c ro quiet <span class="nv">intel_iommu</span><span class="o">=</span>on <span class="nv">pcie_acs_override</span><span class="o">=</span>downstream,multifunction vfio-pci.ids<span class="o">=</span>10ee:5000,10ee:5001
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>Create a new file under <code class="language-plaintext highlighter-rouge">/etc/modprobe.d/vfio.conf</code> add the below</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> options vfio-pci <span class="nv">ids</span><span class="o">=</span>10ee:5000,10ee:5001
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Update the <code class="language-plaintext highlighter-rouge">initramfs</code> using the below command and reboot the host.</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">sudo </span>update-initramfs <span class="nt">-u</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>After the reboot of the host, check NVIDA is configure for Pass-through using the below command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ lspci -k
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Kernel driver in use: vfio-pci</code> is OK</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01:00.0 Processing accelerators: Xilinx Corporation Device 5000
+    Subsystem: Xilinx Corporation Device 000e
+    Kernel driver in use: vfio-pci
+    Kernel modules: xclmgmt
+01:00.1 Processing accelerators: Xilinx Corporation Device 5001
+    Subsystem: Xilinx Corporation Device 000e
+    Kernel driver in use: vfio-pci
+    Kernel modules: xocl
+
+</code></pre></div></div>
+
+<p><strong>Reference:</strong> Visit <a href="https://medium0.com/techbeatly/virtual-machine-with-gpu-enabled-on-ubuntu-using-kvm-on-ubuntu-22-4-f0354ba74b1">URL</a></p>
+
+<h2 id="step-4-check-iommu-group-with-provided-script-in-this-repo">Step 4: Check IOMMU group with provided script in this repo</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo chmod</span> +x iommu_viewer.sh
+./iommu_viewer.sh
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+Group:  1   0000:00:01.0 PCI bridge [0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x16) [8086:1901] (rev 0a)   Driver: pcieport
+Group:  1   0000:00:01.1 PCI bridge [0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x8) [8086:1905] (rev 0a)   Driver: pcieport
+Group:  1   0000:01:00.0 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5000]   Driver: vfio-pci
+Group:  1   0000:01:00.1 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5001]   Driver: vfio-pci
+Group:  1   0000:02:00.0 VGA compatible controller [0300]: NVIDIA Corporation Device [10de:2489] (rev a1)   Driver: nvidia
+Group:  1   0000:02:00.1 Audio device [0403]: NVIDIA Corporation Device [10de:228b] (rev a1)   Driver: snd_hda_intel
+Group:  2   0000:00:02.0 Display controller [0380]: Intel Corporation UHD Graphics 630 (Desktop 9 Series) [8086:3e98]   Driver: i915
+Group:  3   0000:00:12.0 Signal processing controller [1180]: Intel Corporation Cannon Lake PCH Thermal Controller [8086:a379] (rev 10)   Driver: intel_pch_thermal
+Group:  4   0000:00:14.0 USB controller [0c03]: Intel Corporation Cannon Lake PCH USB 3.1 xHCI Host Controller [8086:a36d] (rev 10)   Driver: xhci_hcd
+...
+</code></pre></div></div>
+
+<p>Now, you can see the Xilinx card is in the same IOMMU group <code class="language-plaintext highlighter-rouge">Group 1</code> with NVIDIA GPU. Passing through Xilinx card to KVM requires all devices in the same group use the same <code class="language-plaintext highlighter-rouge">vfio-pci</code></p>
+
+<p>Watch <a href="https://www.youtube.com/watch?v=qQiMMeVNw-o">this video</a> to understand more. Splitting IOMMU is required in this case, however my machine which includes a MOBO (Z390 Gigabyte Wifi Pro + CPU 9900K) does not support <code class="language-plaintext highlighter-rouge">pcie_acs_override</code>. Therefore, even putting the grub command like above, the IOMMU is not splitting as expectation. To make it works, we have to create a Patched ACS kernel and running this kernel instead. Step 5 shows how to do so.</p>
+:ET

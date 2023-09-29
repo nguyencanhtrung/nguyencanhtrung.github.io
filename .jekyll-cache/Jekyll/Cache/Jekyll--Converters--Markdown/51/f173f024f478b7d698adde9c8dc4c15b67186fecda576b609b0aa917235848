@@ -1,0 +1,41 @@
+I"?<h2 id="1-xml-files-for-pcie-devices">1. XML files for PCIe devices</h2>
+
+<p><em>user</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode="subsystem" type="pci" managed="yes"&gt;
+  &lt;source&gt;
+    &lt;address domain="0x0000" bus="0x01" slot="0x00" function="0x1"/&gt;
+  &lt;/source&gt;
+  &lt;address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/&gt;
+&lt;/hostdev&gt;
+
+</code></pre></div></div>
+
+<p><em>mgmt</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode="subsystem" type="pci" managed="yes"&gt;
+  &lt;source&gt;
+    &lt;address domain="0x0000" bus="0x01" slot="0x00" function="0x0"/&gt;
+  &lt;/source&gt;
+  &lt;address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;address domain ..&gt;</code>: address of PCIe device in the HOST</p>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;address type ..&gt;</code>: address of PCIe device in the KVM</p>
+
+<p>Attach or detach must be processed when VM is destroy.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virsh attach-device ukvm2004 <span class="nt">--file</span> pass-user.xml <span class="nt">--config</span>
+ virsh attach-device ukvm2004 <span class="nt">--file</span> pass-mgmt.xml <span class="nt">--config</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virsh detach-device ukvm2004 <span class="nt">--file</span> pass-user.xml <span class="nt">--config</span>
+ virsh detach-device ukvm2004 <span class="nt">--file</span> pass-mgmt.xml <span class="nt">--config</span>
+</code></pre></div></div>
+
+<h2 id="5-references">5. References</h2>
+
+<p>Visit <a href="https://www.xilinx.com/developer/articles/using-alveo-data-center-accelerator-cards-in-a-kvm-environment.html">Xilinx instruction</a></p>
+:ET

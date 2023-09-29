@@ -1,0 +1,48 @@
+I"l<h2 id="a-splitting-iommu-group">A. Splitting IOMMU group</h2>
+
+<h3 id="1-pcie-acs-override">1. PCIe ACS override</h3>
+
+<p>PCIe ACS (Access Control Services) Override is a feature in Linux-based systems and server systems that use PCIe (Peripheral Component Interconnect Express) ports. This feature allows you to override or modify the configuration of the ACS protocol within the PCIe system. ACS is part of the PCIe standard and plays a role in controlling access to PCIe devices, especially when using PCIe passthrough in virtualization.</p>
+
+<p>Specifically, the PCIe ACS Override feature allows you to:</p>
+
+<p>Override: Modify the ACS configuration to eliminate or modify access constraints between PCIe devices. This can be useful when you want to share PCIe devices among virtual machines or different Linux systems and need to disable or adjust ACS constraints.</p>
+
+<p>Configuration Management: Adjust how the system manages access to PCIe devices. You can specify access rights for virtual machines or physical devices to specific PCIe devices.</p>
+
+<p>Customization: PCIe ACS Override enables you to customize the ACS configuration based on your specific needs, especially when using PCIe passthrough in a virtualized environment.</p>
+
+<p>Please note that using PCIe ACS Override should be done carefully and following the specific guidelines of your system and virtualization management software, such as KVM/QEMU or VMware. Adjusting the ACS configuration can affect the stability and security of the PCIe system, so it should be performed knowledgeably, taking into account its impact on the system.</p>
+
+<h3 id="2-enable-pcie-acs-override">2. Enable PCIe ACS override</h3>
+
+<p>Open the grub configuration file:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/default/grub
+</code></pre></div></div>
+
+<p>Add the <code class="language-plaintext highlighter-rouge">pcie_acs_override=downstream,multifunction</code> flags to the <code class="language-plaintext highlighter-rouge">GRUB_CMDLINE_LINUX</code> variable:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">"quiet intel_iommu=on pcie_acs_override=downstream,multifunction vfio-pci.ids=10ee:5000,10ee:5001"</span>
+</code></pre></div></div>
+
+<p>Update grub:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>update-grub
+</code></pre></div></div>
+
+<p>or</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>grub-mkconfig <span class="nt">-o</span> /boot/grub/grub.cfg
+</code></pre></div></div>
+
+<p>Check the new content of Grub by</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /proc/cmdline
+
+<span class="nv">BOOT_IMAGE</span><span class="o">=</span>/boot/vmlinuz-5.15.0-acso <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>2006ace4-1a9a-4d7f-aa7c-685cae3abe4c ro quiet <span class="nv">intel_iommu</span><span class="o">=</span>on <span class="nv">pcie_acs_override</span><span class="o">=</span>downstream,multifunction vfio-pci.ids<span class="o">=</span>10ee:5000,10ee:5001
+</code></pre></div></div>
+
+<p>Splitting IOMMU is required in this case, however my machine which includes a MOBO (Z390 Gigabyte Wifi Pro + CPU 9900K) does not support <code class="language-plaintext highlighter-rouge">pcie_acs_override</code>. Therefore, even putting the grub command like above, the IOMMU is not splitting as expectation. To make it works, we have to create a Patched ACS kernel and running this kernel instead. Step 5 shows how to do so.</p>
+
+:ET

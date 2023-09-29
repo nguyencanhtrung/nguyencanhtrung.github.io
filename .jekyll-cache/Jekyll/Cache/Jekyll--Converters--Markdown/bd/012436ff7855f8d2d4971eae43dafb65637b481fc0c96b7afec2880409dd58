@@ -1,0 +1,202 @@
+I"w(<p>There are 2 ways to attach or detach PCIe devices to/from KVM which are</p>
+
+<ul>
+  <li>GUI method</li>
+  <li>Commandline method</li>
+</ul>
+
+<p>GUI and commandline method are described <a href="https://documentation.suse.com/smart/virtualization-cloud/html/task-assign-pci-device-libvirt/index.html">here</a>.</p>
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<h3 id="1-identify-the-host-pci-device-to-assign-to-the-vm-guest">1. Identify the host PCI device to assign to the VM Guest</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lspci -nn | grep "Xilinx"
+
+</code></pre></div></div>
+
+<p>The output is</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm$ sudo lspci -nn | grep "Xilinx"
+01:00.0 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5000]
+01:00.1 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5001]
+</code></pre></div></div>
+
+<p>Xilinx has 2 IDs: (<code class="language-plaintext highlighter-rouge">01:00.0</code>  and <code class="language-plaintext highlighter-rouge">01:00.1</code>)</p>
+
+<h3 id="2-gather-detailed-information-about-the-device">2. Gather detailed information about the device</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ virsh nodedev-dumpxml pci_0000_01_00_0
+
+&lt;device&gt;
+  &lt;name&gt;pci_0000_01_00_0&lt;/name&gt;
+  &lt;path&gt;/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0&lt;/path&gt;
+  &lt;parent&gt;pci_0000_00_01_0&lt;/parent&gt;
+  &lt;driver&gt;
+    &lt;name&gt;vfio-pci&lt;/name&gt;
+  &lt;/driver&gt;
+  &lt;capability type='pci'&gt;
+    &lt;class&gt;0x120000&lt;/class&gt;
+    &lt;domain&gt;0&lt;/domain&gt;
+    &lt;bus&gt;1&lt;/bus&gt;
+    &lt;slot&gt;0&lt;/slot&gt;
+    &lt;function&gt;0&lt;/function&gt;
+    &lt;product id='0x5000'/&gt;
+    &lt;vendor id='0x10ee'&gt;Xilinx Corporation&lt;/vendor&gt;
+    &lt;iommuGroup number='12'&gt;
+      &lt;address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/&gt;
+    &lt;/iommuGroup&gt;
+    &lt;pci-express&gt;
+      &lt;link validity='cap' port='0' speed='8' width='16'/&gt;
+      &lt;link validity='sta' speed='8' width='8'/&gt;
+    &lt;/pci-express&gt;
+  &lt;/capability&gt;
+&lt;/device&gt;
+
+</code></pre></div></div>
+
+<p>and</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ virsh nodedev-dumpxml pci_0000_01_00_1
+
+&lt;device&gt;
+  &lt;name&gt;pci_0000_01_00_1&lt;/name&gt;
+  &lt;path&gt;/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.1&lt;/path&gt;
+  &lt;parent&gt;pci_0000_00_01_0&lt;/parent&gt;
+  &lt;driver&gt;
+    &lt;name&gt;vfio-pci&lt;/name&gt;
+  &lt;/driver&gt;
+  &lt;capability type='pci'&gt;
+    &lt;class&gt;0x120000&lt;/class&gt;
+    &lt;domain&gt;0&lt;/domain&gt;
+    &lt;bus&gt;1&lt;/bus&gt;
+    &lt;slot&gt;0&lt;/slot&gt;
+    &lt;function&gt;1&lt;/function&gt;
+    &lt;product id='0x5001'/&gt;
+    &lt;vendor id='0x10ee'&gt;Xilinx Corporation&lt;/vendor&gt;
+    &lt;iommuGroup number='13'&gt;
+      &lt;address domain='0x0000' bus='0x01' slot='0x00' function='0x1'/&gt;
+    &lt;/iommuGroup&gt;
+    &lt;pci-express&gt;
+      &lt;link validity='cap' port='0' speed='8' width='16'/&gt;
+      &lt;link validity='sta' speed='8' width='8'/&gt;
+    &lt;/pci-express&gt;
+  &lt;/capability&gt;
+&lt;/device&gt;
+
+</code></pre></div></div>
+
+<p>Write down the values for domain, bus, slot and function.</p>
+
+<h3 id="3-detach-the-device-from-the-host-system">3. Detach the device from the host system</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh nodedev-detach pci_0000_01_00_0
+</code></pre></div></div>
+
+<p><strong>Tip: Multi-function PCI devices</strong></p>
+
+<p>When using a multi-function PCI device that does not support FLR (function level reset) or PM (power management) reset, you need to detach all its functions from the VM Host Server. The whole device must be reset for security reasons. libvirt will refuse to assign the device if one of its functions is still in use by the VM Host Server or another VM Guest.</p>
+
+<p><strong>Note:</strong></p>
+
+<p>In our case, <code class="language-plaintext highlighter-rouge">detach</code> or <code class="language-plaintext highlighter-rouge">reattach</code> means nothing</p>
+
+<h3 id="4-convert-the-domain-bus-slot-and-function-from-dec-to-hex">4. Convert the domain, bus, slot and function from dec to hex</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 0
+printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 1
+</code></pre></div></div>
+
+<p>Output:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm$ printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 0
+&lt;address domain='0x0' bus='0x1' slot='0x0' function='0x0'/&gt;
+tesla@tesla:~/kvm$ printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 1
+&lt;address domain='0x0' bus='0x1' slot='0x0' function='0x1'/&gt;
+
+</code></pre></div></div>
+
+<h3 id="5-run-virsh-edit">5. Run <code class="language-plaintext highlighter-rouge">virsh edit</code></h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh edit ukvm2004
+</code></pre></div></div>
+
+<p>Add the following device entry in the <devices> section using the result from the previous step:</devices></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode='subsystem' type='pci' managed='yes'&gt;
+  &lt;source&gt;
+    &lt;address domain='0x0' bus='0x1' slot='0x0' function='0x0'/&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div>
+
+<p>and,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode='subsystem' type='pci' managed='yes'&gt;
+  &lt;source&gt;
+    &lt;address domain='0x0' bus='0x1' slot='0x0' function='0x1'/&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div>
+
+<p><strong>Notes:</strong></p>
+
+<p>managed compared to unmanaged</p>
+
+<p>libvirt recognizes two modes for handling PCI devices: managed or unmanaged.</p>
+
+<p>If the device is managed, libvirt handles all of the details of adding or removing the device. Before starting the domain, libvirt unbinds the device from the existing driver if needed, resets the device, and binds it to vfio-pci. When the domain is terminated or the device is removed from the domain, libvirt unbinds the device from vfio-pci and rebinds it to the original driver.</p>
+
+<p>If the device is unmanaged, you must manually manage these tasks before assigning the device to a domain, and after the device is no longer used by the domain.</p>
+
+<p>In the example above, the managed=’yes’ option means that the device is managed. To switch the device mode to unmanaged, set managed=’no’. If you do so, you need to take care of the related driver with the virsh nodedev-detach and virsh nodedev-reattach commands. Prior to starting the VM Guest you need to detach the device from the host by running</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh nodedev-detach pci_0000_01_00_0
+</code></pre></div></div>
+
+<p>When the VM Guest is not running, you can make the device available for the host by running</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh nodedev-reattach pci_0000_01_00_0
+</code></pre></div></div>
+
+<h2 id="b-another-way-to-attach-pcie-devices">B. Another way to attach PCIe devices</h2>
+
+<p>Create a file named <code class="language-plaintext highlighter-rouge">pass-user.xml</code> and pasting the following content</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode="subsystem" type="pci" managed="yes"&gt;
+  &lt;source&gt;
+    &lt;address domain="0x0000" bus="0x01" slot="0x00" function="0x1"/&gt;
+  &lt;/source&gt;
+  &lt;address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/&gt;
+&lt;/hostdev&gt;
+
+</code></pre></div></div>
+
+<p>Create a file named <code class="language-plaintext highlighter-rouge">pass-mgmt.xml</code> and pasting the following content</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode="subsystem" type="pci" managed="yes"&gt;
+  &lt;source&gt;
+    &lt;address domain="0x0000" bus="0x01" slot="0x00" function="0x0"/&gt;
+  &lt;/source&gt;
+  &lt;address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;address domain ..&gt;</code>: address of PCIe device in the HOST</p>
+
+<p><code class="language-plaintext highlighter-rouge">&lt;address type ..&gt;</code>: address of PCIe device in the KVM (optional)</p>
+
+<p>Attach or detach must be processed when VM is destroyed.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virsh attach-device ukvm2004 <span class="nt">--file</span> pass-user.xml <span class="nt">--config</span>
+ virsh attach-device ukvm2004 <span class="nt">--file</span> pass-mgmt.xml <span class="nt">--config</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virsh detach-device ukvm2004 <span class="nt">--file</span> pass-user.xml <span class="nt">--config</span>
+ virsh detach-device ukvm2004 <span class="nt">--file</span> pass-mgmt.xml <span class="nt">--config</span>
+</code></pre></div></div>
+
+<h2 id="5-references">5. References</h2>
+
+<p>Visit <a href="https://documentation.suse.com/smart/virtualization-cloud/html/task-assign-pci-device-libvirt/index.html">the instruction</a> and <a href="https://www.xilinx.com/developer/articles/using-alveo-data-center-accelerator-cards-in-a-kvm-environment.html">Xilinx instruction</a></p>
+:ET
