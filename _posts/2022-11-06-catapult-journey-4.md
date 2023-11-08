@@ -3,8 +3,8 @@ layout: distill
 title: Catapult Journey - Untimed C++ - lab 4
 description: Working with memory
 date: 2022-11-06
-tags: catapult hls
-categories: catapult
+tags: catapult
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

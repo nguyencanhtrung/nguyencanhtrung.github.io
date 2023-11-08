@@ -4,7 +4,7 @@ title: 5G LDPC - Base Matrices
 description: Describing 5G LDPC base matrix and how to construct it
 date: 2022-10-06
 tags: 5g
-categories: algorithm vi
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

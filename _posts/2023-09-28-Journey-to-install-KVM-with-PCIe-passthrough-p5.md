@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: Series - Trải nghiệm cài đặt máy ảo KVM với PCIe passthrough - p5
+title: Series - Setup KVM with PCIe passthrough - p5
 description: Attach PCIe cards to KVM
 date: 2023-09-28
 tags: kvm
@@ -258,6 +258,13 @@ Then, starting the VM
 ```shell
 virsh start ukvm2004
 ```
+
+Now you can see the PCIe card is available in your VM with the following command
+
+```
+lspci -nn
+```
+
 
 ## C. References
 

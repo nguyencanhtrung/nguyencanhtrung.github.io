@@ -3,7 +3,7 @@ layout: distill
 title: Ultrascale Architecture - part 1
 description: CLB resources
 date: 2023-03-31
-tags: docker
+tags: xilinx
 categories: en
 
 authors:

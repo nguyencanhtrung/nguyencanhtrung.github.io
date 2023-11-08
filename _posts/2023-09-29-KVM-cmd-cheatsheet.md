@@ -46,10 +46,6 @@ _styles: >
 ---
 
 ```shell
-virsh start ukvm2004
-```
-
-```shell
 sudo kvm-ok
 ```
 
@@ -126,20 +122,43 @@ sudo chown -R $USER:$USER ~/.virtinst
 virsh list --all
 ```
 
-
-### b. Installing `ukvm2004` VM
+### Installing `ukvm2004` VM
 
 ```shell
-virt-install --virt-type=kvm --name=ukvm2004 --ram 8192 --vcpus=4 --virt-type=kvm --hvm --cdrom ~/kvm/mini.iso --network network=default --disk pool=default,size=20,bus=virtio,format=qcow2 --noautoconsole --machine q35
+virt-install \
+--virt-type=kvm \
+--name=ukvm2004 \
+--ram 8192 \
+--vcpus=4 \
+--virt-type=kvm \
+--hvm \
+--cdrom ~/kvm/mini.iso \
+--network network=default \
+--disk pool=default,size=20,bus=virtio,format=qcow2 \
+--noautoconsole \
+--machine q35 \
 ```
 
-### c. Open the VM
+### Start the VM
+
+```shell
+virsh start ukvm2004
+```
+
+### View the running VM
 
 ```shell
 virt-viewer ukvm2004
 ```
 
+### Close the VM
+
 ```shell
 virsh destroy ukvm2004
+```
+
+### Delete the VM
+
+```shell
 virsh undefine ukvm2004
 ```

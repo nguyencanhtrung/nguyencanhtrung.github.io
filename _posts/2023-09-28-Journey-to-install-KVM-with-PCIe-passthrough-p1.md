@@ -1,10 +1,10 @@
 ---
 layout: distill
-title: Series - Trải nghiệm cài đặt máy ảo KVM với PCIe passthrough - p1
-description: Cài đặt máy ảo KVM với PCIe passthrough
+title: Series - Setup KVM with PCIe passthrough - p1
+description: Setup KVM with PCIe passthrough that allows guests working in a virtual machine and still interact with PCIe card. This model can be used in firmware development.
 date: 2023-09-28
 tags: kvm
-categories: vn
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

@@ -3,8 +3,8 @@ layout: distill
 title: Signal Tap
 description: Working with signal tap to debug on board
 date: 2022-11-22
-tags: simulation
-categories: intel vi
+tags: intel
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

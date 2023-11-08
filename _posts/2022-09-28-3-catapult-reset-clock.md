@@ -3,8 +3,8 @@ layout: distill
 title: 3. Catapult - Reset and clock
 description: Simple example to get familiar with Catapult HLS flow
 date: 2022-09-28
-tags: catapult hls
-categories: catapult
+tags: catapult
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

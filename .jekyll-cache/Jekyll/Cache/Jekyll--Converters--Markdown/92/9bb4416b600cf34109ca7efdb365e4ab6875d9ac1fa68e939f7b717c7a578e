@@ -1,0 +1,180 @@
+I"T!<h2 id="overview">Overview</h2>
+
+<p>Lifting factor hay expansion factor \(Z_c\) (có nhiều tài liệu ký hiệu là \(Z\)) là tham số được sử dụng để quyết định kích thước của ma trận cơ sở (\(B\)) sẽ được mở rộng bao nhiêu lần. Việc sử dụng <a href="https://bobibo.one/blog/2022/ldpc-base-matrix/">ma trận cơ sở \(B\)</a> để mô tả parity check matrices là một phương pháp hiệu quả giúp giảm tài nguyên nhớ. Về mặt lý thuyết, phương pháp này giảm được \(Z^2_c\) phần tử nhớ (trong thực tế, tài nguyên nhớ sử dụng còn tiếp tục được tối ưu hơn nữa, do việc tính toán chỉ cần sử dụng một phần của ma trận cơ bản bao gồm ma trận \(A, E, C_1, C_2\)).</p>
+
+<p>Phần sau sẽ mô tả cách tính \(Z_c\) được mô tả trong tài liệu 3GPP.</p>
+
+<hr />
+<h2 id="compute-z_c">Compute \(Z_c\)</h2>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/2-480.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/2-800.webp" />
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221006_ldpc_basematrix/2-1400.webp" />
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/01.blogs/221006_ldpc_basematrix/2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" data-zoomable="" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<p><br />
+Mỗi \(i_{LS}\) index sẽ có nhiều giá trị có thể có của \(Z_c\).</p>
+
+<p>Việc tính toán các giá trị của \(Z_c\) cho mỗi \(i_{LS}\) index được thự hiện như sau:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Tham số</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+      <th style="text-align: center">—–</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">\(i_{LS}\)</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">6</td>
+      <td style="text-align: center">7</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">\(a\)</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">7</td>
+      <td style="text-align: center">9</td>
+      <td style="text-align: center">11</td>
+      <td style="text-align: center">13</td>
+      <td style="text-align: center">15</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">\(J_a\)</td>
+      <td style="text-align: center">7</td>
+      <td style="text-align: center">7</td>
+      <td style="text-align: center">6</td>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: center">4</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+Bảng trên được hiểu như sau:</p>
+
+<ul>
+  <li>
+    <p>Với index 0, trong đó \(a = 2\) thì \(J_a = 0, 1, 2, ..., 7\)</p>
+  </li>
+  <li>
+    <p>Với index 2, trong đó \(a = 5\) thì \(J_a = 0, 1, 2, ..., 6\)
+…</p>
+  </li>
+</ul>
+
+<p>Với mỗi giá trị \(a\) hay với mỗi index \(i_{LS}\), thì:</p>
+
+\[Z_c = a * 2^{j_a}\]
+
+<p>Như vậy table 5.3.2-1 đang mô tả các giá trị của \(Z_c\) ứng với mỗi index, nhưng bản chất nó là tập các giá trị của \(Z_c\) ứng với một giá trị của \(a\). Sau cùng, chúng ta sẽ chỉ quan tâm đến các giá trị của \(Z_c\) mà thôi.</p>
+
+<hr />
+<h2 id="z_c-selection">\(Z_c\) selection</h2>
+
+<p>Việc lựa chọn \(Z_c\) phụ thuộc vào <b>độ dài của thông tin cần mã hóa</b> (theo đơn vị bit). Nó được mô tả ở phần <code class="language-plaintext highlighter-rouge">Matlab code</code> dưới đây.</p>
+
+<p>Với mỗi \(Z_c\), ma trận cơ sở B sẽ có những ràng buộc sau đây:</p>
+
+<ul>
+  <li>Giá trị của elements trong ma trận có giá trị \([-1, 0, .. Z_c-1]\)</li>
+  <li>Các ma trận expansion thay thế cho các elements trong ma trận cơ sở sẽ luôn có kích thước Zc x Zc</li>
+  <li>-1: tương ứng ma trận 0 kích thước Zc x Zc</li>
+  <li>0 : tương ứng với ma trận Identity kích thước Zc x Zc</li>
+  <li>Các giá trị a lớn hơn 0: tương ứng với ma trận Identity được shift phải a lần</li>
+</ul>
+
+<hr />
+<h2 id="matlab-code">Matlab code</h2>
+
+<figure class="highlight"><pre><code class="language-matlab" data-lang="matlab"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="code"><pre><span class="c1">% Find the minimum value of Z in all sets of lifting sizes in 38.212</span>
+<span class="c1">%  Table 5.3.2-1, denoted as Zc, such that Kb*Zc&gt;=KdE1_CB</span>
+<span class="c1">%  Step 1: Determine Kb</span>
+<span class="c1">%  Step 2: Determine minimum value of Zc</span>
+
+<span class="c1">% Kb is number of columns carrying actual information bit (no filler bits) in base matrix</span>
+<span class="k">if</span> <span class="n">NBG</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">Kb</span> <span class="o">=</span> <span class="mi">22</span><span class="p">;</span>
+<span class="k">else</span>
+    <span class="k">if</span> <span class="n">B</span> <span class="o">&gt;</span> <span class="mi">640</span>
+        <span class="n">Kb</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="k">elseif</span> <span class="n">B</span> <span class="o">&gt;</span> <span class="mi">560</span>
+        <span class="n">Kb</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
+    <span class="k">elseif</span> <span class="n">B</span> <span class="o">&gt;</span> <span class="mi">192</span>
+        <span class="n">Kb</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+    <span class="k">else</span>
+        <span class="n">Kb</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">Zlist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">16</span> <span class="mi">18</span><span class="p">:</span><span class="mi">2</span><span class="p">:</span><span class="mi">32</span> <span class="mi">36</span><span class="p">:</span><span class="mi">4</span><span class="p">:</span><span class="mi">64</span> <span class="mi">72</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">112</span> <span class="mi">120</span> <span class="mi">128</span> <span class="mi">144</span> <span class="mi">160</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">256</span> <span class="mi">288</span> <span class="mi">320</span> <span class="mi">352</span> <span class="mi">384</span><span class="p">];</span>
+
+<span class="c1">% Kd is length of each codeblock (excluding filler bits)</span>
+<span class="k">for</span> <span class="n">Zc</span> <span class="o">=</span> <span class="n">Zlist</span>
+    <span class="k">if</span> <span class="n">Kb</span><span class="o">*</span><span class="n">Zc</span> <span class="o">&gt;=</span> <span class="n">Kd</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+:ET

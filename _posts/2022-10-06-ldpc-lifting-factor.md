@@ -4,7 +4,7 @@ title: 5G LDPC - Lifting factor Zc
 date: 2022-10-06
 description: Describing 5G LDPC lifting factor and how to calculate it
 tags: 5g
-categories: algorithm vi
+categories: vi
 ---
 
 ## Overview
@@ -37,7 +37,7 @@ Bảng trên được hiểu như sau:
 
 * Với index 0, trong đó $$a = 2$$ thì $$J_a = 0, 1, 2, ..., 7$$
 
-* Với index 1, trong đó $$a = 5$$ thì $$J_a = 0, 1, 2, ..., 6$$
+* Với index 2, trong đó $$a = 5$$ thì $$J_a = 0, 1, 2, ..., 6$$
 ...
 
 Với mỗi giá trị $$a$$ hay với mỗi index $$i_{LS}$$, thì:

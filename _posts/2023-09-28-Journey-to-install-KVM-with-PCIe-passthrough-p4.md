@@ -1,7 +1,7 @@
 ---
 layout: distill
-title: Series - Trải nghiệm cài đặt máy ảo KVM với PCIe passthrough - p4
-description: Splitting IOMMU group
+title: Series - Setup KVM with PCIe passthrough - p4
+description: Guide to split IOMMU group. In case your MOBO does not support ACS feature, patching the kernel is required.
 date: 2023-09-28
 tags: kvm
 categories: en

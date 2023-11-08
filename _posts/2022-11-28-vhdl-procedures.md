@@ -3,8 +3,8 @@ layout: distill
 title: VHDL - Procedures
 description: Working with procedures
 date: 2022-11-28
-tags: entry vhdl
-categories: hdl en
+tags: vhdl
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

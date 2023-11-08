@@ -1,7 +1,7 @@
 ---
 layout: distill
-title: Series - Trải nghiệm cài đặt máy ảo KVM với PCIe passthrough - p3
-description: Cài đặt VFIO và IOMMU
+title: Series - Setup KVM with PCIe passthrough - p3
+description: Setup VFIO và IOMMU for the host
 date: 2023-09-28
 tags: kvm
 categories: en

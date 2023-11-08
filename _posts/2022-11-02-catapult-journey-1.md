@@ -3,8 +3,8 @@ layout: distill
 title: Catapult Journey - Untimed C++ - lab 1
 description: Compiling, debugging and executing design using AC data-types
 date: 2022-11-02
-tags: catapult hls
-categories: catapult
+tags: catapult
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

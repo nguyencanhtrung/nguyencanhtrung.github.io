@@ -3,8 +3,8 @@ layout: distill
 title: PCIe - Re-programing FPGA without reboot
 description: Possibility to reprogram FPGA with embedded PCIe without reboot
 date: 2022-09-29
-tags: interfaces pcie
-categories: interfaces
+tags: pcie
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

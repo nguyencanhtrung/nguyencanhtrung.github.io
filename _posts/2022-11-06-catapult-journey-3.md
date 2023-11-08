@@ -3,8 +3,8 @@ layout: distill
 title: Catapult Journey - Untimed C++ - lab 3
 description: Loop handling (unrolling and pipelining)
 date: 2022-11-06
-tags: catapult hls
-categories: catapult
+tags: catapult
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

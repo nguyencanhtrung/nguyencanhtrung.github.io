@@ -3,8 +3,8 @@ layout: distill
 title: Catapult Journey - Untimed C++ - lab 2
 description: Catapult GUI and simulation setting notices
 date: 2022-11-04
-tags: catapult hls
-categories: catapult
+tags: catapult
+categories: vi
 
 authors:
   - name: Nguyen Canh Trung

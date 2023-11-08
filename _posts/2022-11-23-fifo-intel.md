@@ -4,7 +4,7 @@ title: Using FIFO in Intel platform
 description: Working with FIFOs
 date: 2022-11-23
 tags: intel
-categories: intel en
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

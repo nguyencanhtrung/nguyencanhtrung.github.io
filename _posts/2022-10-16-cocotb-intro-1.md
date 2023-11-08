@@ -3,8 +3,8 @@ layout: distill
 title: Cocotb framework - day 1
 description: Learning about cocotb framework for RTL simulation
 date: 2022-10-19
-tags: sim
-categories: cocotb
+tags: cocotb
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

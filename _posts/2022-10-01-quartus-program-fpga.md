@@ -3,8 +3,8 @@ layout: distill
 title: Quartus - Program FPGA
 description: Describe how to program FPGA with Quartus
 date: 2022-10-01
-tags: introduction
-categories: intel
+tags: intel
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

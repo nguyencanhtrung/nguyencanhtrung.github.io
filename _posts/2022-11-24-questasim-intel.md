@@ -3,8 +3,8 @@ layout: distill
 title: RTL simulation with Questasim 
 description: Introduction - how to simulate RTL design with Questa Sim
 date: 2022-11-23
-tags: entry
-categories: sim en
+tags: sim
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

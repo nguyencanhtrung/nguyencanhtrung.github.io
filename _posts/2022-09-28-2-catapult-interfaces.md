@@ -3,8 +3,8 @@ layout: distill
 title: 2. Catapult - Interfaces! 
 description: Simple example to get familiar with Catapult HLS flow
 date: 2022-09-28
-tags: catapult hls
-categories: catapult
+tags: catapult
+categories: en
 
 authors:
   - name: Nguyen Canh Trung

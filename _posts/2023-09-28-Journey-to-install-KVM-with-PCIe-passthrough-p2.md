@@ -1,7 +1,7 @@
 ---
 layout: distill
-title: Series - Trải nghiệm cài đặt máy ảo KVM với PCIe passthrough - p2
-description: Cài đặt máy ảo KVM
+title: Series - Setup KVM with PCIe passthrough - p2
+description: Guide to setup a KVM from scratch
 date: 2023-09-28
 tags: kvm
 categories: en
