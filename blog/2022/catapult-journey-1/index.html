@@ -1,0 +1,206 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Catapult Journey - Untimed C++ - lab 1 | Trung Canh Nguyen</title> <meta name="author" content="Trung Canh Nguyen"/> <meta name="description" content="Compiling, debugging and executing design using AC data-types"/> <meta name="keywords" content="catapult, fpga, vhdl, hdl, intel, xilinx"/> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"/> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="none" id="highlight_theme_light"/> <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://bobibo.one/blog/2022/catapult-journey-1/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"/> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.fake-img{background:#bbb;border:1px solid rgba(0,0,0,0.1);box-shadow:0 0 4px rgba(0,0,0,0.1);margin-bottom:12px}.fake-img p{font-family:monospace;color:white;text-align:left;margin:12px 0;text-align:center;font-size:16px}</style> </head> <d-front-matter> <script async type="text/json">{
+      "title": "Catapult Journey - Untimed C++ - lab 1",
+      "description": "Compiling, debugging and executing design using AC data-types",
+      "published": "November 2, 2022",
+      "authors": [
+        {
+          "author": "Nguyen Canh Trung",
+          "authorURL": "https://bobibo.one",
+          "affiliations": [
+            {
+              "name": "bobibo.one",
+              "url": ""
+            }
+          ]
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script> </d-front-matter> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Trung </span>Canh Nguyen</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">Projects</a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">Repositories</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">Resume</a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Collections</a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item" href="/blog/tag/core/">Fundamental</a> <a class="dropdown-item" href="/blog/tag/hdl/">HDL</a> <a class="dropdown-item" href="/blog/tag/hls/">HLS</a> <div class="dropdown-divider"></div> <a class="dropdown-item" href="/blog/tag/catapult/">Catapult</a> <a class="dropdown-item" href="/blog/tag/intel/">Intel</a> <a class="dropdown-item" href="/blog/tag/xilinx/">Xilinx</a> </div> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> </header> <div class="post distill"> <d-title> <h1>Catapult Journey - Untimed C++ - lab 1</h1> <p>Compiling, debugging and executing design using AC data-types</p> </d-title> <d-byline></d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#m%E1%BB%A5c-%C4%91%C3%ADch">Mục đích</a></div> <div><a href="#makefile">Makefile</a></div> <div><a href="#section-1">Section 1</a></div> <div><a href="#section-2">Section 2</a></div> <div><a href="#section-3">Section 3</a></div> </nav> </d-contents> <h2 id="mục-đích">Mục đích</h2> <ul> <li>Sử dụng g++ đi kèm với Catapult để biên dịch C/C++ model</li> <li>Biết đường dẫn của thư viện C/C++ của Catapult cũng như cách thêm thư viện vào khi biên dịch</li> <li>Debug lỗi data types</li> <li>Hiểu về cách hoạt động của phép dịch trái với AC data types</li> </ul> <h2 id="makefile">Makefile</h2> <p>Makefile bao gồm những thành phần sau để thực hiện được việc compiling C/C++ model</p> <table> <tbody> <tr> <td>Thư viện</td> <td><code class="language-plaintext highlighter-rouge">IDIR =$(MGC_HOME)/shared/include</code></td> </tr> <tr> <td>g++</td> <td><code class="language-plaintext highlighter-rouge">CC=$(MGC_HOME)/bin/g++</code></td> </tr> <tr> <td>C flag</td> <td><code class="language-plaintext highlighter-rouge">CFLAGS=-g</code></td> </tr> <tr> <td>Debugger</td> <td><code class="language-plaintext highlighter-rouge">$(MGC_HOME)/bin/gdb</code></td> </tr> </tbody> </table> <p>Makefile example:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IDIR <span class="o">=</span><span class="si">$(</span>MGC_HOME<span class="si">)</span>/shared/include
+TDIR ?<span class="o">=</span> <span class="si">$(</span>MGC_HOME<span class="si">)</span>/tmp
+<span class="nv">CC</span><span class="o">=</span><span class="si">$(</span>MGC_HOME<span class="si">)</span>/bin/g++
+<span class="nv">CFLAGS</span><span class="o">=</span><span class="nt">-g</span>
+
+tb0: tb_pod_err.cpp test_chan_assert.cpp
+  <span class="si">$(</span>CC<span class="si">)</span> <span class="nt">-o</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb tb_pod_err.cpp test.cpp <span class="nt">-I</span><span class="si">$(</span>IDIR<span class="si">)</span> <span class="si">$(</span>CFLAGS<span class="si">)</span>
+tb1: tb.cpp test_chan_assert.cpp
+  <span class="si">$(</span>CC<span class="si">)</span> <span class="nt">-o</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb tb.cpp test_chan_assert.cpp <span class="nt">-I</span><span class="si">$(</span>IDIR<span class="si">)</span> <span class="si">$(</span>CFLAGS<span class="si">)</span>
+  <span class="si">$(</span>TDIR<span class="si">)</span>/tb
+tb1_debug: tb.cpp test_chan_assert.cpp
+  <span class="si">$(</span>CC<span class="si">)</span> <span class="nt">-o</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb tb.cpp test_chan_assert.cpp <span class="nt">-I</span><span class="si">$(</span>IDIR<span class="si">)</span> <span class="si">$(</span>CFLAGS<span class="si">)</span>
+  <span class="si">$(</span>MGC_HOME<span class="si">)</span>/bin/gdb <span class="si">$(</span>TDIR<span class="si">)</span>/tb
+tb2: tb.cpp test_shift_loss.cpp
+  <span class="si">$(</span>CC<span class="si">)</span> <span class="nt">-o</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb tb.cpp test_shift_loss.cpp <span class="nt">-I</span><span class="si">$(</span>IDIR<span class="si">)</span> <span class="si">$(</span>CFLAGS<span class="si">)</span>
+  <span class="si">$(</span>TDIR<span class="si">)</span>/tb
+tb3: tb.cpp test.cpp
+  <span class="si">$(</span>CC<span class="si">)</span> <span class="nt">-o</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb tb.cpp test.cpp <span class="nt">-I</span><span class="si">$(</span>IDIR<span class="si">)</span> <span class="si">$(</span>CFLAGS<span class="si">)</span>
+  <span class="si">$(</span>TDIR<span class="si">)</span>/tb
+
+.PHONY: clean
+clean:
+  <span class="nb">rm</span> <span class="nt">-f</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb 
+</code></pre></div></div> <h3 id="compiling-cmd">Compiling cmd</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="si">$(</span>CC<span class="si">)</span> <span class="nt">-o</span> <span class="si">$(</span>TDIR<span class="si">)</span>/tb tb.cpp tb.cpp test_chan_assert.cpp <span class="nt">-I</span><span class="si">$(</span>IDIR<span class="si">)</span> <span class="si">$(</span>CFLAGS<span class="si">)</span>
+</code></pre></div></div> <ul> <li> <code class="language-plaintext highlighter-rouge">-o $(TDIR)/tb</code> : compile and put output file named <code class="language-plaintext highlighter-rouge">tb</code> at <code class="language-plaintext highlighter-rouge">$(TDIR)</code> </li> <li> <code class="language-plaintext highlighter-rouge">test_chan_assert.cpp</code>: source files</li> <li> <code class="language-plaintext highlighter-rouge">-I$(IDIR)</code> : include library which stores in <code class="language-plaintext highlighter-rouge">IDIR</code> variable</li> <li> <code class="language-plaintext highlighter-rouge">$CFLAGS</code> : C flag</li> </ul> <h3 id="debuging-cmd">Debuging cmd</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="si">$(</span>MGC_HOME<span class="si">)</span>/bin/gdb <span class="si">$(</span>TDIR<span class="si">)</span>/tb
+</code></pre></div></div> <h2 id="section-1">Section 1</h2> <h4 id="understand-makefile-and-simple-errors">Understand makefile and simple errors</h4> <figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="c1">//test_chan_assert.cpp</span>
+
+<span class="cp">#include</span> <span class="cpf">"test.h"</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="nf">test</span><span class="p">(</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span>                   <span class="n">data0</span><span class="p">,</span>
+          <span class="n">ac_fixed</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span>               <span class="n">data1</span><span class="p">,</span>
+          <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span>      <span class="o">&amp;</span><span class="n">chan_in</span><span class="p">,</span>
+          <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span>                   <span class="o">&amp;</span><span class="n">wrap_behavior</span><span class="p">,</span>
+          <span class="n">ac_fixed</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="n">AC_RND</span><span class="p">,</span><span class="n">AC_SAT</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">sat_behavior</span><span class="p">,</span>
+          <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span>                   <span class="o">&amp;</span><span class="n">shift_behavior</span><span class="p">,</span>
+          <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span>      <span class="o">&amp;</span><span class="n">chan_out</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">wrap_behavior</span> <span class="o">=</span> <span class="n">data0</span><span class="p">;</span>               <span class="c1">// will wrap for values &gt; 7</span>
+  <span class="n">sat_behavior</span> <span class="o">=</span> <span class="n">data1</span><span class="p">;</span>                <span class="c1">// will clamp to 7 for values &gt; 7</span>
+  <span class="n">shift_behavior</span> <span class="o">=</span> <span class="n">data0</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">;</span>         <span class="c1">// will lose MSB after shift</span>
+
+  <span class="n">chan_out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">chan_in</span><span class="p">.</span><span class="n">read</span><span class="p">());</span>      <span class="c1">// will assert if read of empty </span>
+                                       <span class="c1">// channel is attempted</span>
+<span class="p">}</span></code></pre></figure> <figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="c1">// tb_pod_err.cpp</span>
+
+<span class="cp">#include</span> <span class="cpf">"test.h"</span><span class="cp">
+</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fstream&gt;</span><span class="cp">
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">data0</span><span class="p">;</span> <span class="c1">// 4 bit unsigned, 0 to 15</span>
+  <span class="n">ac_fixed</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">data1</span><span class="p">;</span>
+  <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">chan_in</span><span class="p">;</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">wrap_behavior</span><span class="p">;</span>
+  <span class="n">ac_fixed</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="n">AC_RND</span><span class="p">,</span><span class="n">AC_SAT</span><span class="o">&gt;</span> <span class="n">sat_behavior</span><span class="p">;</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">shift_behavior</span><span class="p">;</span>
+  <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">chan_out</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">chan_in</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">data0</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">data1</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="n">test</span><span class="p">(</span><span class="n">data0</span><span class="p">,</span><span class="n">data1</span><span class="p">,</span><span class="n">chan_in</span><span class="p">,</span><span class="n">wrap_behavior</span><span class="p">,</span><span class="n">sat_behavior</span><span class="p">,</span><span class="n">shift_behavior</span><span class="p">,</span><span class="n">chan_out</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Input = %3d "</span><span class="p">,</span><span class="n">data0</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"wrap_behavior = %3d, "</span><span class="p">,</span><span class="n">wrap_behavior</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"sat_behavior = %3d, "</span><span class="p">,</span><span class="n">sat_behavior</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"shift_behavior = %3d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">shift_behavior</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure> <p>Compiling status</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>administrator@centos lab1]<span class="nv">$ </span>make tb0
+/opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/bin/g++ <span class="nt">-o</span> /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/tmp/tb tb_pod_err.cpp test.cpp <span class="nt">-I</span>/opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include <span class="nt">-g</span>
+tb_pod_err.cpp: In <span class="k">function</span> ‘int main<span class="o">()</span>’:
+tb_pod_err.cpp:31:47: error: cannot pass objects of non-trivially-copyable <span class="nb">type</span> ‘class ac_fixed&lt;3, 3, <span class="nb">false</span>, <span class="o">(</span>ac_q_mode<span class="o">)</span>1u, <span class="o">(</span>ac_o_mode<span class="o">)</span>1u&gt;’ through ‘...’
+     <span class="nb">printf</span><span class="o">(</span><span class="s2">"sat_behavior = %3d, "</span>,sat_behavior<span class="o">)</span><span class="p">;</span>
+                                               ^
+make: <span class="k">***</span> <span class="o">[</span>tb0] Error 1
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">sat_behavior</code> là kiểu <code class="language-plaintext highlighter-rouge">ac_fixed</code> do đó nó cần gọi method để convert về dạng unsigned integer.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nb">printf</span><span class="o">(</span><span class="s2">"sat_behavior = %3d, "</span>,sat_behavior.to_uint<span class="o">())</span><span class="p">;</span>
+</code></pre></div></div> <h2 id="section-2">Section 2</h2> <h4 id="working-with-debugger-dbg-to-trace-back-the-error-cause-in-source-code">Working with debugger (dbg) to trace back the error cause in source code</h4> <figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="c1">// tb.cpp</span>
+<span class="cp">#include</span> <span class="cpf">"test.h"</span><span class="cp">
+</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;fstream&gt;</span><span class="cp">
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">data0</span><span class="p">;</span> <span class="c1">// 4 bit unsigned, 0 to 15</span>
+  <span class="n">ac_fixed</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">data1</span><span class="p">;</span>
+  <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">chan_in</span><span class="p">;</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">wrap_behavior</span><span class="p">;</span>
+  <span class="n">ac_fixed</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="nb">false</span><span class="p">,</span><span class="n">AC_RND</span><span class="p">,</span><span class="n">AC_SAT</span><span class="o">&gt;</span> <span class="n">sat_behavior</span><span class="p">;</span>
+  <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">shift_behavior</span><span class="p">;</span>
+  <span class="n">ac_channel</span><span class="o">&lt;</span><span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">chan_out</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">16</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">chan_in</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">data0</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">data1</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="n">test</span><span class="p">(</span><span class="n">data0</span><span class="p">,</span><span class="n">data1</span><span class="p">,</span><span class="n">chan_in</span><span class="p">,</span><span class="n">wrap_behavior</span><span class="p">,</span><span class="n">sat_behavior</span><span class="p">,</span><span class="n">shift_behavior</span><span class="p">,</span><span class="n">chan_out</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Input = %3d "</span><span class="p">,</span><span class="n">data0</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"wrap_behavior = %3d, "</span><span class="p">,</span><span class="n">wrap_behavior</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"sat_behavior = %3d, "</span><span class="p">,</span><span class="n">sat_behavior</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"shift_behavior = %3d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">shift_behavior</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+  <span class="p">}</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">Channel data = "</span><span class="p">);</span>
+
+  <span class="k">while</span> <span class="p">(</span><span class="n">chan_out</span><span class="p">.</span><span class="n">available</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// while data in channel, keep reading</span>
+    <span class="n">ac_int</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">,</span><span class="nb">false</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">chan_out</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%2d "</span><span class="p">,</span><span class="n">data</span><span class="p">.</span><span class="n">to_uint</span><span class="p">());</span>
+  <span class="p">}</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure> <p>Compiling status</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make tb1
+/opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/bin/g++ <span class="nt">-o</span> /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/tmp/tb tb.cpp test_chan_assert.cpp <span class="nt">-I</span>/opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include <span class="nt">-g</span>
+/opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/tmp/tb
+Assert <span class="k">in </span>file /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h:229 Read from empty channel
+tb: /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h:175: static void ac_channel&lt;T&gt;::ac_assert<span class="o">(</span>bool, const char<span class="k">*</span>, int, const ac_channel_exception::code&amp;<span class="o">)</span> <span class="o">[</span>with T <span class="o">=</span> ac_int&lt;4, <span class="nb">false</span><span class="o">&gt;]</span>: Assertion <span class="sb">`</span>0<span class="s1">' failed.
+make: *** [tb1] Aborted (core dumped)
+[administrator@centos lab1]$ 
+
+</span></code></pre></div></div> <p>Lỗi này xảy ra khi xảy ra trường hợp đọc data từ empty channel. Ở error message, ta chỉ có thể nhìn thấy đoạn thông tin assert trong thư viện <code class="language-plaintext highlighter-rouge">ac_channel</code>. Để backtrack tới đoạn code lỗi, dbg được sử dụng như sau:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="si">$(</span>MGC_HOME<span class="si">)</span>/bin/gdb <span class="si">$(</span>TDIR<span class="si">)</span>/tb
+</code></pre></div></div> <p>Chạy debugger (gdb)</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> run
+</code></pre></div></div> <p>Gõ <code class="language-plaintext highlighter-rouge">up</code> để kiểm tra theo thứ tự từ trong ra ngoài của hierarchy, để phát hiện lỗi ở user source code.</p> <p>Sau đó, gõ <code class="language-plaintext highlighter-rouge">quit</code> để thoát.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Program received signal SIGABRT, Aborted.
+0x00007ffff7223387 <span class="k">in </span>raise <span class="o">()</span> from /lib64/libc.so.6
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#1  0x00007ffff7224a78 in abort () from /lib64/libc.so.6</span>
+<span class="o">(</span>gdb<span class="o">)</span> ip
+Undefined <span class="nb">command</span>: <span class="s2">"ip"</span><span class="nb">.</span>  Try <span class="s2">"help"</span><span class="nb">.</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#2  0x00007ffff721c1a6 in __assert_fail_base () from /lib64/libc.so.6</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#3  0x00007ffff721c252 in __assert_fail () from /lib64/libc.so.6</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#4  0x0000000000401b1f in ac_channel&lt;ac_int&lt;4, false&gt; &gt;::ac_assert (condition=false, </span>
+    <span class="nv">file</span><span class="o">=</span>0x4039c8 <span class="s2">"/opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h"</span>, <span class="nv">line</span><span class="o">=</span>229, 
+    <span class="nv">code</span><span class="o">=</span>@0x7fffffffd88c: ac_channel_exception::read_from_empty_channel<span class="o">)</span>
+    at /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h:175
+175           assert<span class="o">(</span>0<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#5  0x00000000004026c2 in ac_channel&lt;ac_int&lt;4, false&gt; &gt;::fifo::fifo_ac_channel::read (this=0x608010)</span>
+    at /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h:229
+229           AC_CHANNEL_ASSERT<span class="o">(!</span>empty<span class="o">()</span>, ac_channel_exception::read_from_empty_channel<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#6  0x0000000000401755 in ac_channel&lt;ac_int&lt;4, false&gt; &gt;::fifo::read (this=0x7fffffffd9e0)</span>
+    at /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h:402
+402     inline T <span class="nb">read</span><span class="o">()</span> <span class="o">{</span> <span class="k">return </span>f-&gt;read<span class="o">()</span><span class="p">;</span> <span class="o">}</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#7  0x000000000040152e in ac_channel&lt;ac_int&lt;4, false&gt; &gt;::read (this=0x7fffffffd9e0)</span>
+    at /opt/tools/Mentor/Catapult_2022.1_1/Mgc_home/shared/include/ac_channel.h:118
+118   T <span class="nb">read</span><span class="o">()</span> <span class="o">{</span> <span class="k">return </span>chan.read<span class="o">()</span><span class="p">;</span> <span class="o">}</span>
+<span class="o">(</span>gdb<span class="o">)</span> up
+<span class="c">#8  0x0000000000403465 in test (data0=..., data1=..., chan_in=..., wrap_behavior=..., sat_behavior=..., </span>
+    <span class="nv">shift_behavior</span><span class="o">=</span>..., <span class="nv">chan_out</span><span class="o">=</span>...<span class="o">)</span> at test_chan_assert.cpp:18
+18    chan_out.write<span class="o">(</span>chan_in.read<span class="o">())</span><span class="p">;</span>      // will assert <span class="k">if </span><span class="nb">read </span>of empty channel is attempted
+<span class="o">(</span>gdb<span class="o">)</span> 
+
+</code></pre></div></div> <p>Ta thấy rằng dòng code <code class="language-plaintext highlighter-rouge">chan_in.read()</code> gây ra lỗi “read empty channel”</p> <p>Giải pháp: Thực hiện kiểm tra channel có dữ liệu hay không trước khi thực hiện đọc như phần dưới đây</p> <figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="c1">// test_chan_assert</span>
+
+<span class="c1">//....</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">chan_in</span><span class="p">.</span><span class="n">available</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="p">{</span>          <span class="c1">// Only read if channel not empty</span>
+    <span class="n">chan_out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">chan_in</span><span class="p">.</span><span class="n">read</span><span class="p">());</span>
+ <span class="p">}</span></code></pre></figure> <h2 id="section-3">Section 3</h2> <h4 id="understand-behaviour-of-shifting-in-ac-data-types">Understand behaviour of shifting in AC data types</h4> <p>Khi thực hiện dịch trái một vector ac_* phải cast vector đó với một kích thước đủ lớn để đảm bảo giá trị của kết quả thu được phản ánh đúng toán tử dịch trái.</p> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Trung Canh Nguyen. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a>. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>. Last updated: November 09, 2023. </div> </footer> <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> </body> </html>

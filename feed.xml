@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://bobibo.one/feed.xml" rel="self" type="application/atom+xml"/><link href="https://bobibo.one/" rel="alternate" type="text/html" hreflang="en"/><updated>2023-11-09T04:39:14+07:00</updated><id>https://bobibo.one/feed.xml</id><title type="html">blank</title><subtitle>The space where I collect and share what I have learned! </subtitle><entry><title type="html">KVM commands cheatsheet</title><link href="https://bobibo.one/blog/2023/KVM-cmd-cheatsheet/" rel="alternate" type="text/html" title="KVM commands cheatsheet"/><published>2023-09-29T00:00:00+07:00</published><updated>2023-09-29T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/KVM-cmd-cheatsheet</id><content type="html" xml:base="https://bobibo.one/blog/2023/KVM-cmd-cheatsheet/"><![CDATA[<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>kvm-ok
+</code></pre></div></div> <p>The output should look like this:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm<span class="nv">$ </span>kvm-ok
+INFO: /dev/kvm exists
+KVM acceleration can be used
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># use same connection and objects as sudo</span>
+<span class="nb">export </span><span class="nv">LIBVIRT_DEFAULT_URI</span><span class="o">=</span>qemu:///system
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip addr show virbr0
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># bridge to physical network</span>
+<span class="nv">$ </span>virsh net-dumpxml host-bridge
+
+&lt;network <span class="nv">connections</span><span class="o">=</span><span class="s1">'2'</span><span class="o">&gt;</span>
+  &lt;name&gt;host-bridge&lt;/name&gt;
+  &lt;uuid&gt;44d2c3f5-6301-4fc6-be81-5ae2be4a47d8&lt;/uuid&gt;
+  &lt;forward <span class="nv">mode</span><span class="o">=</span><span class="s1">'bridge'</span>/&gt;
+  &lt;bridge <span class="nv">name</span><span class="o">=</span><span class="s1">'br0'</span>/&gt;
+&lt;/network&gt;
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># this needs to be "1"</span>
+<span class="nb">cat</span> /proc/sys/net/ipv4/ip_forward
+<span class="c"># if not, then add it</span>
+<span class="nb">echo </span>net.ipv4.ip_forward<span class="o">=</span>1 | <span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/sysctl.conf
+
+<span class="c"># make permanent</span>
+<span class="nb">sudo </span>sysctl <span class="nt">-p</span> /etc/sysctl.conf
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+ Name                 State      Autostart 
+<span class="nt">-------------------------------------------</span>
+ default              active     <span class="nb">yes</span>       
+
+<span class="nv">$ </span>virsh pool-define-as kvmpool <span class="nt">--type</span> <span class="nb">dir</span> <span class="nt">--target</span> /data/kvm/pool
+Pool kvmpool defined
+<span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+<span class="nv">$ </span>virsh pool-start kvmpool
+<span class="nv">$ </span>virsh pool-autostart kvmpool
+
+<span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+ Name                 State      Autostart 
+<span class="nt">-------------------------------------------</span>
+ default              active     <span class="nb">yes       
+ </span>kvmpool              active     <span class="nb">yes</span>
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># chown is only necessary if virsh was run previously as sudo</span>
+<span class="nb">ls</span> <span class="nt">-l</span> ~/.virtinst
+<span class="nb">sudo chown</span> <span class="nt">-R</span> <span class="nv">$USER</span>:<span class="nv">$USER</span> ~/.virtinst
+
+<span class="c"># list VMs</span>
+virsh list <span class="nt">--all</span>
+</code></pre></div></div> <h3 id="installing-ukvm2004-vm">Installing <code class="language-plaintext highlighter-rouge">ukvm2004</code> VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virt-install <span class="se">\</span>
+<span class="nt">--virt-type</span><span class="o">=</span>kvm <span class="se">\</span>
+<span class="nt">--name</span><span class="o">=</span>ukvm2004 <span class="se">\</span>
+<span class="nt">--ram</span> 8192 <span class="se">\</span>
+<span class="nt">--vcpus</span><span class="o">=</span>4 <span class="se">\</span>
+<span class="nt">--virt-type</span><span class="o">=</span>kvm <span class="se">\</span>
+<span class="nt">--hvm</span> <span class="se">\</span>
+<span class="nt">--cdrom</span> ~/kvm/mini.iso <span class="se">\</span>
+<span class="nt">--network</span> <span class="nv">network</span><span class="o">=</span>default <span class="se">\</span>
+<span class="nt">--disk</span> <span class="nv">pool</span><span class="o">=</span>default,size<span class="o">=</span>20,bus<span class="o">=</span>virtio,format<span class="o">=</span>qcow2 <span class="se">\</span>
+<span class="nt">--noautoconsole</span> <span class="se">\</span>
+<span class="nt">--machine</span> q35 <span class="se">\</span>
+</code></pre></div></div> <h3 id="start-the-vm">Start the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh start ukvm2004
+</code></pre></div></div> <h3 id="view-the-running-vm">View the running VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virt-viewer ukvm2004
+</code></pre></div></div> <h3 id="close-the-vm">Close the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh destroy ukvm2004
+</code></pre></div></div> <h3 id="delete-the-vm">Delete the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh undefine ukvm2004
+</code></pre></div></div>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="kvm"/><summary type="html"><![CDATA[All commands for KVM]]></summary></entry><entry><title type="html">Series - Setup KVM with PCIe passthrough - p1</title><link href="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p1/" rel="alternate" type="text/html" title="Series - Setup KVM with PCIe passthrough - p1"/><published>2023-09-28T00:00:00+07:00</published><updated>2023-09-28T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p1</id><content type="html" xml:base="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p1/"><![CDATA[<h2 id="1-giới-thiệu">1. Giới thiệu</h2> <p>Vào một ngày đẹp trời, một người em đồng nghiệp cũ liên hệ với tôi với mong muốn được truy cập vào card Xilinx Alveo AU200 để làm project với <code class="language-plaintext highlighter-rouge">XDMA</code>, <code class="language-plaintext highlighter-rouge">QDMA</code>. Vì máy của tôi có nhiều tài liệu cá nhân nên không thể cho truy cập trực tiếp vào máy vật lý được. Sau một lúc tìm hiểu, tôi quyết định cài đặt một máy ảo (VM) và cho card PCIe passthrough vào máy ảo này. Khi đó, em ấy có thể cài đặt driver trực tiếp trên máy ảo, program FPGA thông qua hardware client kết nối với hardware server cài đặt trên máy vật lý.</p> <p>Những tưởng việc cài đặt sẽ mất khoảng 1 buổi chiều là xong, nhưng thực tế tôi mất hơn 2 ngày (18h) để có thể cài đặt xong. Series này sẽ mô tả chi tiết các bước tôi đã trải qua để hoàn thiện việc cài đặt.</p> <h2 id="2-cấu-hình-và-thông-số-host">2. Cấu hình và thông số host</h2> <ul> <li>Mainboard: Z390 Gigabyte Aorus Wifi Pro</li> <li>CPU: Core i9 9900K</li> <li>RAM: 64GB DDR4</li> <li>SSD: 2TB</li> <li>OS: Ubuntu 20.04 - kernel: 5.15.06</li> </ul> <h2 id="3-máy-ảo-vm">3. Máy ảo (VM)</h2> <p>Giải pháp mà tôi lựa chọn cho việc ảo hóa là KVM. <strong>KVM (Kernel-based Virtual Machine)</strong> là một công nghệ ảo hóa dựa trên kernel Linux, cho phép tạo và quản lý máy ảo trên một hệ thống Linux.</p> <p>KVM được tích hợp trực tiếp vào kernel Linux, điều này đồng nghĩa với việc nó sử dụng những lợi ích và tính ổn định của kernel Linux. Ngoài ra, việc nó được tích hợp vào kernel Linux và sử dụng trực tiếp tài nguyên phần cứng của hệ thống, nên nó có hiệu suất cao và độ trễ thấp.</p> <p><strong>KVM hỗ trợ nhiều kiến trúc phần cứng (ISA)</strong> bao gồm x86, ARM và một số kiến trúc khác. Điều này làm cho nó trở thành một lựa chọn linh hoạt cho nhiều loại hệ thống và ứng dụng.</p> <p><strong>KVM hỗ trợ hệ điều hành đa dạng (Guest OS)</strong> bao gồm Linux, Windows, BSD, và nhiều distro Linux khác nhau. Điều này giúp chạy các ứng dụng và máy ảo đa dạng trên cùng một hệ thống.</p> <p><strong>KVM hỗ trợ ảo hóa đầy đủ</strong> bao gồm ảo hóa CPU và I/O. Điều này cho phép chạy các máy ảo có hiệu suất cao và sử dụng đa dạng tài nguyên.</p> <p><strong>Bảo Mật:</strong> KVM được tích hợp sâu vào kernel Linux, điều này giúp cải thiện bảo mật bằng cách sử dụng các tính năng bảo mật của kernel.</p> <p><strong>Quản Lý Tài Nguyên:</strong> KVM có khả năng quản lý tài nguyên linh hoạt, cho phép bạn cấp phát tài nguyên (CPU, RAM, ổ cứng) cho các máy ảo một cách tùy chỉnh.</p> <p><strong>Hỗ Trợ Cộng Đồng Mạnh Mẽ:</strong> KVM được phát triển và duy trì bởi một cộng đồng lớn của các nhà phát triển và người dùng. Điều này đồng nghĩa với việc có nhiều tài liệu và hỗ trợ trực tuyến.</p> <p><strong>Chi Phí Thấp:</strong> KVM là mã nguồn mở và miễn phí, giúp giảm đi các chi phí liên quan đến giấy phép và phần mềm.</p> <p><strong>Khả Năng Ảo Hóa GPU:</strong> KVM hỗ trợ ảo hóa GPU, cho phép bạn chạy ứng dụng đòi hỏi đồ họa cao cấp trong máy ảo.</p> <p><strong>Mạnh Mẽ Cho Ảo Hóa Đám Mây:</strong> KVM thường được sử dụng trong các mô hình ảo hóa đám mây với các công cụ quản lý như OpenStack.</p> <p>Hướng dẫn cài đặt máy ảo sẽ được mô tả kỹ ở phần 2 của series.</p> <h2 id="4-vfio">4. VFIO</h2> <p>Để máy ảo (KVM) có thể truy cập trực tiếp được vào card PCIe, card đó phải được ảo hóa. Phần này giới thiệu framework hỗ trợ việc này.</p> <p>VFIO (Virtual Function I/O) là một framework trong hệ thống Linux cho phép ảo hóa các thiết bị I/O (Input-Output) như card đồ họa, card mạng, hoặc các thiết bị PCIe khác để chúng có thể được sử dụng trực tiếp bởi các máy ảo. VFIO cho phép ảo hóa PCIe Passthrough, một công nghệ mạnh mẽ cho phép máy ảo truy cập trực tiếp vào thiết bị vật lý, cải thiện hiệu suất và khả năng sử dụng các thiết bị đặc biệt.</p> <p>Dưới đây là một số điểm quan trọng về VFIO:</p> <p><strong>PCIe Passthrough:</strong> VFIO cho phép bạn cấu hình máy ảo để truy cập trực tiếp vào một thiết bị PCIe vật lý, chẳng hạn như card đồ họa hoặc card mạng. Điều này có nghĩa là máy ảo có thể sử dụng thiết bị này như một máy tính vật lý thay vì thông qua một lớp trung gian.</p> <p><strong>Hiệu Suất Cao:</strong> PCIe Passthrough sử dụng trực tiếp tài nguyên phần cứng và loại bỏ độ trễ của máy ảo, giúp cải thiện hiệu suất, đặc biệt là cho các ứng dụng đòi hỏi nhiều tài nguyên đồ họa.</p> <p><strong>Hỗ Trợ Ảo Hóa Đầy Đủ:</strong> VFIO hỗ trợ ảo hóa đầy đủ, bao gồm ảo hóa CPU và I/O, đảm bảo rằng máy ảo có thể chạy các hệ điều hành khách đa dạng và sử dụng tài nguyên một cách hiệu quả.</p> <p><strong>Bảo Mật:</strong> VFIO cung cấp lớp bảo mật cho các thiết bị được ảo hóa, ngăn chặn việc truy cập trái phép từ máy ảo khác hoặc từ hệ thống máy chủ.</p> <p><strong>Ảo Hóa GPU:</strong> VFIO cho phép ảo hóa GPU, cho phép bạn chạy các ứng dụng đòi hỏi đồ họa cao cấp trong máy ảo, chẳng hạn như chơi game hoặc tính toán GPU.</p> <p><strong>Cộng Đồng Hỗ Trợ:</strong> VFIO được hỗ trợ bởi một cộng đồng đông đảo và có nhiều tài liệu, hướng dẫn và diễn đàn để giúp người dùng cấu hình và sử dụng VFIO.</p> <p>VFIO là một công nghệ quan trọng trong các mô hình ảo hóa đòi hỏi hiệu suất cao và sử dụng các thiết bị I/O đặc biệt. Nó giúp tối ưu hóa tài nguyên và cải thiện khả năng sử dụng của hệ thống máy chủ ảo.</p> <h2 id="5-iommu">5. IOMMU</h2> <p>Để có thể passthrough PCIe thành công vào máy ảo, chức năng IOMMU phải được <code class="language-plaintext highlighter-rouge">enable</code> ở host. Phần này giới thiệu tổng quan về IOMMU.</p> <p>IOMMU viết tắt của Input-Output Memory Management Unit. Đây là một thành phần phần cứng trong hệ thống máy tính, thường được tích hợp vào chipset hoặc CPU, đóng vai trò quan trọng trong việc quản lý việc địa chỉ bộ nhớ và truyền dữ liệu giữa CPU và các thiết bị ngoại vi, bao gồm các thiết bị kết nối qua PCIe (Peripheral Component Interconnect Express).</p> <p>Tại sao IOMMU lại quan trọng:</p> <p><strong>Dịch Địa Chỉ Bộ Nhớ:</strong> Một trong những chức năng chính của IOMMU là dịch địa chỉ bộ nhớ giữa CPU và các thiết bị ngoại vi. Khi một thiết bị muốn đọc hoặc ghi vào bộ nhớ, nó chỉ định một địa chỉ bộ nhớ. IOMMU dịch địa chỉ này để đảm bảo rằng thiết bị có thể truy cập vào phần bộ nhớ hệ thống chính xác. Sự dịch này quan trọng cho việc bảo mật và bảo vệ, vì nó ngăn chặn thiết bị truy cập vào các vị trí bộ nhớ ngẫu nhiên.</p> <p><strong>Cách Ly Bộ Nhớ:</strong> IOMMU cung cấp cách ly bộ nhớ, có nghĩa là nó có thể cấp phát các vùng cụ thể của bộ nhớ độc quyền cho các thiết bị hoặc máy ảo cụ thể. Điều này đảm bảo rằng các thiết bị hoặc máy ảo không thể truy cập vào bộ nhớ bên ngoài các vùng được chỉ định của họ, tăng cường bảo mật và tính ổn định của hệ thống.</p> <p><strong>PCIe Passthrough:</strong> IOMMU là quan trọng cho công nghệ PCIe passthrough, một công nghệ cho phép máy ảo truy cập trực tiếp vào một thiết bị PCIe vật lý, chẳng hạn như card đồ họa hoặc card mạng. Nếu không có sự hỗ trợ của IOMMU, việc chia sẻ các thiết bị này an toàn và hiệu quả sẽ trở nên khó khăn.</p> <p><strong>Ảo Hóa:</strong> Trong môi trường ảo hóa, IOMMU cho phép ánh xạ bộ nhớ hiệu quả giữa các máy ảo và phần cứng vật lý. Nó cho phép các máy ảo có không gian địa chỉ bộ nhớ riêng của họ, giảm thiểu độ trễ và cải thiện hiệu suất.</p> <p><strong>DMA (Direct Memory Access):</strong> Các thiết bị như GPU và card mạng thường sử dụng DMA để truy cập bộ nhớ hệ thống trực tiếp mà không cần sự can thiệp của CPU. IOMMU đảm bảo rằng các hoạt động DMA được dịch và kiểm soát đúng cách, ngăn chặn truy cập bất hợp pháp vào bộ nhớ.</p> <p><strong>Bảo Mật:</strong> IOMMU tăng cường bảo mật hệ thống bằng cách ngăn chặn các thiết bị hoặc phần mềm độc hại truy cập bộ nhớ ngoài các vùng được ủy quyền. Nó giúp giảm thiểu một số loại tấn công dựa trên can thiệp vào bộ nhớ.</p> <p><strong>Hiệu Năng:</strong> Mặc dù IOMMU thêm một lớp dịch địa chỉ, nó được thiết kế để thực hiện điều này một cách hiệu quả, giảm thiểu độ trễ hiệu năng. Trong thực tế, đối với một số tải công việc như GPU passthrough cho việc chơi game trong máy ảo, sự hỗ trợ của IOMMU có thể cải thiện hiệu suất bằng cách cung cấp truy cập trực tiếp vào GPU.</p> <p>Tóm lại, IOMMU là một thành phần quan trọng đảm bảo truyền dữ liệu an toàn và hiệu quả giữa CPU và các thiết bị ngoại vi, đặc biệt trong các tình huống ảo hóa và PCIe passthrough. Nó đóng một vai trò quan trọng trong quản lý bộ nhớ, bảo mật và cách ly trong các hệ thống máy tính hiện đại.</p> <p>Hướng dẫn về cài đặt IOMMU được mô tả ở phần 3 của series.</p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="vi"/><category term="kvm"/><summary type="html"><![CDATA[Setup KVM with PCIe passthrough that allows guests working in a virtual machine and still interact with PCIe card. This model can be used in firmware development.]]></summary></entry><entry><title type="html">Series - Setup KVM with PCIe passthrough - p2</title><link href="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p2/" rel="alternate" type="text/html" title="Series - Setup KVM with PCIe passthrough - p2"/><published>2023-09-28T00:00:00+07:00</published><updated>2023-09-28T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p2</id><content type="html" xml:base="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p2/"><![CDATA[<h2 id="1-giới-thiệu">1. Giới thiệu</h2> <p>Nối tiếp phần 1, phần này sẽ mô tả chi tiết về việc cài đặt máy ảo KVM. Phần hướng dẫn này sẽ được mô tả bằng tiếng Anh.</p> <h2 id="2-prerequisites">2. Prerequisites</h2> <p>Before getting started, ensure that you meet the following prerequisites:</p> <ol> <li> <p><strong>Linux System</strong>: Ubuntu 20.04 - kernel v5.15.</p> </li> <li> <p><strong>Bios</strong>: Make sure Intel Virtualization Technology (Intel VT) and Intel ® VT-d must be enabled from server BIOS</p> </li> <li> <p><strong>CPU Support</strong>: Check if your CPU supports virtualization and IOMMU (Input-Output Memory Management Unit) by running:</p> </li> </ol> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>egrep -c '(vmx|svm)' /proc/cpuinfo
+</code></pre></div></div> <p>If the command returns a value of 0, your processor is not capable of running KVM. On the other hand, any other number means you can proceed with the installation.</p> <p>You are now ready to start installing KVM.</p> <h2 id="3-kvm-installation">3. KVM Installation</h2> <h3 id="a-install-kvm-and-assorted-tools">a. Install KVM and assorted tools</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>qemu-kvm libvirt-clients libvirt-daemon-system virtinst bridge-utils cpu-checker virt-viewer virt-manager qemu-system
+</code></pre></div></div> <h3 id="b-check-whether-your-system-can-use-kvm-acceleration">b. Check whether your system can use KVM acceleration</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>kvm-ok
+</code></pre></div></div> <p>The output should look like this:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm<span class="nv">$ </span>kvm-ok
+INFO: /dev/kvm exists
+KVM acceleration can be used
+</code></pre></div></div> <p>Then run the virt-host-validate utility to run a whole set of checks against your virtualization ability and KVM readiness.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>virt-host-validate
+QEMU: Checking <span class="k">for </span>hardware virtualization                                 : PASS
+QEMU: Checking <span class="k">if </span>device /dev/kvm exists                                   : PASS
+QEMU: Checking <span class="k">if </span>device /dev/kvm is accessible                            : PASS
+QEMU: Checking <span class="k">if </span>device /dev/vhost-net exists                             : PASS
+QEMU: Checking <span class="k">if </span>device /dev/net/tun exists                               : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'memory'</span> controller support                      : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'memory'</span> controller mount-point                  : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'cpu'</span> controller support                         : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'cpu'</span> controller mount-point                     : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'cpuacct'</span> controller support                     : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'cpuacct'</span> controller mount-point                 : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'cpuset'</span> controller support                      : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'cpuset'</span> controller mount-point                  : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'devices'</span> controller support                     : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'devices'</span> controller mount-point                 : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'blkio'</span> controller support                       : PASS
+QEMU: Checking <span class="k">for </span>cgroup <span class="s1">'blkio'</span> controller mount-point                   : PASS
+QEMU: Checking <span class="k">for </span>device assignment IOMMU support                         : PASS
+ LXC: Checking <span class="k">for </span>Linux <span class="o">&gt;=</span> 2.6.26                                         : PASS
+ LXC: Checking <span class="k">for </span>namespace ipc                                           : PASS
+ LXC: Checking <span class="k">for </span>namespace mnt                                           : PASS
+ LXC: Checking <span class="k">for </span>namespace pid                                           : PASS
+ LXC: Checking <span class="k">for </span>namespace uts                                           : PASS
+ LXC: Checking <span class="k">for </span>namespace net                                           : PASS
+ LXC: Checking <span class="k">for </span>namespace user                                          : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'memory'</span> controller support                      : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'memory'</span> controller mount-point                  : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'cpu'</span> controller support                         : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'cpu'</span> controller mount-point                     : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'cpuacct'</span> controller support                     : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'cpuacct'</span> controller mount-point                 : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'cpuset'</span> controller support                      : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'cpuset'</span> controller mount-point                  : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'devices'</span> controller support                     : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'devices'</span> controller mount-point                 : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'blkio'</span> controller support                       : PASS
+ LXC: Checking <span class="k">for </span>cgroup <span class="s1">'blkio'</span> controller mount-point                   : PASS
+ LXC: Checking <span class="k">if </span>device /sys/fs/fuse/connections exists                   : PASS
+</code></pre></div></div> <h3 id="c-add-user-to-libvirt-groups">c. Add user to libvirt groups</h3> <p>To allow the current user to manage the guest VM without sudo, we can add ourselves to all of the libvirt groups (e.g. libvirt, libvirt-qemu) and the kvm group</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/group | <span class="nb">grep </span>libvirt | <span class="nb">awk</span> <span class="nt">-F</span><span class="s1">':'</span> <span class="o">{</span><span class="s1">'print $1'</span><span class="o">}</span> | xargs <span class="nt">-n1</span> <span class="nb">sudo </span>adduser <span class="nv">$USER</span>
+
+<span class="c"># add user to kvm group also</span>
+<span class="nb">sudo </span>adduser <span class="nv">$USER</span> kvm
+
+<span class="c"># relogin, then show group membership</span>
+<span class="nb">exec </span>su <span class="nt">-l</span> <span class="nv">$USER</span>
+<span class="nb">id</span> | <span class="nb">grep </span>libvirt
+</code></pre></div></div> <p>Group membership requires a user to log back in, so if the <code class="language-plaintext highlighter-rouge">id</code> command does not show your libvirt* group membership, logout and log back in, or try <code class="language-plaintext highlighter-rouge">exec su -l $USER</code>.</p> <h3 id="d-qemu-connection-to-system">d. QEMU connection to system</h3> <p>If not explicitly set, the userspace QEMU connection will be to <code class="language-plaintext highlighter-rouge">qemu:///session</code>, and not to <code class="language-plaintext highlighter-rouge">qemu:///system</code>. This will cause you to see different domains, networks, and disk pool when executing virsh as your regular user versus sudo.</p> <p>Modify your profile so that the environment variable below is exported to your login sessions.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># use same connection and objects as sudo</span>
+<span class="nb">export </span><span class="nv">LIBVIRT_DEFAULT_URI</span><span class="o">=</span>qemu:///system
+</code></pre></div></div> <h3 id="e-default-network">e. Default network</h3> <p>By default, KVM creates a virtual switch that shows up as a host interface named <code class="language-plaintext highlighter-rouge">virbr0</code> using 192.168.122.0/24.</p> <p>This interface should be visible from the Host using the “ip” command below.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ip addr show virbr0
+3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    <span class="nb">link</span>/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0
+       valid_lft forever preferred_lft forever
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">virbr0</code> operates in NAT mode, which allows the guest OS to communicate out, but only allowing the Host(and those VMs in its subnet) to make incoming connections.</p> <h3 id="f-bridge-network">f. Bridge network</h3> <p>To enable guest VMs on the same network as the Host, you should create a bridged network to your physical interface (e.g. eth0, ens4, epn1s0).</p> <p>Read my article here for how to use NetPlan on Ubuntu to bridge your physical network interface to <code class="language-plaintext highlighter-rouge">br0</code> at the OS level. And then use that to create a libvirt network named <code class="language-plaintext highlighter-rouge">host-bridge</code> that uses <code class="language-plaintext highlighter-rouge">br0</code>.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># bridge to physical network</span>
+<span class="nv">$ </span>virsh net-dumpxml host-bridge
+
+&lt;network <span class="nv">connections</span><span class="o">=</span><span class="s1">'2'</span><span class="o">&gt;</span>
+  &lt;name&gt;host-bridge&lt;/name&gt;
+  &lt;uuid&gt;44d2c3f5-6301-4fc6-be81-5ae2be4a47d8&lt;/uuid&gt;
+  &lt;forward <span class="nv">mode</span><span class="o">=</span><span class="s1">'bridge'</span>/&gt;
+  &lt;bridge <span class="nv">name</span><span class="o">=</span><span class="s1">'br0'</span>/&gt;
+&lt;/network&gt;
+</code></pre></div></div> <p>This <code class="language-plaintext highlighter-rouge">host-bridge</code> will be required in later articles.</p> <p>Instruction to setup host’s OS to create <code class="language-plaintext highlighter-rouge">br0</code> <a href="https://fabianlee.org/2019/04/01/kvm-creating-a-bridged-network-with-netplan-on-ubuntu-bionic/">here</a></p> <h3 id="g-enable-ipv4-forwarding-on-kvm-host">g. Enable IPv4 forwarding on KVM host</h3> <p>In order to handle NAT and routed networks for KVM, enable IPv4 forwarding on this host.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># this needs to be "1"</span>
+<span class="nb">cat</span> /proc/sys/net/ipv4/ip_forward
+<span class="c"># if not, then add it</span>
+<span class="nb">echo </span>net.ipv4.ip_forward<span class="o">=</span>1 | <span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/sysctl.conf
+
+<span class="c"># make permanent</span>
+<span class="nb">sudo </span>sysctl <span class="nt">-p</span> /etc/sysctl.conf
+</code></pre></div></div> <h3 id="h-default-storage-pool">h. Default storage pool</h3> <p>The “default” storage pool for guest disks is <code class="language-plaintext highlighter-rouge">/var/lib/libvirt/images</code>. This is fine for test purposes, but if you have another mount that you want to use for guest OS disks, then you should create a custom storage pool.</p> <p>Below are the commands to create a “kvmpool” on an SSD mounted at <code class="language-plaintext highlighter-rouge">/data/kvm/pool</code>.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+ Name                 State      Autostart 
+<span class="nt">-------------------------------------------</span>
+ default              active     <span class="nb">yes</span>       
+
+<span class="nv">$ </span>virsh pool-define-as kvmpool <span class="nt">--type</span> <span class="nb">dir</span> <span class="nt">--target</span> /data/kvm/pool
+Pool kvmpool defined
+<span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+<span class="nv">$ </span>virsh pool-start kvmpool
+<span class="nv">$ </span>virsh pool-autostart kvmpool
+
+<span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+ Name                 State      Autostart 
+<span class="nt">-------------------------------------------</span>
+ default              active     <span class="nb">yes       
+ </span>kvmpool              active     <span class="nb">yes</span>
+</code></pre></div></div> <h2 id="4-vm-creation-using-virt-install">4. VM creation using <code class="language-plaintext highlighter-rouge">virt-install</code></h2> <h3 id="a-download-ubuntu-2004-focal-iso">a. Download ubuntu 20.04 focal iso</h3> <p>In order to test you need an OS boot image. Since we are on an Ubuntu host, let’s download the ISO for the network installer of Ubuntu 20.04 Focal. When complete, you should have a local file named <code class="language-plaintext highlighter-rouge">~/kvm/mini.iso</code></p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://releases.ubuntu.com/20.04.6/ubuntu-20.04.6-desktop-amd64.iso <span class="nt">-O</span> ~/kvm/mini.iso
+</code></pre></div></div> <p>First list what virtual machines are running on our host:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># chown is only necessary if virsh was run previously as sudo</span>
+<span class="nb">ls</span> <span class="nt">-l</span> ~/.virtinst
+<span class="nb">sudo chown</span> <span class="nt">-R</span> <span class="nv">$USER</span>:<span class="nv">$USER</span> ~/.virtinst
+
+<span class="c"># list VMs</span>
+virsh list <span class="nt">--all</span>
+</code></pre></div></div> <p>This should return an empty list of VMs, because no guest OS have been deployed.</p> <h3 id="b-installing-ukvm2004-vm">b. Installing <code class="language-plaintext highlighter-rouge">ukvm2004</code> VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virt-install <span class="nt">--virt-type</span><span class="o">=</span>kvm <span class="nt">--name</span><span class="o">=</span>ukvm2004 <span class="nt">--ram</span> 8192 <span class="nt">--vcpus</span><span class="o">=</span>4 <span class="nt">--virt-type</span><span class="o">=</span>kvm <span class="nt">--hvm</span> <span class="nt">--cdrom</span> ~/kvm/mini.iso <span class="nt">--network</span> <span class="nv">network</span><span class="o">=</span>default <span class="nt">--disk</span> <span class="nv">pool</span><span class="o">=</span>default,size<span class="o">=</span>20,bus<span class="o">=</span>virtio,format<span class="o">=</span>qcow2 <span class="nt">--noautoconsole</span> <span class="nt">--machine</span> q35
+</code></pre></div></div> <p>Note: When creating VM’s using virt-manager, make sure to also select <code class="language-plaintext highlighter-rouge">q35</code> as the machine type for full support of pcie in your guests.</p> <ul> <li>VM name: <code class="language-plaintext highlighter-rouge">ukvm2004</code></li> <li>VCPU: <code class="language-plaintext highlighter-rouge">4</code></li> <li>RAM: <code class="language-plaintext highlighter-rouge">8G</code></li> <li>Network: <code class="language-plaintext highlighter-rouge">default virbr0 NAT network</code></li> <li>Pool storage: <code class="language-plaintext highlighter-rouge">default</code> and size = 20GB</li> <li>Graphic: <code class="language-plaintext highlighter-rouge">default</code> - spice</li> </ul> <h3 id="c-open-the-vm">c. Open the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># open console to VM</span>
+virt-viewer ukvm2004
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">virt-viewer</code> will popup a window for the Guest OS, when you click the mouse in the window and then press <ENTER> you will see the initial Ubuntu network install screen.</ENTER></p> <p><code class="language-plaintext highlighter-rouge">virt-manager</code> provides a convenient interface for creating or managing a guest OS, and any guest OS you create from the CLI using virt-install will show up in this list also.</p> <h3 id="d-stop-and-delete-vm">d. Stop and delete VM</h3> <p>If you want to delete this guest OS completely, close the GUI window opened with virt-viewer, then use the following commands:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh destroy ukvm2004
+virsh undefine ukvm2004
+</code></pre></div></div> <h2 id="5-references">5. References</h2> <p>Visit <a href="https://fabianlee.org/2018/08/27/kvm-bare-metal-virtualization-on-ubuntu-with-kvm/">kvm all commands</a> and <a href="https://www.xilinx.com/developer/articles/using-alveo-data-center-accelerator-cards-in-a-kvm-environment.html">Xilinx instruction</a></p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="kvm"/><summary type="html"><![CDATA[Guide to setup a KVM from scratch]]></summary></entry><entry><title type="html">Series - Setup KVM with PCIe passthrough - p3</title><link href="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p3/" rel="alternate" type="text/html" title="Series - Setup KVM with PCIe passthrough - p3"/><published>2023-09-28T00:00:00+07:00</published><updated>2023-09-28T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p3</id><content type="html" xml:base="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p3/"><![CDATA[<h2 id="1-what-is-iommu">1. What is IOMMU?</h2> <p>IOMMU stands for Input-Output Memory Management Unit. It is a hardware component in a computer system, typically integrated into the chipset or CPU, that plays a crucial role in managing memory addressing and data transfers between the CPU and peripheral devices, including those connected via PCIe (Peripheral Component Interconnect Express).</p> <p>What IOMMU does and why it’s important:</p> <p><strong>Memory Address Translation:</strong> One of the primary functions of the IOMMU is to translate memory addresses between the CPU and peripheral devices. When a device wants to read from or write to memory, it specifies a memory address. The IOMMU translates this address to ensure that the device can access the correct portion of system memory. This translation is essential for security and protection, as it prevents devices from accessing arbitrary memory locations.</p> <p><strong>Memory Isolation:</strong> IOMMU provides memory isolation, which means it can allocate specific regions of memory exclusively to certain devices or virtual machines. This ensures that devices or virtual machines cannot access memory outside their designated regions, enhancing system security and stability.</p> <p><strong>PCIe Passthrough:</strong> IOMMU is crucial for PCIe passthrough, a technology that allows a virtual machine to have direct access to a physical PCIe device, such as a graphics card or network adapter. Without IOMMU support, it would be challenging to securely and efficiently share these devices between the host and virtual machines.</p> <p><strong>Virtualization:</strong> In virtualized environments, IOMMU enables efficient memory mapping between virtual machines and physical hardware. It allows virtual machines to have their own memory address spaces, reducing overhead and improving performance.</p> <p><strong>DMA (Direct Memory Access):</strong> Devices, such as GPUs and network cards, often use DMA to access system memory directly without CPU intervention. IOMMU ensures that DMA operations are properly translated and controlled, preventing unauthorized access to memory.</p> <p><strong>Security:</strong> IOMMU enhances system security by preventing devices or malicious software from accessing memory outside their authorized regions. It helps mitigate certain types of attacks that rely on memory manipulation.</p> <p><strong>Performance:</strong> While IOMMU adds a layer of address translation, it is designed to do so efficiently, minimizing performance overhead. In fact, for some workloads like GPU passthrough for gaming in virtual machines, IOMMU support can improve performance by providing direct access to the GPU.</p> <h2 id="2-iommu-and-vfio-setup">2. IOMMU and VFIO setup</h2> <h3 id="a-enable-iommu-on-host">a. Enable IOMMU on host</h3> <p>Open the grub configuration file:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/default/grub
+</code></pre></div></div> <p>Add the <code class="language-plaintext highlighter-rouge">amd_iommu=on</code> or <code class="language-plaintext highlighter-rouge">intel_iommu=on</code> flags to the <code class="language-plaintext highlighter-rouge">GRUB_CMDLINE_LINUX</code> variable:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">"quiet intel_iommu=on"</span>
+</code></pre></div></div> <p>Update grub:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>update-grub
+</code></pre></div></div> <p>or</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>grub-mkconfig <span class="nt">-o</span> /boot/grub/grub.cfg
+</code></pre></div></div> <p>Check the new content of Grub by</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /proc/cmdline
+
+<span class="nv">BOOT_IMAGE</span><span class="o">=</span>/boot/vmlinuz-5.15.0-acso <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>2006ace4-1a9a-4d7f-aa7c-685cae3abe4c ro quiet <span class="nv">intel_iommu</span><span class="o">=</span>on
+</code></pre></div></div> <h3 id="b-assign-xilinx-au200-card-to-vfio">b. Assign Xilinx AU200 card to VFIO</h3> <p>Again, open the grub configuration file:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/default/grub
+</code></pre></div></div> <p>Add the <code class="language-plaintext highlighter-rouge">vfio-pci.ids=10ee:5000,10ee:5001</code> to the <code class="language-plaintext highlighter-rouge">GRUB_CMDLINE_LINUX</code> variable:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">"quiet intel_iommu=on vfio-pci.ids=10ee:5000,10ee:5001"</span>
+</code></pre></div></div> <p>We can identify the pci.ids using the below command.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>lspci <span class="nt">-nn</span> | <span class="nb">grep</span> <span class="s2">"Xilinx"</span>
+
+01:00.0 Processing accelerators <span class="o">[</span>1200]: Xilinx Corporation Device <span class="o">[</span>10ee:5000]
+01:00.1 Processing accelerators <span class="o">[</span>1200]: Xilinx Corporation Device <span class="o">[</span>10ee:5001]
+</code></pre></div></div> <p>With this command, Xilinx card will be assigned to <code class="language-plaintext highlighter-rouge">vfio-pci</code></p> <p>Update grub:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>update-grub
+</code></pre></div></div> <p>or</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>grub-mkconfig <span class="nt">-o</span> /boot/grub/grub.cfg
+</code></pre></div></div> <p>Check the new content of Grub by</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /proc/cmdline
+
+<span class="nv">BOOT_IMAGE</span><span class="o">=</span>/boot/vmlinuz-5.15.0-acso <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>2006ace4-1a9a-4d7f-aa7c-685cae3abe4c ro quiet <span class="nv">intel_iommu</span><span class="o">=</span>on vfio-pci.ids<span class="o">=</span>10ee:5000,10ee:5001
+</code></pre></div></div> <p>Create a new file under <code class="language-plaintext highlighter-rouge">/etc/modprobe.d/vfio.conf</code> add the below</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>options vfio-pci <span class="nv">ids</span><span class="o">=</span>10ee:5000,10ee:5001
+</code></pre></div></div> <p>Update the <code class="language-plaintext highlighter-rouge">initramfs</code> using the below command and reboot the host.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>update-initramfs <span class="nt">-u</span>
+</code></pre></div></div> <p>After the reboot of the host, check Xilinx is configure for Pass-through using the below command.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lspci -k
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">Kernel driver in use: vfio-pci</code> is OK</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01:00.0 Processing accelerators: Xilinx Corporation Device 5000
+    Subsystem: Xilinx Corporation Device 000e
+    Kernel driver in use: vfio-pci
+    Kernel modules: xclmgmt
+01:00.1 Processing accelerators: Xilinx Corporation Device 5001
+    Subsystem: Xilinx Corporation Device 000e
+    Kernel driver in use: vfio-pci
+    Kernel modules: xocl
+
+</code></pre></div></div> <h3 id="c-check-iommu-group">c. Check IOMMU group</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/nguyencanhtrung/kvm-pcie.git
+<span class="nb">cd </span>kvm-pcie
+<span class="nb">sudo chmod</span> +x iommu_viewer.sh
+./iommu_viewer.sh
+</code></pre></div></div> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+Group:  1   0000:00:01.0 PCI bridge [0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x16) [8086:1901] (rev 0a)   Driver: pcieport
+Group:  1   0000:00:01.1 PCI bridge [0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x8) [8086:1905] (rev 0a)   Driver: pcieport
+Group:  1   0000:01:00.0 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5000]   Driver: vfio-pci
+Group:  1   0000:01:00.1 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5001]   Driver: vfio-pci
+Group:  1   0000:02:00.0 VGA compatible controller [0300]: NVIDIA Corporation Device [10de:2489] (rev a1)   Driver: nvidia
+Group:  1   0000:02:00.1 Audio device [0403]: NVIDIA Corporation Device [10de:228b] (rev a1)   Driver: snd_hda_intel
+Group:  2   0000:00:02.0 Display controller [0380]: Intel Corporation UHD Graphics 630 (Desktop 9 Series) [8086:3e98]   Driver: i915
+Group:  3   0000:00:12.0 Signal processing controller [1180]: Intel Corporation Cannon Lake PCH Thermal Controller [8086:a379] (rev 10)   Driver: intel_pch_thermal
+Group:  4   0000:00:14.0 USB controller [0c03]: Intel Corporation Cannon Lake PCH USB 3.1 xHCI Host Controller [8086:a36d] (rev 10)   Driver: xhci_hcd
+...
+</code></pre></div></div> <p>Now, you can see the Xilinx card is in the same IOMMU group <code class="language-plaintext highlighter-rouge">Group 1</code> with NVIDIA GPU. Passing through Xilinx card to KVM requires all devices in the same group use the same <code class="language-plaintext highlighter-rouge">vfio-pci</code>. However, I donot want to virtualize GPU since I want to keep it for host. Therefore, splitting IOMMU is require in this case. The next part will show how to do so.</p> <h2 id="3-references">3. References</h2> <p>To understand about IOMMU group more please watch <a href="https://www.youtube.com/watch?v=qQiMMeVNw-o">this video</a> and visit <a href="https://medium0.com/techbeatly/virtual-machine-with-gpu-enabled-on-ubuntu-using-kvm-on-ubuntu-22-4-f0354ba74b1">URL</a></p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="kvm"/><summary type="html"><![CDATA[Setup VFIO và IOMMU for the host]]></summary></entry><entry><title type="html">Series - Setup KVM with PCIe passthrough - p4</title><link href="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p4/" rel="alternate" type="text/html" title="Series - Setup KVM with PCIe passthrough - p4"/><published>2023-09-28T00:00:00+07:00</published><updated>2023-09-28T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p4</id><content type="html" xml:base="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p4/"><![CDATA[<h2 id="a-splitting-iommu-group">A. Splitting IOMMU group</h2> <h3 id="1-pcie-acs-override">1. PCIe ACS override</h3> <p>PCIe ACS (Access Control Services) Override is a feature in Linux-based systems and server systems that use PCIe (Peripheral Component Interconnect Express) ports. This feature allows you to override or modify the configuration of the ACS protocol within the PCIe system. ACS is part of the PCIe standard and plays a role in controlling access to PCIe devices, especially when using PCIe passthrough in virtualization.</p> <p>Specifically, the PCIe ACS Override feature allows you to:</p> <p><strong>Override:</strong> Modify the ACS configuration to eliminate or modify access constraints between PCIe devices. This can be useful when you want to share PCIe devices among virtual machines or different Linux systems and need to disable or adjust ACS constraints.</p> <p><strong>Configuration Management:</strong> Adjust how the system manages access to PCIe devices. You can specify access rights for virtual machines or physical devices to specific PCIe devices.</p> <p><strong>Customization:</strong> PCIe ACS Override enables you to customize the ACS configuration based on your specific needs, especially when using PCIe passthrough in a virtualized environment.</p> <p>Please note that using PCIe ACS Override should be done carefully and following the specific guidelines of your system and virtualization management software, such as KVM/QEMU or VMware. Adjusting the ACS configuration can affect the stability and security of the PCIe system, so it should be performed knowledgeably, taking into account its impact on the system.</p> <h3 id="2-enable-pcie-acs-override">2. Enable PCIe ACS override</h3> <p>Open the grub configuration file:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/default/grub
+</code></pre></div></div> <p>Add the <code class="language-plaintext highlighter-rouge">pcie_acs_override=downstream,multifunction</code> flags to the <code class="language-plaintext highlighter-rouge">GRUB_CMDLINE_LINUX</code> variable:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">GRUB_CMDLINE_LINUX_DEFAULT</span><span class="o">=</span><span class="s2">"quiet intel_iommu=on pcie_acs_override=downstream,multifunction vfio-pci.ids=10ee:5000,10ee:5001"</span>
+</code></pre></div></div> <p>Update grub:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>update-grub
+</code></pre></div></div> <p>or</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>grub-mkconfig <span class="nt">-o</span> /boot/grub/grub.cfg
+</code></pre></div></div> <p>Check the new content of Grub by</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /proc/cmdline
+
+<span class="nv">BOOT_IMAGE</span><span class="o">=</span>/boot/vmlinuz-5.15.0-acso <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>2006ace4-1a9a-4d7f-aa7c-685cae3abe4c ro quiet <span class="nv">intel_iommu</span><span class="o">=</span>on <span class="nv">pcie_acs_override</span><span class="o">=</span>downstream,multifunction vfio-pci.ids<span class="o">=</span>10ee:5000,10ee:5001
+</code></pre></div></div> <p>Then, reboot the host.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>reboot now
+</code></pre></div></div> <p>After rebooting, re-check IOMMU group:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./iommu_viewer.sh
+</code></pre></div></div> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+Group:  1   0000:00:01.0 PCI bridge [0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x16) [8086:1901] (rev 0a)   Driver: pcieport
+Group:  1   0000:00:01.1 PCI bridge [0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller (x8) [8086:1905] (rev 0a)   Driver: pcieport
+Group:  1   0000:01:00.0 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5000]   Driver: vfio-pci
+Group:  1   0000:01:00.1 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5001]   Driver: vfio-pci
+Group:  1   0000:02:00.0 VGA compatible controller [0300]: NVIDIA Corporation Device [10de:2489] (rev a1)   Driver: nvidia
+Group:  1   0000:02:00.1 Audio device [0403]: NVIDIA Corporation Device [10de:228b] (rev a1)   Driver: snd_hda_intel
+Group:  2   0000:00:02.0 Display controller [0380]: Intel Corporation UHD Graphics 630 (Desktop 9 Series) [8086:3e98]   Driver: i915
+Group:  3   0000:00:12.0 Signal processing controller [1180]: Intel Corporation Cannon Lake PCH Thermal Controller [8086:a379] (rev 10)   Driver: intel_pch_thermal
+Group:  4   0000:00:14.0 USB controller [0c03]: Intel Corporation Cannon Lake PCH USB 3.1 xHCI Host Controller [8086:a36d] (rev 10)   Driver: xhci_hcd
+...
+</code></pre></div></div> <p>Unfortunately, it DID NOT work since my machine which includes a MOBO (Z390 Gigabyte Wifi Pro + CPU 9900K) does not support <code class="language-plaintext highlighter-rouge">pcie_acs_override</code>.</p> <p>The last solution would be rebuild the host’s kernel that patched ACS feature and use that kernel instead. Luckily, I found a way to do so.</p> <h2 id="b-build-patched-acs-kernel">B. Build patched ACS kernel</h2> <h3 id="1-download-acs-patch-and-original-kernel-to-build">1. Download ACS patch and original kernel to build</h3> <p>On the host machine,</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt upgrade
+<span class="nb">sudo </span>reboot now
+<span class="nb">sudo </span>apt <span class="nb">install </span>build-essential libncurses5-dev fakeroot xz-utils libelf-dev liblz4-tool unzip flex bison bc debhelper rsync libssl-dev:native 
+<span class="nb">mkdir</span> ~/kernel
+<span class="nb">cd</span> ~/kernel
+wget https://github.com/nguyencanhtrung/kvm-pcie/blob/main/acso.patch
+wget https://github.com/torvalds/linux/archive/refs/tags/v5.15.zip
+unzip v5.15.zip
+</code></pre></div></div> <h3 id="2-editing-config-file-to-avoid-building-error">2. Editing config file to avoid building error</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>linux-5.15
+<span class="nb">sudo </span>find /boot/ <span class="se">\(</span> <span class="nt">-iname</span> <span class="s2">"*config*"</span> <span class="nt">-a</span> <span class="nt">-iname</span> <span class="s2">"*</span><span class="sb">`</span><span class="nb">uname</span> <span class="nt">-r</span><span class="sb">`</span><span class="s2">*"</span> <span class="se">\)</span> <span class="nt">-exec</span> <span class="nb">cp</span> <span class="nt">-i</span> <span class="nt">-t</span> ./ <span class="o">{}</span> <span class="se">\;</span>
+<span class="nb">mv</span> <span class="k">*</span><span class="sb">`</span><span class="nb">uname</span> <span class="nt">-r</span><span class="sb">`</span><span class="k">*</span> .config
+<span class="nb">ls</span> /boot | <span class="nb">grep </span>config
+<span class="nb">sudo </span>nano .config
+</code></pre></div></div> <p>Use <code class="language-plaintext highlighter-rouge">Ctrl+w</code> to search for <code class="language-plaintext highlighter-rouge">CONFIG_SYSTEM_TRUSTED_KEYS</code> on nano and comment out the line like: <code class="language-plaintext highlighter-rouge">#CONFIG_SYSTEM_TRUSTED_KEYS</code> <code class="language-plaintext highlighter-rouge">Ctrl+x</code> to Save &amp; Exit</p> <h3 id="3-apply-patches-acs">3. Apply patches ACS</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>patch <span class="nt">-p1</span> &lt; ../acso.patch
+</code></pre></div></div> <p>Output should be something like this:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>patching file Documentation/admin-guide/kernel-parameters.txt
+Hunk <span class="c">#1 succeeded at 3892 (offset 383 lines).</span>
+patching file drivers/pci/quirks.c
+Hunk <span class="c">#1 succeeded at 3515 with fuzz 2 (offset -29 lines).</span>
+Hunk <span class="c">#2 succeeded at 5049 with fuzz 1 (offset 153 lines).</span>
+</code></pre></div></div> <p>This shows a successful patch that required a fuzz (slight offset change) because the patch was made for an earlier kernel version. As long as there isn’t an error this should be okay. Run the following command to build the kernel:</p> <h3 id="4-build-patched-kernel">4. Build patched kernel</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>make <span class="nt">-j</span> <span class="sb">`</span>getconf _NPROCESSORS_ONLN<span class="sb">`</span> bindeb-pkg <span class="nv">LOCALVERSION</span><span class="o">=</span><span class="nt">-acso</span> <span class="nv">KDEB_PKGVERSION</span><span class="o">=</span><span class="si">$(</span>make kernelversion<span class="si">)</span><span class="nt">-1</span>
+</code></pre></div></div> <p>Press Enter for all prompts.</p> <p><strong>Note:</strong> If you get a build failure remove the “-j <code class="language-plaintext highlighter-rouge">getconf _NPROCESSORS_ONLN</code>”” part from the make line and run it again to see the error with more detail and fix it.</p> <h3 id="5-install-the-patched-kernel">5. Install the patched kernel</h3> <p>When you get a successful build run the following to install the kernel:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> ../linux-<span class="k">*</span>.deb
+<span class="nb">sudo </span>dpkg <span class="nt">-i</span> ../linux-<span class="k">*</span>.deb
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> <span class="nt">-i</span>
+<span class="nb">echo</span> <span class="s2">"vfio"</span> <span class="o">&gt;&gt;</span> /etc/modules
+<span class="nb">echo</span> <span class="s2">"vfio_iommu_type1"</span> <span class="o">&gt;&gt;</span> /etc/modules
+<span class="nb">echo</span> <span class="s2">"vfio_pci"</span> <span class="o">&gt;&gt;</span> /etc/modules
+<span class="nb">echo</span> <span class="s2">"kvm"</span> <span class="o">&gt;&gt;</span> /etc/modules
+<span class="nb">echo</span> <span class="s2">"kvm_intel"</span> <span class="o">&gt;&gt;</span> /etc/modules
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>update-initramfs <span class="nt">-u</span>
+reboot
+</code></pre></div></div> <p>When the system rebooting, hold <code class="language-plaintext highlighter-rouge">SHIFT</code> to entering the patched kernel <code class="language-plaintext highlighter-rouge">Advanced Ubuntu</code> &gt; <code class="language-plaintext highlighter-rouge">5.15.0-acso</code></p> <h3 id="6-in-case-booting-hang-optional">6. In case booting hang (optional)</h3> <p>Reboot the system hold <code class="language-plaintext highlighter-rouge">SHIFT</code> to entering the patched kernel <code class="language-plaintext highlighter-rouge">Advanced Ubuntu</code> &gt; <code class="language-plaintext highlighter-rouge">5.15.0-acso</code></p> <p>Press <code class="language-plaintext highlighter-rouge">e</code> to edit the grub</p> <p>Appending <code class="language-plaintext highlighter-rouge">nomodeset</code> in the command line (watch video in the following reference to know the detail)</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>linux     /boot/vmlinuz ....    .... downstream nomodeset ...
+</code></pre></div></div> <p>Then press <code class="language-plaintext highlighter-rouge">F10</code> to save and reload.</p> <p>After rebooting, let’s check IOMMU group now</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm<span class="nv">$ </span>./iommu_viewer.sh 
+Please be patient. This may take a couple seconds.
+Group:  0   0000:00:00.0 Host bridge <span class="o">[</span>0600]: Intel Corporation 8th Gen Core 8-core Desktop Processor Host Bridge/DRAM Registers <span class="o">[</span>Coffee Lake S] <span class="o">[</span>8086:3e30] <span class="o">(</span>rev 0a<span class="o">)</span>   Driver: skl_uncore
+Group:  1   0000:00:01.0 PCI bridge <span class="o">[</span>0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller <span class="o">(</span>x16<span class="o">)</span> <span class="o">[</span>8086:1901] <span class="o">(</span>rev 0a<span class="o">)</span>   Driver: pcieport
+Group:  2   0000:00:01.1 PCI bridge <span class="o">[</span>0604]: Intel Corporation Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe Controller <span class="o">(</span>x8<span class="o">)</span> <span class="o">[</span>8086:1905] <span class="o">(</span>rev 0a<span class="o">)</span>   Driver: pcieport
+Group:  3   0000:00:12.0 Signal processing controller <span class="o">[</span>1180]: Intel Corporation Cannon Lake PCH Thermal Controller <span class="o">[</span>8086:a379] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: intel_pch_thermal
+Group:  4   0000:00:14.0 USB controller <span class="o">[</span>0c03]: Intel Corporation Cannon Lake PCH USB 3.1 xHCI Host Controller <span class="o">[</span>8086:a36d] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: xhci_hcd
+Group:  4   0000:00:14.2 RAM memory <span class="o">[</span>0500]: Intel Corporation Cannon Lake PCH Shared SRAM <span class="o">[</span>8086:a36f] <span class="o">(</span>rev 10<span class="o">)</span>
+Group:  5   0000:00:14.3 Network controller <span class="o">[</span>0280]: Intel Corporation Wireless-AC 9560 <span class="o">[</span>Jefferson Peak] <span class="o">[</span>8086:a370] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: iwlwifi
+Group:  6   0000:00:16.0 Communication controller <span class="o">[</span>0780]: Intel Corporation Cannon Lake PCH HECI Controller <span class="o">[</span>8086:a360] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: mei_me
+Group:  7   0000:00:17.0 SATA controller <span class="o">[</span>0106]: Intel Corporation Cannon Lake PCH SATA AHCI Controller <span class="o">[</span>8086:a352] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: ahci
+Group:  8   0000:00:1b.0 PCI bridge <span class="o">[</span>0604]: Intel Corporation Cannon Lake PCH PCI Express Root Port <span class="c">#17 [8086:a340] (rev f0)   Driver: pcieport</span>
+Group:  9   0000:00:1c.0 PCI bridge <span class="o">[</span>0604]: Intel Corporation Cannon Lake PCH PCI Express Root Port <span class="c">#1 [8086:a338] (rev f0)   Driver: pcieport</span>
+Group:  10  0000:00:1d.0 PCI bridge <span class="o">[</span>0604]: Intel Corporation Cannon Lake PCH PCI Express Root Port <span class="c">#9 [8086:a330] (rev f0)   Driver: pcieport</span>
+Group:  11  0000:00:1f.0 ISA bridge <span class="o">[</span>0601]: Intel Corporation Z390 Chipset LPC/eSPI Controller <span class="o">[</span>8086:a305] <span class="o">(</span>rev 10<span class="o">)</span>
+Group:  11  0000:00:1f.3 Audio device <span class="o">[</span>0403]: Intel Corporation Cannon Lake PCH cAVS <span class="o">[</span>8086:a348] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: snd_hda_intel
+Group:  11  0000:00:1f.4 SMBus <span class="o">[</span>0c05]: Intel Corporation Cannon Lake PCH SMBus Controller <span class="o">[</span>8086:a323] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: i801_smbus
+Group:  11  0000:00:1f.5 Serial bus controller <span class="o">[</span>0c80]: Intel Corporation Cannon Lake PCH SPI Controller <span class="o">[</span>8086:a324] <span class="o">(</span>rev 10<span class="o">)</span>
+Group:  11  0000:00:1f.6 Ethernet controller <span class="o">[</span>0200]: Intel Corporation Ethernet Connection <span class="o">(</span>7<span class="o">)</span> I219-V <span class="o">[</span>8086:15bc] <span class="o">(</span>rev 10<span class="o">)</span>   Driver: e1000e
+Group:  12  0000:01:00.0 Processing accelerators <span class="o">[</span>1200]: Xilinx Corporation Device <span class="o">[</span>10ee:5000]   Driver: vfio-pci
+Group:  13  0000:01:00.1 Processing accelerators <span class="o">[</span>1200]: Xilinx Corporation Device <span class="o">[</span>10ee:5001]   Driver: vfio-pci
+Group:  14  0000:02:00.0 VGA compatible controller <span class="o">[</span>0300]: NVIDIA Corporation Device <span class="o">[</span>10de:2489] <span class="o">(</span>rev a1<span class="o">)</span>   Driver: nvidia
+Group:  15  0000:02:00.1 Audio device <span class="o">[</span>0403]: NVIDIA Corporation Device <span class="o">[</span>10de:228b] <span class="o">(</span>rev a1<span class="o">)</span>   Driver: snd_hda_intel
+Group:  16  0000:03:00.0 Non-Volatile memory controller <span class="o">[</span>0108]: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983 <span class="o">[</span>144d:a808]   Driver: nvme
+Group:  17  0000:05:00.0 Non-Volatile memory controller <span class="o">[</span>0108]: Samsung Electronics Co Ltd NVMe SSD Controller SM981/PM981/PM983 <span class="o">[</span>144d:a808]   Driver: nvme
+</code></pre></div></div> <p>Now, Xilinx card and Nvidia card are in different IOMMU groups</p> <h3 id="7-change-grub-to-auto-boot-to-patched-kernel">7. Change Grub to auto boot to patched kernel</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/default/grub
+</code></pre></div></div> <p>Change</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">GRUB_DEFAULT</span><span class="o">=</span><span class="s2">"1&gt;4"</span>
+
+</code></pre></div></div> <p>Then,</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo update-grub
+reboot
+</code></pre></div></div> <p><strong>Note:</strong> The index <code class="language-plaintext highlighter-rouge">1</code> or <code class="language-plaintext highlighter-rouge">4</code> is counted based on the order in the menu (after rebooting, hold <code class="language-plaintext highlighter-rouge">SHIFT</code>).</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ubuntu              (index = 0)
+Advanced Ubuntu     (index = 1)
+    ubuntu-kernel-xxx           (index = 0)
+    ubuntu-kernel-xxx-recovery  (index = 1)
+    ubuntu-kernel-xxx           (index = 2)
+    ubuntu-kernel-xxx-recovery  (index = 3)
+    ubuntu-kernel-xxx           (index = 4)
+...
+</code></pre></div></div> <h2 id="c-references">C. References</h2> <p>Visit <a href="https://www.youtube.com/watch?v=JBEzshbGPhQ">video</a></p> <p><a href="https://queuecumber.gitlab.io/linux-acs-override/">Patched ACS</a></p> <p><a href="https://gitlab.com/Queuecumber/linux-acs-override/-/issues/12">Original script - scroll to the end of page</a></p> <p><a href="https://github.com/benbaker76/linux-acs-override">Repo</a></p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="kvm"/><summary type="html"><![CDATA[Guide to split IOMMU group. In case your MOBO does not support ACS feature, patching the kernel is required.]]></summary></entry><entry><title type="html">Series - Setup KVM with PCIe passthrough - p5</title><link href="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p5/" rel="alternate" type="text/html" title="Series - Setup KVM with PCIe passthrough - p5"/><published>2023-09-28T00:00:00+07:00</published><updated>2023-09-28T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p5</id><content type="html" xml:base="https://bobibo.one/blog/2023/Journey-to-install-KVM-with-PCIe-passthrough-p5/"><![CDATA[<p>There are 2 ways to attach or detach PCIe devices to/from KVM which are</p> <ul> <li>GUI method</li> <li>Commandline method</li> </ul> <p>GUI and commandline method are described <a href="https://documentation.suse.com/smart/virtualization-cloud/html/task-assign-pci-device-libvirt/index.html">here</a>.</p> <h2 id="a-command-line-method-to-assign-pcie-device-to-vm-guest">A. Command line method to assign PCIe device to VM Guest</h2> <h3 id="1-identify-the-host-pci-device-to-assign-to-the-vm-guest">1. Identify the host PCI device to assign to the VM Guest</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lspci -nn | grep "Xilinx"
+
+</code></pre></div></div> <p>The output is</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm$ sudo lspci -nn | grep "Xilinx"
+01:00.0 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5000]
+01:00.1 Processing accelerators [1200]: Xilinx Corporation Device [10ee:5001]
+</code></pre></div></div> <p>Xilinx has 2 IDs: (<code class="language-plaintext highlighter-rouge">01:00.0</code> and <code class="language-plaintext highlighter-rouge">01:00.1</code>)</p> <h3 id="2-gather-detailed-information-about-the-device">2. Gather detailed information about the device</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ virsh nodedev-dumpxml pci_0000_01_00_0
+
+&lt;device&gt;
+  &lt;name&gt;pci_0000_01_00_0&lt;/name&gt;
+  &lt;path&gt;/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0&lt;/path&gt;
+  &lt;parent&gt;pci_0000_00_01_0&lt;/parent&gt;
+  &lt;driver&gt;
+    &lt;name&gt;vfio-pci&lt;/name&gt;
+  &lt;/driver&gt;
+  &lt;capability type='pci'&gt;
+    &lt;class&gt;0x120000&lt;/class&gt;
+    &lt;domain&gt;0&lt;/domain&gt;
+    &lt;bus&gt;1&lt;/bus&gt;
+    &lt;slot&gt;0&lt;/slot&gt;
+    &lt;function&gt;0&lt;/function&gt;
+    &lt;product id='0x5000'/&gt;
+    &lt;vendor id='0x10ee'&gt;Xilinx Corporation&lt;/vendor&gt;
+    &lt;iommuGroup number='12'&gt;
+      &lt;address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/&gt;
+    &lt;/iommuGroup&gt;
+    &lt;pci-express&gt;
+      &lt;link validity='cap' port='0' speed='8' width='16'/&gt;
+      &lt;link validity='sta' speed='8' width='8'/&gt;
+    &lt;/pci-express&gt;
+  &lt;/capability&gt;
+&lt;/device&gt;
+
+</code></pre></div></div> <p>and, do the same with the other</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ virsh nodedev-dumpxml pci_0000_01_00_1
+</code></pre></div></div> <p>Write down the values for domain, bus, slot and function.</p> <h3 id="3-detach-the-device-from-the-host-system">3. Detach the device from the host system</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh nodedev-detach pci_0000_01_00_0
+</code></pre></div></div> <p><strong>Tip: Multi-function PCI devices</strong></p> <p>When using a multi-function PCI device that does not support FLR (function level reset) or PM (power management) reset, you need to detach all its functions from the VM Host Server. The whole device must be reset for security reasons. libvirt will refuse to assign the device if one of its functions is still in use by the VM Host Server or another VM Guest.</p> <p><strong>Note:</strong></p> <p>Trong trường hợp của ta, <code class="language-plaintext highlighter-rouge">detach</code> or <code class="language-plaintext highlighter-rouge">reattach</code> không có ý nghĩa, vì ta đã cố định card FPGA với <code class="language-plaintext highlighter-rouge">VFIO</code> ở GRUB. Tôi sẽ thử bỏ command đó đi và chạy theo flow này xem ntn. Vì với flow này có thể sử dụng card FPGA ở cả host lẫn VM.</p> <h3 id="4-convert-the-domain-bus-slot-and-function-from-dec-to-hex">4. Convert the domain, bus, slot and function from dec to hex</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 0
+printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 1
+</code></pre></div></div> <p>Output:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm$ printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 0
+&lt;address domain='0x0' bus='0x1' slot='0x0' function='0x0'/&gt;
+tesla@tesla:~/kvm$ printf "&lt;address domain='0x%x' bus='0x%x' slot='0x%x' function='0x%x'/&gt;\n" 0 1 0 1
+&lt;address domain='0x0' bus='0x1' slot='0x0' function='0x1'/&gt;
+
+</code></pre></div></div> <h3 id="5-run-virsh-edit">5. Run <code class="language-plaintext highlighter-rouge">virsh edit</code></h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh edit ukvm2004
+</code></pre></div></div> <p>Add the following device entry in the <devices> section using the result from the previous step:</devices></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode='subsystem' type='pci' managed='yes'&gt;
+  &lt;source&gt;
+    &lt;address domain='0x0' bus='0x1' slot='0x0' function='0x0'/&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div> <p>and,</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode='subsystem' type='pci' managed='yes'&gt;
+  &lt;source&gt;
+    &lt;address domain='0x0' bus='0x1' slot='0x0' function='0x1'/&gt;
+  &lt;/source&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div> <p>Then, start the VM</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh start ukvm2004
+</code></pre></div></div> <p><strong>Notes:</strong></p> <p>managed compared to unmanaged</p> <p>libvirt recognizes two modes for handling PCI devices: managed or unmanaged.</p> <p>If the device is managed, libvirt handles all of the details of adding or removing the device. Before starting the domain, libvirt unbinds the device from the existing driver if needed, resets the device, and binds it to vfio-pci. When the domain is terminated or the device is removed from the domain, libvirt unbinds the device from vfio-pci and rebinds it to the original driver.</p> <p>If the device is unmanaged, you must manually manage these tasks before assigning the device to a domain, and after the device is no longer used by the domain.</p> <p>In the example above, the managed=’yes’ option means that the device is managed. To switch the device mode to unmanaged, set managed=’no’. If you do so, you need to take care of the related driver with the virsh nodedev-detach and virsh nodedev-reattach commands. Prior to starting the VM Guest you need to detach the device from the host by running</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh nodedev-detach pci_0000_01_00_0
+</code></pre></div></div> <p>When the VM Guest is not running, you can make the device available for the host by running</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh nodedev-reattach pci_0000_01_00_0
+</code></pre></div></div> <p>Sẽ test flow này sau … Nếu có thể flexible attach với VM và Host thì ngon quá.</p> <h2 id="b-another-way-to-attach-pcie-devices">B. Another way to attach PCIe devices</h2> <p>Create a file named <code class="language-plaintext highlighter-rouge">pass-user.xml</code> and pasting the following content</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode="subsystem" type="pci" managed="yes"&gt;
+  &lt;source&gt;
+    &lt;address domain="0x0000" bus="0x01" slot="0x00" function="0x1"/&gt;
+  &lt;/source&gt;
+  &lt;address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/&gt;
+&lt;/hostdev&gt;
+
+</code></pre></div></div> <p>Create a file named <code class="language-plaintext highlighter-rouge">pass-mgmt.xml</code> and pasting the following content</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;hostdev mode="subsystem" type="pci" managed="yes"&gt;
+  &lt;source&gt;
+    &lt;address domain="0x0000" bus="0x01" slot="0x00" function="0x0"/&gt;
+  &lt;/source&gt;
+  &lt;address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/&gt;
+&lt;/hostdev&gt;
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">&lt;address domain ..&gt;</code>: address of PCIe device in the HOST</p> <p><code class="language-plaintext highlighter-rouge">&lt;address type ..&gt;</code>: address of PCIe device in the KVM (optional)</p> <p>Attach or detach must be processed when VM is destroyed.</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virsh attach-device ukvm2004 <span class="nt">--file</span> pass-user.xml <span class="nt">--config</span>
+ virsh attach-device ukvm2004 <span class="nt">--file</span> pass-mgmt.xml <span class="nt">--config</span>
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> virsh detach-device ukvm2004 <span class="nt">--file</span> pass-user.xml <span class="nt">--config</span>
+ virsh detach-device ukvm2004 <span class="nt">--file</span> pass-mgmt.xml <span class="nt">--config</span>
+</code></pre></div></div> <p>Then, starting the VM</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh start ukvm2004
+</code></pre></div></div> <p>Now you can see the PCIe card is available in your VM with the following command</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lspci -nn
+</code></pre></div></div> <h2 id="c-references">C. References</h2> <p>Visit <a href="https://documentation.suse.com/smart/virtualization-cloud/html/task-assign-pci-device-libvirt/index.html">the instruction</a> and <a href="https://www.xilinx.com/developer/articles/using-alveo-data-center-accelerator-cards-in-a-kvm-environment.html">Xilinx instruction</a></p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="kvm"/><summary type="html"><![CDATA[Attach PCIe cards to KVM]]></summary></entry><entry><title type="html">Psioniq file header for VScode</title><link href="https://bobibo.one/blog/2023/VScode-psioniq-file-header/" rel="alternate" type="text/html" title="Psioniq file header for VScode"/><published>2023-09-15T00:00:00+07:00</published><updated>2023-09-15T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/VScode-psioniq-file-header</id><content type="html" xml:base="https://bobibo.one/blog/2023/VScode-psioniq-file-header/"><![CDATA[<h2 id="1-giới-thiệu-về-psioniq-extension">1. Giới thiệu về psioniq extension</h2> <p>Đây là một extension hỗ trợ chèn header vào file code chỉ với phím tắt <code class="language-plaintext highlighter-rouge">Ctrl+Alt+H</code> (x2 - nhấn 2 lần). Ngoài ra, nó còn hỗ trợ chèn <code class="language-plaintext highlighter-rouge">Revision</code> với tổ hợp phím <code class="language-plaintext highlighter-rouge">Ctrl+Alt+C</code> (x2 - nhấn 2 lần). Dưới đây là một ví dụ header được chèn vào code VHDL:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//-----------------------------------------------------------------------------
+// 
+// Project   : 5G L1 PDSCH and PUSCH channels
+// Module    : chspad
+// Parent    : crc.sv
+// Children  : ifc_axis.sv, axis_fifo.sv, axis_reg.sv
+// 
+// Author    : Nguyen Canh Trung
+// Email     : nguyencanhtrung 'at' me 'dot' com
+// Date      : 2023-09-14 00:12:05
+// Last Modified : 2023-10-17 11:34:25
+// Modified By   : Nguyen Canh Trung
+// 
+// Description: 
+//
+// Parameters:
+// 
+// Multicycle and False Paths: 
+// 
+// HISTORY:
+// Date         By  Comments
+// ----------   --- ---------------------------------------------------------
+// 2023-09-14   NCT File created
+//-----------------------------------------------------------------------------
+</code></pre></div></div> <h2 id="2-thiết-lập">2. Thiết lập</h2> <p>Phần này sẽ mô tả cách thiết lập psioniq, để nó có thể tự động nhận diện <code class="language-plaintext highlighter-rouge">language</code> và chèn header phù hợp.</p> <p>Thiết lập <code class="language-plaintext highlighter-rouge">psioniq</code> bằng cách truy cập: <code class="language-plaintext highlighter-rouge">File</code> &gt; <code class="language-plaintext highlighter-rouge">Preferences</code> &gt; <code class="language-plaintext highlighter-rouge">Settings</code> &gt; <code class="language-plaintext highlighter-rouge">Extensions</code> &gt; <code class="language-plaintext highlighter-rouge">psioniq File Header</code> &gt; <code class="language-plaintext highlighter-rouge">Editing settings.json</code></p> <h3 id="a-trường-psi-headerconfig">a. Trường <code class="language-plaintext highlighter-rouge">psi-header.config</code></h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"psi-header.config": {
+        "forceToTop": true,
+        "blankLinesAfter": 6,
+        "spacesBetweenYears": false,
+        "license": "MIT",
+        "author": "Nguyen Canh Trung",
+        "initials": "NCT",
+        "authorEmail": "nguyencanhtrung 'at' me 'dot' com",
+        "company": "",
+        "copyrightHolder": "",
+        "creationDateZero": "asIs",
+        "hostname": ""
+    }
+</code></pre></div></div> <p>Trường này chứa thông tin chung về <code class="language-plaintext highlighter-rouge">LICENSE</code>, <code class="language-plaintext highlighter-rouge">author</code>, <code class="language-plaintext highlighter-rouge">initials</code> (viết tắt tên tác giả để chèn vào phần <code class="language-plaintext highlighter-rouge">HISTORY</code> hay <code class="language-plaintext highlighter-rouge">Revision</code>)</p> <h3 id="b-trường-psi-headerchanges-tracking">b. Trường <code class="language-plaintext highlighter-rouge">psi-header.changes-tracking</code></h3> <p>Trường này thiết lập cơ chế tracking của extension và cách extension update header như ở ví dụ dưới đây:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  "psi-header.changes-tracking": {
+        "isActive": true,
+        "modAuthor": "Modified By",
+        "modDate": "Last Modified",
+        "modDateFormat": "YYYY-MM-DD HH:mm:ss",
+        "include": [],
+        "includeGlob": [],
+        "exclude": [
+            "markdown",
+            "json",
+            "jsonc",
+            "shellscript"
+        ],
+        "excludeGlob": [
+            "./**/*/ignoreme.*"
+        ],
+        "autoHeader": "autoSave",
+        "enforceHeader": false,
+        "updateLicenseVariables": false
+    }
+</code></pre></div></div> <p>Tracking được <code class="language-plaintext highlighter-rouge">activate</code>, extension sẽ tìm đến trường text <code class="language-plaintext highlighter-rouge">Modified By</code> và <code class="language-plaintext highlighter-rouge">Last Modified</code> để cập nhật thông tin với format được mô tả ở <code class="language-plaintext highlighter-rouge">modDateFormat</code>.</p> <p>Chú ý rằng: trường text <code class="language-plaintext highlighter-rouge">Modified By</code> và <code class="language-plaintext highlighter-rouge">Last Modified</code> phụ thuộc vào nội dung header mà bạn quy định. Việc thiết lập nội dung của header được thực hiện ở <code class="language-plaintext highlighter-rouge">bước d</code>.</p> <h3 id="c-trường-psi-headerlang-config">c. Trường <code class="language-plaintext highlighter-rouge">psi-header.lang-config</code></h3> <p>Trường này thiết lập định dạng của header ứng với mỗi một <code class="language-plaintext highlighter-rouge">language</code> khác nhau.</p> <ul> <li><code class="language-plaintext highlighter-rouge">Language</code>: được quy định bởi VScode theo <a href="https://code.visualstudio.com/docs/languages/identifiers">link</a></li> <li><code class="language-plaintext highlighter-rouge">begin</code> : dòng đầu tiên của header</li> <li><code class="language-plaintext highlighter-rouge">prefix</code> : Ký tự đầu dòng của header - thường là comment syntax của mỗi <code class="language-plaintext highlighter-rouge">language</code>. Đối với C là <code class="language-plaintext highlighter-rouge">//</code>, VHDL là <code class="language-plaintext highlighter-rouge">--</code></li> <li><code class="language-plaintext highlighter-rouge">suffix</code> : Ký tự cuối dòng của header – thường để taọ header dưới dạng một <code class="language-plaintext highlighter-rouge">text box</code></li> <li><code class="language-plaintext highlighter-rouge">linelength</code>: quy định chiều dài tối đa của một dòng.</li> <li><code class="language-plaintext highlighter-rouge">end</code> : dòng cuối cùng của header</li> <li><code class="language-plaintext highlighter-rouge">forceToTop</code>: force chèn header vào top của file, thay vì tại vị trí con trỏ.</li> <li><code class="language-plaintext highlighter-rouge">mapTo</code> : ánh xạ cấu hình của một <code class="language-plaintext highlighter-rouge">language</code> với cấu hình được định nghĩa trước, tránh việc khai báo nhiều lần.</li> <li><code class="language-plaintext highlighter-rouge">afterHeader</code>: được dùng để thiết lập đoạn text bên dưới header, thường là code template</li> </ul> <p>Trên đây là một vài thiết lập phổ biến, nếu bạn muốn tìm hiểu thêm các thiết lập khác hãy truy cập vào psioniq <a href="https://marketplace.visualstudio.com/items?itemName=psioniq.psi-header#language-configuration">language config</a></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"psi-header.lang-config": [
+    {
+        "language": "*",
+        "begin": "// ----------------------------------------------------------------------------",
+        "prefix": "// ",
+        "suffix": "",
+        "lineLength": 80,
+        "end": "// ----------------------------------------------------------------------------",
+        "forceToTop": true,
+        "blankLinesAfter": 0
+    },
+    {
+        "language": "systemverilog",
+        "begin": "//-----------------------------------------------------------------------------",
+        "prefix": "// ",
+        "suffix": "",
+        "lineLength": 80,
+        "end": "//-----------------------------------------------------------------------------",
+        "forceToTop": true,
+        "blankLinesAfter": 0,
+        "afterHeader": [
+            "`timescale 1ns / 1ps"
+        ]
+    },
+    {
+        "language": "verilog",
+        "mapTo": "systemverilog"
+    }
+]
+</code></pre></div></div> <p>Đây là một ví dụ về việc thiết lập header file cho file <code class="language-plaintext highlighter-rouge">SystemVerilog</code>, <code class="language-plaintext highlighter-rouge">verilog</code> và các ngôn ngữ còn lại.</p> <h3 id="d-trường-psi-headertemplates">d. Trường <code class="language-plaintext highlighter-rouge">psi-header.templates</code></h3> <p>Mô tả template của header. Chú ý: nếu bạn sử dụng cụm từ khác để mô tả <code class="language-plaintext highlighter-rouge">Last Modified</code> và <code class="language-plaintext highlighter-rouge">Modified by</code> thì phải thay đổi <code class="language-plaintext highlighter-rouge">si-header.changes-tracking</code> bằng cụm từ tương ứng để extension có thể lọc và thay đổi nội dụng.</p> <p>Dưới đây là ví dụ về header teamplate của <code class="language-plaintext highlighter-rouge">SystemVerilog</code> và các định dạng còn lại.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"psi-header.templates": [
+    {
+        "language": "*",
+        "template": [
+            "",
+            "Project   : ",
+            "Filename  : &lt;&lt;filenamebase&gt;&gt;",
+            "",
+            "Author    : &lt;&lt;author&gt;&gt;",
+            "Email     : &lt;&lt;authoremail&gt;&gt;",
+            "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Modified By   : &lt;&lt;author&gt;&gt;",
+            "",
+            "Description: ",
+            "",
+            "HISTORY:",
+            "Date      \tBy\tComments",
+            "----------\t---\t---------------------------------------------------------"
+        ],
+        "changeLogCaption": "HISTORY:",
+        "changeLogHeaderLineCount": 2,
+        "changeLogEntryTemplate": [
+            "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+        ]
+    },
+    {
+        "language": "systemverilog",
+        "template": [
+            "",
+            "Project   : ",
+            "Module    : &lt;&lt;filenamebase&gt;&gt;",
+            "Parent    : ",
+            "Children  : ",
+            "",
+            "Author    : &lt;&lt;author&gt;&gt;",
+            "Email     : &lt;&lt;authoremail&gt;&gt;",
+            "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Modified By   : &lt;&lt;author&gt;&gt;",
+            "",
+            "Description: ",
+            "", 
+            "Parameters:",
+            "",
+            "Multicycle and False Paths: ",
+            "", 
+            "HISTORY:",
+            "Date      \tBy\tComments",
+            "----------\t---\t---------------------------------------------------------"  
+        ],
+        "changeLogCaption": "HISTORY:",
+        "changeLogHeaderLineCount": 2,
+        "changeLogEntryTemplate": [
+            "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+        ]
+    }
+]
+</code></pre></div></div> <h2 id="3-cấu-hình-hoàn-thiện">3. Cấu hình hoàn thiện</h2> <p>Cấu hình hoàn thiện bao gồm tất cả các trường mô tả bên trên và được lưu tại <code class="language-plaintext highlighter-rouge">settings.json</code></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "workbench.colorTheme": "Default High Contrast",
+    "code-runner.runInTerminal": true,
+    "files.autoSave": "afterDelay",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "editor.inlineSuggest.enabled": true,
+    "git.autofetch": true,
+    "explorer.confirmDelete": false,
+    "editor.fontSize": 13,
+    "editor.formatOnPaste": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.snippetSuggestions": "top",
+    "security.workspace.trust.untrustedFiles": "open",
+    "psi-header.config": {
+        "forceToTop": true,
+        "blankLinesAfter": 6,
+        "spacesBetweenYears": false,
+        "license": "MIT",
+        "author": "Nguyen Canh Trung",
+        "initials": "NCT",
+        "authorEmail": "nguyencanhtrung 'at' me 'dot' com",
+        "company": "",
+        "copyrightHolder": "",
+        "creationDateZero": "asIs",
+        "hostname": ""
+    },
+    "psi-header.changes-tracking": {
+        "isActive": true,
+        "modAuthor": "Modified By",
+        "modDate": "Last Modified",
+        "modDateFormat": "YYYY-MM-DD HH:mm:ss",
+        "include": [],
+        "includeGlob": [],
+        "exclude": [
+            "markdown",
+            "json",
+            "jsonc",
+            "shellscript"
+        ],
+        "excludeGlob": [
+            "./**/*/ignoreme.*"
+        ],
+        "autoHeader": "autoSave",
+        "enforceHeader": false,
+        "updateLicenseVariables": false
+    },
+    "psi-header.lang-config": [
+        {
+            "language": "*",
+            "begin": "// ----------------------------------------------------------------------------",
+            "prefix": "// ",
+            "suffix": "",
+            "lineLength": 80,
+            "end": "// ----------------------------------------------------------------------------",
+            "forceToTop": true,
+            "blankLinesAfter": 0
+        },
+        {
+            "language": "vhdl",
+            "begin": "-- ----------------------------------------------------------------------------",
+            "prefix": "-- ",
+            "suffix": "",
+            "lineLength": 80,
+            "end": "-- ----------------------------------------------------------------------------",
+            "forceToTop": true,
+            "blankLinesAfter": 0,
+            "afterHeader": [
+                "-- Language: VHDL-1993",
+                "",
+                "library ieee;",
+                "\tuse ieee.std_logic_1164.all;"
+            ]
+        },
+        {
+            "language": "systemverilog",
+            "begin": "//-----------------------------------------------------------------------------",
+            "prefix": "// ",
+            "suffix": "",
+            "lineLength": 80,
+            "end": "//-----------------------------------------------------------------------------",
+            "forceToTop": true,
+            "blankLinesAfter": 0,
+            "afterHeader": [
+                "`timescale 1ns / 1ps"
+            ]
+        },
+        {
+            "language": "verilog",
+            "mapTo": "systemverilog"
+        }
+    ],
+    "psi-header.templates": [
+        {
+            "language": "*",
+            "template": [
+                "",
+                "Project   : ",
+                "Filename  : &lt;&lt;filenamebase&gt;&gt;",
+                "",
+                "Author    : &lt;&lt;author&gt;&gt;",
+                "Email     : &lt;&lt;authoremail&gt;&gt;",
+                "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Modified By   : &lt;&lt;author&gt;&gt;",
+                "",
+                "Description: ",
+                "",
+                "HISTORY:",
+                "Date      \tBy\tComments",
+                "----------\t---\t---------------------------------------------------------"
+            ],
+            "changeLogCaption": "HISTORY:",
+            "changeLogHeaderLineCount": 2,
+            "changeLogEntryTemplate": [
+                "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+            ]
+        },
+        {
+            "language": "systemverilog",
+            "template": [
+                "",
+                "Project   : ",
+                "Module    : &lt;&lt;filenamebase&gt;&gt;",
+                "Parent    : ",
+                "Children  : ",
+                "",
+                "Author    : &lt;&lt;author&gt;&gt;",
+                "Email     : &lt;&lt;authoremail&gt;&gt;",
+                "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Modified By   : &lt;&lt;author&gt;&gt;",
+                "",
+                "Description: ",
+                "", 
+                "Parameters:",
+                "",
+                "Multicycle and False Paths: ",
+                "", 
+                "HISTORY:",
+                "Date      \tBy\tComments",
+                "----------\t---\t---------------------------------------------------------"  
+            ],
+            "changeLogCaption": "HISTORY:",
+            "changeLogHeaderLineCount": 2,
+            "changeLogEntryTemplate": [
+                "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+            ]
+        },
+        {
+            "language": "vhdl",
+            "template": [
+                "",
+                "Project   : ",
+                "Module    : &lt;&lt;filenamebase&gt;&gt;",
+                "Parent    : ",
+                "Children  : ",
+                "",
+                "Author    : &lt;&lt;author&gt;&gt;",
+                "Email     : &lt;&lt;authoremail&gt;&gt;",
+                "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Modified By   : &lt;&lt;author&gt;&gt;",
+                "",
+                "Description: ",
+                "",
+                "Parameters:",
+                "",
+                "Multicycle and False Paths: ",
+                "",
+                "HISTORY:",
+                "Date      \tBy\tComments",
+                "----------\t---\t---------------------------------------------------------"
+            ],
+            "changeLogCaption": "HISTORY:",
+            "changeLogHeaderLineCount": 2,
+            "changeLogEntryTemplate": [
+                "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+            ]
+        }
+    ],
+}
+</code></pre></div></div>]]></content><author><name>Nguyen Canh Trung</name></author><category term="vi"/><category term="vscode"/><summary type="html"><![CDATA[Append file header in VScode with Psioniq extension]]></summary></entry><entry><title type="html">Pipeline AXIS bus with registered ready signals</title><link href="https://bobibo.one/blog/2023/Register-ready-signals-in-low-latency-design/" rel="alternate" type="text/html" title="Pipeline AXIS bus with registered ready signals"/><published>2023-09-13T00:00:00+07:00</published><updated>2023-09-13T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Register-ready-signals-in-low-latency-design</id><content type="html" xml:base="https://bobibo.one/blog/2023/Register-ready-signals-in-low-latency-design/"><![CDATA[<h2 id="1-giới-thiệu">1. Giới thiệu</h2> <p>Pipeline handshaking protocol giúp tối ưu throughout của hệ thống. Tuy nhiên, việc thiết kế một kiến trúc pipeline vẫn đảm bảo được đặc tính của handshaking protocol đôi khi trở lên phức tạp quá mức (ít nhất là đối với cá nhân tôi trong thời gian đầu làm việc với RTL design, tôi đã thiết kế một Moore FSM gồm 8 states chỉ để xử lý backpressure từ TREADY và cắt được critical path từ tín hiệu này). Blog này sẽ mô tả một cách chi tiết vấn đề và cách giải quyết.</p> <h2 id="2-axis-protocol-và-pipelining">2. AXIS protocol và pipelining</h2> <h3 id="a-nguyên-lý-của-axis">a. Nguyên lý của AXIS</h3> <p>Dạng đơn giản nhất của AXIS bao gồm 3 tín hiệu <code class="language-plaintext highlighter-rouge">DATA</code> <code class="language-plaintext highlighter-rouge">VALID</code> và <code class="language-plaintext highlighter-rouge">READY</code>. Với thiết kế <code class="language-plaintext highlighter-rouge">single cycle data transfer</code>, <code class="language-plaintext highlighter-rouge">DATA</code> được lấy mẫu và chuyển tiếp ra output thành công khi và chỉ khi:</p> <ul> <li><code class="language-plaintext highlighter-rouge">S_AXIS_TVALID = 1</code></li> <li>Và, <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = 1</code></li> </ul> <p>Tại thời điểm lấy mẫu của hệ thống (sườn lên hoặc sườn xuống của clock)</p> <p>Thiết kế này sẽ có hai dạng thiết kế như ở hình dưới:</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-1400.webp"/> <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <p>Với thiết kế bên tay trái, hệ thống sẽ chuyển tiếp dữ liệu từ <code class="language-plaintext highlighter-rouge">input</code> sang <code class="language-plaintext highlighter-rouge">output</code> khi và chỉ khi <code class="language-plaintext highlighter-rouge">consumer</code> tại output sẵn sàng nhận dữ liệu. Với thiết kế này <code class="language-plaintext highlighter-rouge">invalid</code> <code class="language-plaintext highlighter-rouge">input</code> cũng sẽ được chuyển tiếp, trong một pipeline, việc chuyển tiếp <code class="language-plaintext highlighter-rouge">invalid data</code> vào trong pipe là hiện tượng hình thành bubble.</p> <p>Thiết kế bên tay phải, giống với thiết kế tay trái, tuy nhiên nó ưu việt hơn do nó có khả năng loại bỏ bubble trong pipeline. Việc loại bỏ bubble xảy ra khi:</p> <ul> <li>Bubble trong pipe được phát hiện <code class="language-plaintext highlighter-rouge">m_axis_tvalid = '0'</code></li> <li>Và, <code class="language-plaintext highlighter-rouge">valid input</code> xuất hiện ở đầu vào <code class="language-plaintext highlighter-rouge">s_axis_tvalid = '1'</code></li> </ul> <p>Khi đó hệ thống cho phép dữ liệu được chuyển tiếp dù <code class="language-plaintext highlighter-rouge">consumer</code> vẫn chưa sẵn sàng nhận dữ liệu. Bubble lúc này sẽ được loại bỏ bằng <code class="language-plaintext highlighter-rouge">valid</code> data.</p> <p>Tuy nhiên, hai thiết kế trên có một nhược điểm rất lớn đó là <code class="language-plaintext highlighter-rouge">critical path</code> sẽ được hình thành trên tín hiệu <code class="language-plaintext highlighter-rouge">m_axis_tready</code> làm giảm tần số hoạt động của hệ thống.</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-1400.webp"/> <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/5.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="b-giải-pháp-registering-tready">b. Giải pháp registering <code class="language-plaintext highlighter-rouge">TREADY</code></h3> <p>Dưới đây là một phương pháp chèn <code class="language-plaintext highlighter-rouge">register</code> vào đường <code class="language-plaintext highlighter-rouge">TREADY</code>. <code class="language-plaintext highlighter-rouge">S_AXIS_TREADY</code> chậm hơn <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY</code> 1 chu kỳ clock, do đó ngay tại chu kỳ <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>, dữ liệu đang có ở register sẽ không được lấy mấu ở output (vì <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>). Tuy nhiên, dữ liệu kế tiếp từ input vẫn được chuyển tiếp vào <code class="language-plaintext highlighter-rouge">register</code> và ghi đè vào giá trị chưa được lấy mẫu ở trên. Để giải quyết vấn đề trên, kiến trúc này sử dụng thêm một lớp <code class="language-plaintext highlighter-rouge">expansion registers</code> để lưu trữ giá trị chưa được lấy mẫu khi <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>, dữ liệu input kế tiếp sẽ vẫn tiếp tục lưu trữ vào lớp <code class="language-plaintext highlighter-rouge">primary registers</code> như cũ.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>always_ff @(posedge clk) 
+begin
+    if (s_axis_tready == 1'b1) begin
+        primary_data_reg        &lt;= s_axis_tdata;
+        primary_valid_reg       &lt;= s_axis_tvalid;
+        if (m_axis_tready == 1'b0) begin
+            expansion_data_reg  &lt;= primary_data_reg;
+            expansion_valid_reg &lt;= primary_valid_reg;
+        end
+    end
+end
+</code></pre></div></div> <p>Tại chu kỳ <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '1'</code>, lúc này <code class="language-plaintext highlighter-rouge">S_AXIS_TREADY = '0'</code> do chậm 1 chu kỳ, dữ liệu sẽ được <code class="language-plaintext highlighter-rouge">consumer</code> lấy từ lớp <code class="language-plaintext highlighter-rouge">expansion registers</code> trước, sau đó là từ lớp <code class="language-plaintext highlighter-rouge">primary registers</code>.</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-1400.webp"/> <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="c-thiết-kế-rtl">c. Thiết kế RTL</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>logic [WIDTH-1:0]   expansion_data_reg;
+logic               expansion_valid_reg;
+logic [WIDTH-1:0]   primary_data_reg;
+logic               primary_valid_reg;
+
+always_ff @(posedge clk) 
+begin
+    if (s_axis_tready == 1'b1) begin
+        primary_data_reg        &lt;= s_axis_tdata;
+        primary_valid_reg       &lt;= s_axis_tvalid;
+        if (m_axis_tready == 1'b0) begin
+            expansion_data_reg  &lt;= primary_data_reg;
+            expansion_valid_reg &lt;= primary_valid_reg;
+        end
+    end
+    if (m_axis_tready == 1'b1) begin
+        expansion_valid_reg     &lt;= 1'b0;
+    end
+end
+
+assign s_axis_tready = !(expansion_valid_reg); 
+assign m_axis_tvalid = (expansion_valid_reg) ? 
+                            expansion_valid_reg : 
+                            primary_valid_reg;
+assign m_axis_tdata  = (expansion_valid_reg) ? 
+                            expansion_data_reg : 
+                            primary_data_reg;
+</code></pre></div></div> <p>Thiết kế được viết bằng <code class="language-plaintext highlighter-rouge">SystemVerilog</code> và được mô tả cụ thể ở <a href="https://github.com/nguyencanhtrung/systemverilog_axis/blob/master/rtl/axis_reg.sv"><code class="language-plaintext highlighter-rouge">axis_reg.sv</code></a></p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="vi"/><category term="rtl"/><summary type="html"><![CDATA[Kỹ thuật chèn register trên đường tín hiệu READY của AXI4 Stream]]></summary></entry><entry><title type="html">Generic ROM design with SystemVerilog</title><link href="https://bobibo.one/blog/2023/A-generic-systemverilog-rom/" rel="alternate" type="text/html" title="Generic ROM design with SystemVerilog"/><published>2023-09-13T00:00:00+07:00</published><updated>2023-09-13T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/A-generic-systemverilog-rom</id><content type="html" xml:base="https://bobibo.one/blog/2023/A-generic-systemverilog-rom/"><![CDATA[<h2 id="1-introduction">1. Introduction</h2> <p>Pipeline handshaking protocol giúp tối ưu throughout của hệ thống. Tuy nhiên, việc thiết kế một kiến trúc pipeline vẫn đảm bảo được đặc tính của handshaking protocol đôi khi trở lên phức tạp quá mức (ít nhất là đối với cá nhân tôi trong thời gian đầu làm việc với RTL design, tôi đã thiết kế một Moore FSM gồm 8 states chỉ để xử lý backpressure từ TREADY và cắt được critical path từ tín hiệu này). Blog này sẽ mô tả một cách chi tiết vấn đề và cách giải quyết.</p> <h2 id="2-axis-protocol-và-pipelining">2. AXIS protocol và pipelining</h2> <h3 id="a-nguyên-lý-của-axis">a. Nguyên lý của AXIS</h3> <p>Dạng đơn giản nhất của AXIS bao gồm 3 tín hiệu <code class="language-plaintext highlighter-rouge">DATA</code> <code class="language-plaintext highlighter-rouge">VALID</code> và <code class="language-plaintext highlighter-rouge">READY</code>. Với thiết kế <code class="language-plaintext highlighter-rouge">single cycle data transfer</code>, <code class="language-plaintext highlighter-rouge">DATA</code> được lấy mẫu và chuyển tiếp ra output thành công khi và chỉ khi:</p> <ul> <li><code class="language-plaintext highlighter-rouge">S_AXIS_TVALID = 1</code></li> <li>Và, <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = 1</code></li> </ul> <p>Tại thời điểm lấy mẫu của hệ thống (sườn lên hoặc sườn xuống của clock)</p> <p>Thiết kế này sẽ có hai dạng thiết kế như ở hình dưới:</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/3-1400.webp"/> <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <p>Với thiết kế bên tay trái, hệ thống sẽ chuyển tiếp dữ liệu từ <code class="language-plaintext highlighter-rouge">input</code> sang <code class="language-plaintext highlighter-rouge">output</code> khi và chỉ khi <code class="language-plaintext highlighter-rouge">consumer</code> tại output sẵn sàng nhận dữ liệu. Với thiết kế này <code class="language-plaintext highlighter-rouge">invalid</code> <code class="language-plaintext highlighter-rouge">input</code> cũng sẽ được chuyển tiếp, trong một pipeline, việc chuyển tiếp <code class="language-plaintext highlighter-rouge">invalid data</code> vào trong pipe là hiện tượng hình thành bubble.</p> <p>Thiết kế bên tay phải, giống với thiết kế tay trái, tuy nhiên nó ưu việt hơn do nó có khả năng loại bỏ bubble trong pipeline. Việc loại bỏ bubble xảy ra khi:</p> <ul> <li>Bubble trong pipe được phát hiện <code class="language-plaintext highlighter-rouge">m_axis_tvalid = '0'</code></li> <li>Và, <code class="language-plaintext highlighter-rouge">valid input</code> xuất hiện ở đầu vào <code class="language-plaintext highlighter-rouge">s_axis_tvalid = '1'</code></li> </ul> <p>Khi đó hệ thống cho phép dữ liệu được chuyển tiếp dù <code class="language-plaintext highlighter-rouge">consumer</code> vẫn chưa sẵn sàng nhận dữ liệu. Bubble lúc này sẽ được loại bỏ bằng <code class="language-plaintext highlighter-rouge">valid</code> data.</p> <p>Tuy nhiên, hai thiết kế trên có một nhược điểm rất lớn đó là <code class="language-plaintext highlighter-rouge">critical path</code> sẽ được hình thành trên tín hiệu <code class="language-plaintext highlighter-rouge">m_axis_tready</code> làm giảm tần số hoạt động của hệ thống.</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/5-1400.webp"/> <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/5.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="b-giải-pháp-registering-tready">b. Giải pháp registering <code class="language-plaintext highlighter-rouge">TREADY</code></h3> <p>Dưới đây là một phương pháp chèn <code class="language-plaintext highlighter-rouge">register</code> vào đường <code class="language-plaintext highlighter-rouge">TREADY</code>. <code class="language-plaintext highlighter-rouge">S_AXIS_TREADY</code> chậm hơn <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY</code> 1 chu kỳ clock, do đó ngay tại chu kỳ <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>, dữ liệu đang có ở register sẽ không được lấy mấu ở output (vì <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>). Tuy nhiên, dữ liệu kế tiếp từ input vẫn được chuyển tiếp vào <code class="language-plaintext highlighter-rouge">register</code> và ghi đè vào giá trị chưa được lấy mẫu ở trên. Để giải quyết vấn đề trên, kiến trúc này sử dụng thêm một lớp <code class="language-plaintext highlighter-rouge">expansion registers</code> để lưu trữ giá trị chưa được lấy mẫu khi <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '0'</code>, dữ liệu input kế tiếp sẽ vẫn tiếp tục lưu trữ vào lớp <code class="language-plaintext highlighter-rouge">primary registers</code> như cũ.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>always_ff @(posedge clk) 
+begin
+    if (s_axis_tready == 1'b1) begin
+        primary_data_reg        &lt;= s_axis_tdata;
+        primary_valid_reg       &lt;= s_axis_tvalid;
+        if (m_axis_tready == 1'b0) begin
+            expansion_data_reg  &lt;= primary_data_reg;
+            expansion_valid_reg &lt;= primary_valid_reg;
+        end
+    end
+end
+</code></pre></div></div> <p>Tại chu kỳ <code class="language-plaintext highlighter-rouge">M_AXIS_TREADY = '1'</code>, lúc này <code class="language-plaintext highlighter-rouge">S_AXIS_TREADY = '0'</code> do chậm 1 chu kỳ, dữ liệu sẽ được <code class="language-plaintext highlighter-rouge">consumer</code> lấy từ lớp <code class="language-plaintext highlighter-rouge">expansion registers</code> trước, sau đó là từ lớp <code class="language-plaintext highlighter-rouge">primary registers</code>.</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230913_pipeline_axi_bus/4-1400.webp"/> <img src="/assets/img/01.blogs/230913_pipeline_axi_bus/4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <h3 id="c-thiết-kế-rtl">c. Thiết kế RTL</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>logic [WIDTH-1:0]   expansion_data_reg;
+logic               expansion_valid_reg;
+logic [WIDTH-1:0]   primary_data_reg;
+logic               primary_valid_reg;
+
+always_ff @(posedge clk) 
+begin
+    if (s_axis_tready == 1'b1) begin
+        primary_data_reg        &lt;= s_axis_tdata;
+        primary_valid_reg       &lt;= s_axis_tvalid;
+        if (m_axis_tready == 1'b0) begin
+            expansion_data_reg  &lt;= primary_data_reg;
+            expansion_valid_reg &lt;= primary_valid_reg;
+        end
+    end
+    if (m_axis_tready == 1'b1) begin
+        expansion_valid_reg     &lt;= 1'b0;
+    end
+end
+
+assign s_axis_tready = !(expansion_valid_reg); 
+assign m_axis_tvalid = (expansion_valid_reg) ? 
+                            expansion_valid_reg : 
+                            primary_valid_reg;
+assign m_axis_tdata  = (expansion_valid_reg) ? 
+                            expansion_data_reg : 
+                            primary_data_reg;
+</code></pre></div></div> <p>Thiết kế được viết bằng <code class="language-plaintext highlighter-rouge">SystemVerilog</code> và được mô tả cụ thể ở <a href="https://github.com/nguyencanhtrung/systemverilog_axis/blob/master/rtl/axis_reg.sv"><code class="language-plaintext highlighter-rouge">axis_reg.sv</code></a></p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="core"/><summary type="html"><![CDATA[Design a technology-independent SystemVerilog ROM memory with content initialisation from a file]]></summary></entry><entry><title type="html">Ultrascale Architecture - part 1</title><link href="https://bobibo.one/blog/2023/Ultrascale_architecture_1/" rel="alternate" type="text/html" title="Ultrascale Architecture - part 1"/><published>2023-03-31T00:00:00+07:00</published><updated>2023-03-31T00:00:00+07:00</updated><id>https://bobibo.one/blog/2023/Ultrascale_architecture_1</id><content type="html" xml:base="https://bobibo.one/blog/2023/Ultrascale_architecture_1/"><![CDATA[<h2 id="clb-layout">CLB layout</h2> <h3 id="what-are-differences-of-ultrascale-clb">What are differences of Ultrascale CLB?</h3> <ul> <li>Removed slice boundaries: In the 7 series architecture, 1 CLB includes 2 slices which are independent. But in the new architecture, this boundary is removed with a new mux as shown in the following picture. Then, it allows wider functions.</li> <li>Carry chain is expaned from 4 bits to 8 bits per CLB.</li> <li>All flip-flop outputs are always available in the Ultrascale architecture for enhanced packing and routing. <ul> <li>Have 8 FFs granularity</li> </ul> </li> </ul> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230331_ultrascale/1-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230331_ultrascale/1-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230331_ultrascale/1-1400.webp"/> <img src="/assets/img/01.blogs/230331_ultrascale/1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <p>The comparison between 7 series and Ultrascale architecture is shown here:</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/230331_ultrascale/2-480.webp"/> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/230331_ultrascale/2-800.webp"/> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/230331_ultrascale/2-1400.webp"/> <img src="/assets/img/01.blogs/230331_ultrascale/2.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"/> </picture> </figure> </div> </div> <p>One CLB has 16 FFs why said 8 FFs granularity?</p>]]></content><author><name>Nguyen Canh Trung</name></author><category term="en"/><category term="xilinx"/><summary type="html"><![CDATA[CLB resources]]></summary></entry></feed>

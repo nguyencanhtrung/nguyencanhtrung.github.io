@@ -1,0 +1,93 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>KVM commands cheatsheet | Trung Canh Nguyen</title> <meta name="author" content="Trung Canh Nguyen"/> <meta name="description" content="All commands for KVM"/> <meta name="keywords" content="catapult, fpga, vhdl, hdl, intel, xilinx"/> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"/> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="none" id="highlight_theme_light"/> <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://bobibo.one/blog/2023/KVM-cmd-cheatsheet/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"/> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.fake-img{background:#bbb;border:1px solid rgba(0,0,0,0.1);box-shadow:0 0 4px rgba(0,0,0,0.1);margin-bottom:12px}.fake-img p{font-family:monospace;color:white;text-align:left;margin:12px 0;text-align:center;font-size:16px}</style> </head> <d-front-matter> <script async type="text/json">{
+      "title": "KVM commands cheatsheet",
+      "description": "All commands for KVM",
+      "published": "September 29, 2023",
+      "authors": [
+        {
+          "author": "Nguyen Canh Trung",
+          "authorURL": "https://bobibo.one",
+          "affiliations": [
+            {
+              "name": "bobibo.one",
+              "url": ""
+            }
+          ]
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script> </d-front-matter> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Trung </span>Canh Nguyen</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">Projects</a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">Repositories</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">Resume</a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Collections</a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item" href="/blog/tag/core/">Fundamental</a> <a class="dropdown-item" href="/blog/tag/hdl/">HDL</a> <a class="dropdown-item" href="/blog/tag/hls/">HLS</a> <div class="dropdown-divider"></div> <a class="dropdown-item" href="/blog/tag/catapult/">Catapult</a> <a class="dropdown-item" href="/blog/tag/intel/">Intel</a> <a class="dropdown-item" href="/blog/tag/xilinx/">Xilinx</a> </div> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> </header> <div class="post distill"> <d-title> <h1>KVM commands cheatsheet</h1> <p>All commands for KVM</p> </d-title> <d-byline></d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#1-gi%E1%BB%9Bi-thi%E1%BB%87u">1. Giới thiệu</a></div> <ul> <li><a href="#a-install-kvm-and-assorted-tools">a. Install KVM and assorted tools</a></li> </ul> </nav> </d-contents> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>kvm-ok
+</code></pre></div></div> <p>The output should look like this:</p> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tesla@tesla:~/kvm<span class="nv">$ </span>kvm-ok
+INFO: /dev/kvm exists
+KVM acceleration can be used
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># use same connection and objects as sudo</span>
+<span class="nb">export </span><span class="nv">LIBVIRT_DEFAULT_URI</span><span class="o">=</span>qemu:///system
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip addr show virbr0
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># bridge to physical network</span>
+<span class="nv">$ </span>virsh net-dumpxml host-bridge
+
+&lt;network <span class="nv">connections</span><span class="o">=</span><span class="s1">'2'</span><span class="o">&gt;</span>
+  &lt;name&gt;host-bridge&lt;/name&gt;
+  &lt;uuid&gt;44d2c3f5-6301-4fc6-be81-5ae2be4a47d8&lt;/uuid&gt;
+  &lt;forward <span class="nv">mode</span><span class="o">=</span><span class="s1">'bridge'</span>/&gt;
+  &lt;bridge <span class="nv">name</span><span class="o">=</span><span class="s1">'br0'</span>/&gt;
+&lt;/network&gt;
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># this needs to be "1"</span>
+<span class="nb">cat</span> /proc/sys/net/ipv4/ip_forward
+<span class="c"># if not, then add it</span>
+<span class="nb">echo </span>net.ipv4.ip_forward<span class="o">=</span>1 | <span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/sysctl.conf
+
+<span class="c"># make permanent</span>
+<span class="nb">sudo </span>sysctl <span class="nt">-p</span> /etc/sysctl.conf
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+ Name                 State      Autostart 
+<span class="nt">-------------------------------------------</span>
+ default              active     <span class="nb">yes</span>       
+
+<span class="nv">$ </span>virsh pool-define-as kvmpool <span class="nt">--type</span> <span class="nb">dir</span> <span class="nt">--target</span> /data/kvm/pool
+Pool kvmpool defined
+<span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+<span class="nv">$ </span>virsh pool-start kvmpool
+<span class="nv">$ </span>virsh pool-autostart kvmpool
+
+<span class="nv">$ </span>virsh pool-list <span class="nt">--all</span>
+ Name                 State      Autostart 
+<span class="nt">-------------------------------------------</span>
+ default              active     <span class="nb">yes       
+ </span>kvmpool              active     <span class="nb">yes</span>
+</code></pre></div></div> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># chown is only necessary if virsh was run previously as sudo</span>
+<span class="nb">ls</span> <span class="nt">-l</span> ~/.virtinst
+<span class="nb">sudo chown</span> <span class="nt">-R</span> <span class="nv">$USER</span>:<span class="nv">$USER</span> ~/.virtinst
+
+<span class="c"># list VMs</span>
+virsh list <span class="nt">--all</span>
+</code></pre></div></div> <h3 id="installing-ukvm2004-vm">Installing <code class="language-plaintext highlighter-rouge">ukvm2004</code> VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virt-install <span class="se">\</span>
+<span class="nt">--virt-type</span><span class="o">=</span>kvm <span class="se">\</span>
+<span class="nt">--name</span><span class="o">=</span>ukvm2004 <span class="se">\</span>
+<span class="nt">--ram</span> 8192 <span class="se">\</span>
+<span class="nt">--vcpus</span><span class="o">=</span>4 <span class="se">\</span>
+<span class="nt">--virt-type</span><span class="o">=</span>kvm <span class="se">\</span>
+<span class="nt">--hvm</span> <span class="se">\</span>
+<span class="nt">--cdrom</span> ~/kvm/mini.iso <span class="se">\</span>
+<span class="nt">--network</span> <span class="nv">network</span><span class="o">=</span>default <span class="se">\</span>
+<span class="nt">--disk</span> <span class="nv">pool</span><span class="o">=</span>default,size<span class="o">=</span>20,bus<span class="o">=</span>virtio,format<span class="o">=</span>qcow2 <span class="se">\</span>
+<span class="nt">--noautoconsole</span> <span class="se">\</span>
+<span class="nt">--machine</span> q35 <span class="se">\</span>
+</code></pre></div></div> <h3 id="start-the-vm">Start the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh start ukvm2004
+</code></pre></div></div> <h3 id="view-the-running-vm">View the running VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virt-viewer ukvm2004
+</code></pre></div></div> <h3 id="close-the-vm">Close the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh destroy ukvm2004
+</code></pre></div></div> <h3 id="delete-the-vm">Delete the VM</h3> <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh undefine ukvm2004
+</code></pre></div></div> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Trung Canh Nguyen. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a>. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>. Last updated: November 09, 2023. </div> </footer> <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> </body> </html>

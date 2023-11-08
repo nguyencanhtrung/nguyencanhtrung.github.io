@@ -1,0 +1,359 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>Psioniq file header for VScode | Trung Canh Nguyen</title> <meta name="author" content="Trung Canh Nguyen"/> <meta name="description" content="Append file header in VScode with Psioniq extension"/> <meta name="keywords" content="catapult, fpga, vhdl, hdl, intel, xilinx"/> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"/> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="none" id="highlight_theme_light"/> <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://bobibo.one/blog/2023/VScode-psioniq-file-header/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"/> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.fake-img{background:#bbb;border:1px solid rgba(0,0,0,0.1);box-shadow:0 0 4px rgba(0,0,0,0.1);margin-bottom:12px}.fake-img p{font-family:monospace;color:white;text-align:left;margin:12px 0;text-align:center;font-size:16px}</style> </head> <d-front-matter> <script async type="text/json">{
+      "title": "Psioniq file header for VScode",
+      "description": "Append file header in VScode with Psioniq extension",
+      "published": "September 15, 2023",
+      "authors": [
+        {
+          "author": "Nguyen Canh Trung",
+          "authorURL": "https://bobibo.one",
+          "affiliations": [
+            {
+              "name": "bobibo.one",
+              "url": ""
+            }
+          ]
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script> </d-front-matter> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Trung </span>Canh Nguyen</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">Projects</a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">Repositories</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">Resume</a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Collections</a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item" href="/blog/tag/core/">Fundamental</a> <a class="dropdown-item" href="/blog/tag/hdl/">HDL</a> <a class="dropdown-item" href="/blog/tag/hls/">HLS</a> <div class="dropdown-divider"></div> <a class="dropdown-item" href="/blog/tag/catapult/">Catapult</a> <a class="dropdown-item" href="/blog/tag/intel/">Intel</a> <a class="dropdown-item" href="/blog/tag/xilinx/">Xilinx</a> </div> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> </header> <div class="post distill"> <d-title> <h1>Psioniq file header for VScode</h1> <p>Append file header in VScode with Psioniq extension</p> </d-title> <d-byline></d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#1-gi%E1%BB%9Bi-thi%E1%BB%87u-v%E1%BB%81-psioniq-extension">1. Giới thiệu về psioniq extension</a></div> <div><a href="#2-thi%E1%BA%BFt-l%E1%BA%ADp">2. Thiết lập</a></div> <ul> <li><a href="#a-tr%C6%B0%E1%BB%9Dng-psi-header-config">a. Trường `psi-header.config`</a></li> <li><a href="#b-tr%C6%B0%E1%BB%9Dng-psi-header-changes-tracking">b. Trường `psi-header.changes-tracking`</a></li> <li><a href="#c-tr%C6%B0%E1%BB%9Dng-psi-header-lang-config">c. Trường `psi-header.lang-config`</a></li> <li><a href="#d-tr%C6%B0%E1%BB%9Dng-psi-header-templates">d. Trường `psi-header.templates`</a></li> </ul> <div><a href="#3-c%E1%BA%A5u-h%C3%ACnh-ho%C3%A0n-thi%E1%BB%87n">3. Cấu hình hoàn thiện</a></div> </nav> </d-contents> <h2 id="1-giới-thiệu-về-psioniq-extension">1. Giới thiệu về psioniq extension</h2> <p>Đây là một extension hỗ trợ chèn header vào file code chỉ với phím tắt <code class="language-plaintext highlighter-rouge">Ctrl+Alt+H</code> (x2 - nhấn 2 lần). Ngoài ra, nó còn hỗ trợ chèn <code class="language-plaintext highlighter-rouge">Revision</code> với tổ hợp phím <code class="language-plaintext highlighter-rouge">Ctrl+Alt+C</code> (x2 - nhấn 2 lần). Dưới đây là một ví dụ header được chèn vào code VHDL:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//-----------------------------------------------------------------------------
+// 
+// Project   : 5G L1 PDSCH and PUSCH channels
+// Module    : chspad
+// Parent    : crc.sv
+// Children  : ifc_axis.sv, axis_fifo.sv, axis_reg.sv
+// 
+// Author    : Nguyen Canh Trung
+// Email     : nguyencanhtrung 'at' me 'dot' com
+// Date      : 2023-09-14 00:12:05
+// Last Modified : 2023-10-17 11:34:25
+// Modified By   : Nguyen Canh Trung
+// 
+// Description: 
+//
+// Parameters:
+// 
+// Multicycle and False Paths: 
+// 
+// HISTORY:
+// Date         By  Comments
+// ----------   --- ---------------------------------------------------------
+// 2023-09-14   NCT File created
+//-----------------------------------------------------------------------------
+</code></pre></div></div> <h2 id="2-thiết-lập">2. Thiết lập</h2> <p>Phần này sẽ mô tả cách thiết lập psioniq, để nó có thể tự động nhận diện <code class="language-plaintext highlighter-rouge">language</code> và chèn header phù hợp.</p> <p>Thiết lập <code class="language-plaintext highlighter-rouge">psioniq</code> bằng cách truy cập: <code class="language-plaintext highlighter-rouge">File</code> &gt; <code class="language-plaintext highlighter-rouge">Preferences</code> &gt; <code class="language-plaintext highlighter-rouge">Settings</code> &gt; <code class="language-plaintext highlighter-rouge">Extensions</code> &gt; <code class="language-plaintext highlighter-rouge">psioniq File Header</code> &gt; <code class="language-plaintext highlighter-rouge">Editing settings.json</code></p> <h3 id="a-trường-psi-headerconfig">a. Trường <code class="language-plaintext highlighter-rouge">psi-header.config</code> </h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"psi-header.config": {
+        "forceToTop": true,
+        "blankLinesAfter": 6,
+        "spacesBetweenYears": false,
+        "license": "MIT",
+        "author": "Nguyen Canh Trung",
+        "initials": "NCT",
+        "authorEmail": "nguyencanhtrung 'at' me 'dot' com",
+        "company": "",
+        "copyrightHolder": "",
+        "creationDateZero": "asIs",
+        "hostname": ""
+    }
+</code></pre></div></div> <p>Trường này chứa thông tin chung về <code class="language-plaintext highlighter-rouge">LICENSE</code>, <code class="language-plaintext highlighter-rouge">author</code>, <code class="language-plaintext highlighter-rouge">initials</code> (viết tắt tên tác giả để chèn vào phần <code class="language-plaintext highlighter-rouge">HISTORY</code> hay <code class="language-plaintext highlighter-rouge">Revision</code>)</p> <h3 id="b-trường-psi-headerchanges-tracking">b. Trường <code class="language-plaintext highlighter-rouge">psi-header.changes-tracking</code> </h3> <p>Trường này thiết lập cơ chế tracking của extension và cách extension update header như ở ví dụ dưới đây:</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  "psi-header.changes-tracking": {
+        "isActive": true,
+        "modAuthor": "Modified By",
+        "modDate": "Last Modified",
+        "modDateFormat": "YYYY-MM-DD HH:mm:ss",
+        "include": [],
+        "includeGlob": [],
+        "exclude": [
+            "markdown",
+            "json",
+            "jsonc",
+            "shellscript"
+        ],
+        "excludeGlob": [
+            "./**/*/ignoreme.*"
+        ],
+        "autoHeader": "autoSave",
+        "enforceHeader": false,
+        "updateLicenseVariables": false
+    }
+</code></pre></div></div> <p>Tracking được <code class="language-plaintext highlighter-rouge">activate</code>, extension sẽ tìm đến trường text <code class="language-plaintext highlighter-rouge">Modified By</code> và <code class="language-plaintext highlighter-rouge">Last Modified</code> để cập nhật thông tin với format được mô tả ở <code class="language-plaintext highlighter-rouge">modDateFormat</code>.</p> <p>Chú ý rằng: trường text <code class="language-plaintext highlighter-rouge">Modified By</code> và <code class="language-plaintext highlighter-rouge">Last Modified</code> phụ thuộc vào nội dung header mà bạn quy định. Việc thiết lập nội dung của header được thực hiện ở <code class="language-plaintext highlighter-rouge">bước d</code>.</p> <h3 id="c-trường-psi-headerlang-config">c. Trường <code class="language-plaintext highlighter-rouge">psi-header.lang-config</code> </h3> <p>Trường này thiết lập định dạng của header ứng với mỗi một <code class="language-plaintext highlighter-rouge">language</code> khác nhau.</p> <ul> <li> <code class="language-plaintext highlighter-rouge">Language</code>: được quy định bởi VScode theo <a href="https://code.visualstudio.com/docs/languages/identifiers" target="_blank" rel="noopener noreferrer">link</a> </li> <li> <code class="language-plaintext highlighter-rouge">begin</code> : dòng đầu tiên của header</li> <li> <code class="language-plaintext highlighter-rouge">prefix</code> : Ký tự đầu dòng của header - thường là comment syntax của mỗi <code class="language-plaintext highlighter-rouge">language</code>. Đối với C là <code class="language-plaintext highlighter-rouge">//</code>, VHDL là <code class="language-plaintext highlighter-rouge">--</code> </li> <li> <code class="language-plaintext highlighter-rouge">suffix</code> : Ký tự cuối dòng của header – thường để taọ header dưới dạng một <code class="language-plaintext highlighter-rouge">text box</code> </li> <li> <code class="language-plaintext highlighter-rouge">linelength</code>: quy định chiều dài tối đa của một dòng.</li> <li> <code class="language-plaintext highlighter-rouge">end</code> : dòng cuối cùng của header</li> <li> <code class="language-plaintext highlighter-rouge">forceToTop</code>: force chèn header vào top của file, thay vì tại vị trí con trỏ.</li> <li> <code class="language-plaintext highlighter-rouge">mapTo</code> : ánh xạ cấu hình của một <code class="language-plaintext highlighter-rouge">language</code> với cấu hình được định nghĩa trước, tránh việc khai báo nhiều lần.</li> <li> <code class="language-plaintext highlighter-rouge">afterHeader</code>: được dùng để thiết lập đoạn text bên dưới header, thường là code template</li> </ul> <p>Trên đây là một vài thiết lập phổ biến, nếu bạn muốn tìm hiểu thêm các thiết lập khác hãy truy cập vào psioniq <a href="https://marketplace.visualstudio.com/items?itemName=psioniq.psi-header#language-configuration" target="_blank" rel="noopener noreferrer">language config</a></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"psi-header.lang-config": [
+    {
+        "language": "*",
+        "begin": "// ----------------------------------------------------------------------------",
+        "prefix": "// ",
+        "suffix": "",
+        "lineLength": 80,
+        "end": "// ----------------------------------------------------------------------------",
+        "forceToTop": true,
+        "blankLinesAfter": 0
+    },
+    {
+        "language": "systemverilog",
+        "begin": "//-----------------------------------------------------------------------------",
+        "prefix": "// ",
+        "suffix": "",
+        "lineLength": 80,
+        "end": "//-----------------------------------------------------------------------------",
+        "forceToTop": true,
+        "blankLinesAfter": 0,
+        "afterHeader": [
+            "`timescale 1ns / 1ps"
+        ]
+    },
+    {
+        "language": "verilog",
+        "mapTo": "systemverilog"
+    }
+]
+</code></pre></div></div> <p>Đây là một ví dụ về việc thiết lập header file cho file <code class="language-plaintext highlighter-rouge">SystemVerilog</code>, <code class="language-plaintext highlighter-rouge">verilog</code> và các ngôn ngữ còn lại.</p> <h3 id="d-trường-psi-headertemplates">d. Trường <code class="language-plaintext highlighter-rouge">psi-header.templates</code> </h3> <p>Mô tả template của header. Chú ý: nếu bạn sử dụng cụm từ khác để mô tả <code class="language-plaintext highlighter-rouge">Last Modified</code> và <code class="language-plaintext highlighter-rouge">Modified by</code> thì phải thay đổi <code class="language-plaintext highlighter-rouge">si-header.changes-tracking</code> bằng cụm từ tương ứng để extension có thể lọc và thay đổi nội dụng.</p> <p>Dưới đây là ví dụ về header teamplate của <code class="language-plaintext highlighter-rouge">SystemVerilog</code> và các định dạng còn lại.</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"psi-header.templates": [
+    {
+        "language": "*",
+        "template": [
+            "",
+            "Project   : ",
+            "Filename  : &lt;&lt;filenamebase&gt;&gt;",
+            "",
+            "Author    : &lt;&lt;author&gt;&gt;",
+            "Email     : &lt;&lt;authoremail&gt;&gt;",
+            "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Modified By   : &lt;&lt;author&gt;&gt;",
+            "",
+            "Description: ",
+            "",
+            "HISTORY:",
+            "Date      \tBy\tComments",
+            "----------\t---\t---------------------------------------------------------"
+        ],
+        "changeLogCaption": "HISTORY:",
+        "changeLogHeaderLineCount": 2,
+        "changeLogEntryTemplate": [
+            "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+        ]
+    },
+    {
+        "language": "systemverilog",
+        "template": [
+            "",
+            "Project   : ",
+            "Module    : &lt;&lt;filenamebase&gt;&gt;",
+            "Parent    : ",
+            "Children  : ",
+            "",
+            "Author    : &lt;&lt;author&gt;&gt;",
+            "Email     : &lt;&lt;authoremail&gt;&gt;",
+            "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+            "Modified By   : &lt;&lt;author&gt;&gt;",
+            "",
+            "Description: ",
+            "", 
+            "Parameters:",
+            "",
+            "Multicycle and False Paths: ",
+            "", 
+            "HISTORY:",
+            "Date      \tBy\tComments",
+            "----------\t---\t---------------------------------------------------------"  
+        ],
+        "changeLogCaption": "HISTORY:",
+        "changeLogHeaderLineCount": 2,
+        "changeLogEntryTemplate": [
+            "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+        ]
+    }
+]
+</code></pre></div></div> <h2 id="3-cấu-hình-hoàn-thiện">3. Cấu hình hoàn thiện</h2> <p>Cấu hình hoàn thiện bao gồm tất cả các trường mô tả bên trên và được lưu tại <code class="language-plaintext highlighter-rouge">settings.json</code></p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "workbench.colorTheme": "Default High Contrast",
+    "code-runner.runInTerminal": true,
+    "files.autoSave": "afterDelay",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "editor.inlineSuggest.enabled": true,
+    "git.autofetch": true,
+    "explorer.confirmDelete": false,
+    "editor.fontSize": 13,
+    "editor.formatOnPaste": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.snippetSuggestions": "top",
+    "security.workspace.trust.untrustedFiles": "open",
+    "psi-header.config": {
+        "forceToTop": true,
+        "blankLinesAfter": 6,
+        "spacesBetweenYears": false,
+        "license": "MIT",
+        "author": "Nguyen Canh Trung",
+        "initials": "NCT",
+        "authorEmail": "nguyencanhtrung 'at' me 'dot' com",
+        "company": "",
+        "copyrightHolder": "",
+        "creationDateZero": "asIs",
+        "hostname": ""
+    },
+    "psi-header.changes-tracking": {
+        "isActive": true,
+        "modAuthor": "Modified By",
+        "modDate": "Last Modified",
+        "modDateFormat": "YYYY-MM-DD HH:mm:ss",
+        "include": [],
+        "includeGlob": [],
+        "exclude": [
+            "markdown",
+            "json",
+            "jsonc",
+            "shellscript"
+        ],
+        "excludeGlob": [
+            "./**/*/ignoreme.*"
+        ],
+        "autoHeader": "autoSave",
+        "enforceHeader": false,
+        "updateLicenseVariables": false
+    },
+    "psi-header.lang-config": [
+        {
+            "language": "*",
+            "begin": "// ----------------------------------------------------------------------------",
+            "prefix": "// ",
+            "suffix": "",
+            "lineLength": 80,
+            "end": "// ----------------------------------------------------------------------------",
+            "forceToTop": true,
+            "blankLinesAfter": 0
+        },
+        {
+            "language": "vhdl",
+            "begin": "-- ----------------------------------------------------------------------------",
+            "prefix": "-- ",
+            "suffix": "",
+            "lineLength": 80,
+            "end": "-- ----------------------------------------------------------------------------",
+            "forceToTop": true,
+            "blankLinesAfter": 0,
+            "afterHeader": [
+                "-- Language: VHDL-1993",
+                "",
+                "library ieee;",
+                "\tuse ieee.std_logic_1164.all;"
+            ]
+        },
+        {
+            "language": "systemverilog",
+            "begin": "//-----------------------------------------------------------------------------",
+            "prefix": "// ",
+            "suffix": "",
+            "lineLength": 80,
+            "end": "//-----------------------------------------------------------------------------",
+            "forceToTop": true,
+            "blankLinesAfter": 0,
+            "afterHeader": [
+                "`timescale 1ns / 1ps"
+            ]
+        },
+        {
+            "language": "verilog",
+            "mapTo": "systemverilog"
+        }
+    ],
+    "psi-header.templates": [
+        {
+            "language": "*",
+            "template": [
+                "",
+                "Project   : ",
+                "Filename  : &lt;&lt;filenamebase&gt;&gt;",
+                "",
+                "Author    : &lt;&lt;author&gt;&gt;",
+                "Email     : &lt;&lt;authoremail&gt;&gt;",
+                "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Modified By   : &lt;&lt;author&gt;&gt;",
+                "",
+                "Description: ",
+                "",
+                "HISTORY:",
+                "Date      \tBy\tComments",
+                "----------\t---\t---------------------------------------------------------"
+            ],
+            "changeLogCaption": "HISTORY:",
+            "changeLogHeaderLineCount": 2,
+            "changeLogEntryTemplate": [
+                "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+            ]
+        },
+        {
+            "language": "systemverilog",
+            "template": [
+                "",
+                "Project   : ",
+                "Module    : &lt;&lt;filenamebase&gt;&gt;",
+                "Parent    : ",
+                "Children  : ",
+                "",
+                "Author    : &lt;&lt;author&gt;&gt;",
+                "Email     : &lt;&lt;authoremail&gt;&gt;",
+                "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Modified By   : &lt;&lt;author&gt;&gt;",
+                "",
+                "Description: ",
+                "", 
+                "Parameters:",
+                "",
+                "Multicycle and False Paths: ",
+                "", 
+                "HISTORY:",
+                "Date      \tBy\tComments",
+                "----------\t---\t---------------------------------------------------------"  
+            ],
+            "changeLogCaption": "HISTORY:",
+            "changeLogHeaderLineCount": 2,
+            "changeLogEntryTemplate": [
+                "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+            ]
+        },
+        {
+            "language": "vhdl",
+            "template": [
+                "",
+                "Project   : ",
+                "Module    : &lt;&lt;filenamebase&gt;&gt;",
+                "Parent    : ",
+                "Children  : ",
+                "",
+                "Author    : &lt;&lt;author&gt;&gt;",
+                "Email     : &lt;&lt;authoremail&gt;&gt;",
+                "Date      : &lt;&lt;filecreated('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Last Modified : &lt;&lt;dateformat('YYYY-MM-DD HH:mm:ss')&gt;&gt;",
+                "Modified By   : &lt;&lt;author&gt;&gt;",
+                "",
+                "Description: ",
+                "",
+                "Parameters:",
+                "",
+                "Multicycle and False Paths: ",
+                "",
+                "HISTORY:",
+                "Date      \tBy\tComments",
+                "----------\t---\t---------------------------------------------------------"
+            ],
+            "changeLogCaption": "HISTORY:",
+            "changeLogHeaderLineCount": 2,
+            "changeLogEntryTemplate": [
+                "&lt;&lt;dateformat(YY-MM-DD)&gt;&gt;\t&lt;&lt;initials&gt;&gt;\t"
+            ]
+        }
+    ],
+}
+</code></pre></div></div> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Trung Canh Nguyen. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a>. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>. Last updated: November 09, 2023. </div> </footer> <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> </body> </html>

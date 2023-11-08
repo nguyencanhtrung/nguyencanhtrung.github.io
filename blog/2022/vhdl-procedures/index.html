@@ -1,0 +1,328 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>VHDL - Procedures | Trung Canh Nguyen</title> <meta name="author" content="Trung Canh Nguyen"/> <meta name="description" content="Working with procedures"/> <meta name="keywords" content="catapult, fpga, vhdl, hdl, intel, xilinx"/> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"/> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="none" id="highlight_theme_light"/> <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://bobibo.one/blog/2022/vhdl-procedures/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"/> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.fake-img{background:#bbb;border:1px solid rgba(0,0,0,0.1);box-shadow:0 0 4px rgba(0,0,0,0.1);margin-bottom:12px}.fake-img p{font-family:monospace;color:white;text-align:left;margin:12px 0;text-align:center;font-size:16px}</style> </head> <d-front-matter> <script async type="text/json">{
+      "title": "VHDL - Procedures",
+      "description": "Working with procedures",
+      "published": "November 28, 2022",
+      "authors": [
+        {
+          "author": "Nguyen Canh Trung",
+          "authorURL": "https://bobibo.one",
+          "affiliations": [
+            {
+              "name": "bobibo.one",
+              "url": ""
+            }
+          ]
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script> </d-front-matter> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Trung </span>Canh Nguyen</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">Projects</a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">Repositories</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">Resume</a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Collections</a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item" href="/blog/tag/core/">Fundamental</a> <a class="dropdown-item" href="/blog/tag/hdl/">HDL</a> <a class="dropdown-item" href="/blog/tag/hls/">HLS</a> <div class="dropdown-divider"></div> <a class="dropdown-item" href="/blog/tag/catapult/">Catapult</a> <a class="dropdown-item" href="/blog/tag/intel/">Intel</a> <a class="dropdown-item" href="/blog/tag/xilinx/">Xilinx</a> </div> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> </header> <div class="post distill"> <d-title> <h1>VHDL - Procedures</h1> <p>Working with procedures</p> </d-title> <d-byline></d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#1-vhdl-procedures">1. VHDL Procedures</a></div> <div><a href="#2-highlights-for-procedure">2. Highlights for procedure</a></div> <div><a href="#3-procedure-structure">3. Procedure structure</a></div> <ul> <li><a href="#a-procedure-parameters">a. Procedure parameters</a></li> <li><a href="#b-parameters-classes">b. Parameters classes</a></li> <li><a href="#c-explicitly-specify-class-of-procedure-parameters">c. Explicitly specify class of procedure parameters</a></li> </ul> <div><a href="#4-where-to-declare-a-procedure">4. Where to declare a procedure?</a></div> </nav> </d-contents> <h2 id="1-vhdl-procedures">1. VHDL Procedures</h2> <p>In a large design, there are some portions of code which might be repeated or called multiple times.</p> <p>A common block that encapsulates some functionality within the design, it is called sub-program.</p> <p>Procedure is a type of subprogram that can be called multiple times throughout the design</p> <p><strong><ins>Advantages of using procedure</ins></strong></p> <ul> <li>Avoids code repetition</li> <li>Can be declared with or without any arguments</li> <li>Can have input, output and inout ports</li> <li>May/may not include timing delays as procedures can be executed in non-zero simulation time</li> </ul> <h2 id="2-highlights-for-procedure">2. Highlights for procedure</h2> <ul> <li>No return as the function</li> <li>Unlike functions, procedures can contain wait-statements</li> <li>Do not have to specify the length of data type like port declaration. Just need to specify type <code class="language-plaintext highlighter-rouge">std_logic_vector</code>, for example, is enough.</li> <li>Procedure can be declared with or without arguments <ul> <li>Procedures without arguments are used to run sequences of events - mostly used in testbench where procedure is used to drive specific signals</li> <li>Parameters (inputs/outputs/inout) to a procedure can be signals, variables, or constants</li> </ul> </li> <li>Procedure is declared within the architecture’s declarative region or in the package</li> </ul> <h2 id="3-procedure-structure">3. Procedure structure</h2> <p><strong><ins> Syntax </ins></strong></p> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="k">procedure</span> <span class="n">PROC1</span> <span class="p">(</span> <span class="o">&lt;</span><span class="n">class</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">arg1</span><span class="o">&gt;</span> <span class="p">:</span> <span class="o">&lt;</span><span class="n">mode</span><span class="err">|</span><span class="n">direction</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="k">type</span><span class="o">&gt;</span><span class="p">;</span>
+                  <span class="o">&lt;</span><span class="n">class</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">arg2</span><span class="o">&gt;</span> <span class="p">:</span> <span class="o">&lt;</span><span class="n">mode</span><span class="err">|</span><span class="n">direction</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="k">type</span><span class="o">&gt;</span> <span class="p">)</span> <span class="k">is</span>
+
+<span class="k">variable</span> <span class="n">VAR1</span><span class="p">;</span>
+<span class="o">&lt;</span><span class="n">declarations_for_use_within_the_procedure</span><span class="o">&gt;</span>
+<span class="k">begin</span>
+  <span class="o">&lt;</span><span class="n">sequential</span> <span class="n">statements</span> <span class="o">...&gt;</span>
+<span class="k">end</span> <span class="k">procedure</span> <span class="n">PROC1</span><span class="p">;</span></code></pre></figure> <p>A procedure’s parameter list defines its inputs and outputs, kind of like a mini-module. It can be a signal or a constant, but unlike a module, it can also be a variable. You can declare objects between the “is” and “begin” keywords that are only valid inside the procedure. These may include constants, variables, types, subtypes, and aliases, but not signals.</p> <p>Unlike functions, procedures may contain wait-statements. Therefore, they are often used in testbenches like simple BFM’s for simulating interfaces, or for checking output from the device under test (DUT).</p> <h3 id="a-procedure-parameters">a. Procedure parameters</h3> <p>Procedure parameters are similar to port declartions.</p> <p>It can be:</p> <ul> <li>Mode IN</li> <li>Mode OUT</li> <li>Mode INOUT</li> </ul> <p>Inside a procedure, parameters with specified mode or direction is restricted as following table.</p> <table> <thead> <tr> <th style="text-align: center">Mode</th> <th style="text-align: center">Readable</th> <th style="text-align: center">Changed</th> </tr> </thead> <tbody> <tr> <td style="text-align: center">IN</td> <td style="text-align: center">OK</td> <td style="text-align: center">NO</td> </tr> <tr> <td style="text-align: center">OUT</td> <td style="text-align: center">NO</td> <td style="text-align: center">Assign back to caller</td> </tr> <tr> <td style="text-align: center">INOUT</td> <td style="text-align: center">OK</td> <td style="text-align: center">Assign back to caller</td> </tr> </tbody> </table> <p><strong>Example</strong></p> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="k">procedure</span> <span class="n">SLV_REVERSE</span>   <span class="p">(</span> <span class="n">SLV_IN</span> <span class="p">:</span> <span class="k">IN</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+                          <span class="n">SLV_OUT</span> <span class="p">:</span> <span class="k">OUT</span> <span class="kt">std_logic_vector</span>
+                        <span class="p">)</span> <span class="k">is</span>
+<span class="k">begin</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">SLV_IN</span><span class="err">`</span><span class="n">length</span><span class="mi">-1</span> <span class="k">downto</span> <span class="mi">0</span> <span class="k">loop</span>
+    <span class="n">SLV_OUT</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  <span class="o">&lt;=</span> <span class="n">SLV_IN</span> <span class="p">(</span><span class="n">SLV_IN</span><span class="na">'length</span><span class="mi">-1</span><span class="p">);</span>
+  <span class="k">end</span> <span class="k">loop</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">procedure</span> <span class="n">SLV_REVERSE</span><span class="p">;</span></code></pre></figure> <p>Want to call the above procedure?</p> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="n">SLV_REVERSE</span>   <span class="p">(</span> <span class="n">SLV_IN</span>      <span class="o">=&gt;</span> <span class="n">D_IN</span><span class="p">,</span> 
+                <span class="n">SLV_OUT</span>     <span class="o">=&gt;</span> <span class="n">D_OUT</span>
+              <span class="p">);</span></code></pre></figure> <p>To make the mapping valid, the <code class="language-plaintext highlighter-rouge">formal</code> and <code class="language-plaintext highlighter-rouge">actual</code> must be of same <code class="language-plaintext highlighter-rouge">data type</code>, <code class="language-plaintext highlighter-rouge">class</code> and <code class="language-plaintext highlighter-rouge">mode</code></p> <h3 id="b-parameters-classes">b. Parameters classes</h3> <p>VHDL supports four classes of objects</p> <ul> <li>Constant</li> <li>Variable</li> <li>Signal</li> <li>File</li> </ul> <p>If classes are not specified in the argument list. The default class will be selected</p> <table> <thead> <tr> <th style="text-align: center">Mode</th> <th style="text-align: center">Default classes</th> </tr> </thead> <tbody> <tr> <td style="text-align: center">IN</td> <td style="text-align: center">constant</td> </tr> <tr> <td style="text-align: center">OUT</td> <td style="text-align: center">variable</td> </tr> <tr> <td style="text-align: center">INOUT</td> <td style="text-align: center">variable</td> </tr> </tbody> </table> <h3 id="c-explicitly-specify-class-of-procedure-parameters">c. Explicitly specify class of procedure parameters</h3> <p>Explicitly specify class of input and output parameters declared in a procedure is oftern helpful. It simplifies usage and expands capabilities of a procedure.</p> <p>Here is an example when not specified class in the argument list</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221128_vhdl_procedure/3-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221128_vhdl_procedure/3-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221128_vhdl_procedure/3-1400.webp"></source> <img src="/assets/img/01.blogs/221128_vhdl_procedure/3.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>We need a variable <code class="language-plaintext highlighter-rouge">TEMP_BUS</code> to pass value to a signal <code class="language-plaintext highlighter-rouge">OUT_BUS</code>.</p> <p>And explicitly specified class for parameters</p> <div class="row mt-3"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/01.blogs/221128_vhdl_procedure/4-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/01.blogs/221128_vhdl_procedure/4-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/01.blogs/221128_vhdl_procedure/4-1400.webp"></source> <img src="/assets/img/01.blogs/221128_vhdl_procedure/4.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>We can see, with explicited declaration, there is no need of variable <code class="language-plaintext highlighter-rouge">TEMP_BUS</code> to pass value to signal <code class="language-plaintext highlighter-rouge">OUT_BUS</code>.</p> <h2 id="4-where-to-declare-a-procedure">4. Where to declare a procedure?</h2> <p><strong><ins>In the declarative region of architecture</ins></strong></p> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="k">library</span> <span class="n">ieee</span><span class="p">;</span>
+  <span class="k">use</span> <span class="n">IEEE</span><span class="o">.</span><span class="n">std_logic_1164</span><span class="o">.</span><span class="k">all</span><span class="p">;</span>
+  <span class="k">use</span> <span class="n">IEEE</span><span class="o">.</span><span class="n">numeric_std</span><span class="o">.</span><span class="k">all</span><span class="p">;</span>
+
+<span class="k">entity</span> <span class="n">tb</span> <span class="k">is</span>
+<span class="k">end</span> <span class="k">entity</span> <span class="n">tb</span><span class="p">;</span>
+
+<span class="k">architecture</span> <span class="n">behavior</span> <span class="k">of</span> <span class="n">tb</span> <span class="k">is</span>
+  <span class="o">...</span>
+
+  <span class="k">procedure</span> <span class="n">AXIS_SEND</span> <span class="p">(</span>
+              <span class="k">signal</span> <span class="n">clk</span>      <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">constant</span> <span class="n">value</span>    <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+              <span class="k">constant</span> <span class="n">nBeats</span>   <span class="p">:</span> <span class="k">in</span> <span class="kt">integer</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">bCounter</span>   <span class="p">:</span> <span class="k">inout</span> <span class="kt">integer</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tready</span>   <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tdata</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tvalid</span>   <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tstrb</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="o">/</span><span class="mi">8-1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+              <span class="k">signal</span> <span class="n">tkeep</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="o">/</span><span class="mi">8-1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+              <span class="k">signal</span> <span class="n">tuser</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tlast</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
+    <span class="p">)</span> <span class="k">is</span>
+  <span class="k">begin</span>
+    <span class="k">wait</span> <span class="k">until</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tready</span> <span class="o">=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">tdata</span>   <span class="o">&lt;=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="n">tvalid</span>  <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">tstrb</span>   <span class="o">&lt;=</span> <span class="p">(</span><span class="k">OTHERS</span> <span class="o">=&gt;</span> <span class="sc">'1'</span><span class="p">);</span>
+    <span class="n">tkeep</span>   <span class="o">&lt;=</span> <span class="p">(</span><span class="k">OTHERS</span> <span class="o">=&gt;</span> <span class="sc">'1'</span><span class="p">);</span>
+    <span class="n">tuser</span>   <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">bCounter</span> <span class="o">=</span> <span class="n">nBeats</span><span class="p">)</span> <span class="k">then</span>
+      <span class="n">tlast</span>   <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+      <span class="n">bCounter</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span>
+      <span class="n">tlast</span>   <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+      <span class="n">bCounter</span> <span class="o">&lt;=</span> <span class="n">bCounter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+  <span class="k">end</span> <span class="k">procedure</span> <span class="n">AXIS_SEND</span><span class="p">;</span>
+
+  <span class="o">...</span>
+
+
+<span class="k">begin</span>
+
+<span class="o">...</span>
+
+<span class="n">rx_test_proc</span><span class="p">:</span> <span class="k">process</span>
+<span class="o">...</span>
+<span class="k">begin</span>
+  <span class="o">...</span>
+
+    
+    <span class="k">for</span> <span class="n">ii</span> <span class="k">in</span> <span class="mi">1</span> <span class="k">to</span> <span class="n">NUM_FRAMES</span> <span class="k">loop</span>
+      <span class="k">for</span> <span class="n">jj</span> <span class="k">in</span> <span class="mi">1</span> <span class="k">to</span> <span class="p">(</span><span class="n">NUN_BYTES_PER_FRAME</span><span class="o">/</span><span class="mi">16</span><span class="p">)</span> <span class="k">loop</span>
+        <span class="o">...</span>
+
+        <span class="n">AXIS_SEND</span> <span class="p">(</span>
+                <span class="n">clk</span>     <span class="o">=&gt;</span> <span class="n">clk</span><span class="p">,</span>
+                <span class="n">value</span>   <span class="o">=&gt;</span> <span class="n">send_value</span><span class="p">,</span>
+                <span class="n">nBeats</span>  <span class="o">=&gt;</span> <span class="n">NUN_BYTES_PER_FRAME</span><span class="o">/</span><span class="mi">16</span><span class="p">,</span>
+                <span class="n">bCounter</span><span class="o">=&gt;</span> <span class="n">bCounter</span><span class="p">,</span>
+                <span class="n">tready</span>  <span class="o">=&gt;</span> <span class="n">din_tready</span><span class="p">,</span>
+                <span class="n">tdata</span>   <span class="o">=&gt;</span> <span class="n">din_tdata</span><span class="p">,</span>
+                <span class="n">tvalid</span>  <span class="o">=&gt;</span> <span class="n">din_tvalid</span><span class="p">,</span>
+                <span class="n">tstrb</span>   <span class="o">=&gt;</span> <span class="n">din_tstrb</span><span class="p">,</span>
+                <span class="n">tkeep</span>   <span class="o">=&gt;</span> <span class="n">din_tkeep</span><span class="p">,</span>
+                <span class="n">tuser</span>   <span class="o">=&gt;</span> <span class="n">din_tuser</span><span class="p">,</span>
+                <span class="n">tlast</span>   <span class="o">=&gt;</span> <span class="n">din_tlast</span>
+      <span class="p">);</span>
+
+      <span class="k">end</span> <span class="k">loop</span><span class="p">;</span>
+      <span class="o">...</span>
+    <span class="k">end</span> <span class="k">loop</span><span class="p">;</span>
+    <span class="o">...</span>
+  <span class="k">end</span> <span class="k">loop</span><span class="p">;</span>
+
+  <span class="k">wait</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">process</span> <span class="n">rx_test_proc</span><span class="p">;</span>
+
+<span class="o">...</span>
+
+<span class="k">end</span> <span class="k">architecture</span><span class="p">;</span></code></pre></figure> <p><strong><ins>In the package</ins></strong></p> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="k">library</span> <span class="n">ieee</span><span class="p">;</span>
+  <span class="k">use</span> <span class="n">IEEE</span><span class="o">.</span><span class="n">std_logic_1164</span><span class="o">.</span><span class="k">all</span><span class="p">;</span>
+  <span class="k">use</span> <span class="n">IEEE</span><span class="o">.</span><span class="n">numeric_std</span><span class="o">.</span><span class="k">all</span><span class="p">;</span>
+
+
+<span class="c1">-- Package declaration section</span>
+<span class="k">package</span> <span class="n">soc_sim</span> <span class="k">is</span>
+  <span class="c1">-- constants</span>
+  <span class="k">constant</span> <span class="n">AXI_LITE_ADDR_WIDTH</span> <span class="p">:</span> <span class="kt">integer</span> <span class="p">:</span><span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="k">constant</span> <span class="n">AXI_LITE_DATA_WIDTH</span> <span class="p">:</span> <span class="kt">integer</span> <span class="p">:</span><span class="o">=</span> <span class="mi">64</span><span class="p">;</span>
+  <span class="k">constant</span> <span class="n">DATA_WIDTH</span>          <span class="p">:</span> <span class="kt">integer</span> <span class="p">:</span><span class="o">=</span> <span class="mi">128</span><span class="p">;</span>
+
+  <span class="c1">-- types</span>
+
+
+  <span class="c1">-- components</span>
+
+
+  <span class="c1">-- function prototypes</span>
+
+
+  <span class="c1">-- procedure prototypes</span>
+
+  <span class="k">procedure</span> <span class="n">AXIS_SEND</span> <span class="p">(</span>
+              <span class="k">signal</span> <span class="n">clk</span>      <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">constant</span> <span class="n">value</span>    <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+              <span class="k">constant</span> <span class="n">nBeats</span>   <span class="p">:</span> <span class="k">in</span> <span class="kt">integer</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">bCounter</span>   <span class="p">:</span> <span class="k">inout</span> <span class="kt">integer</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tready</span>   <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tdata</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tvalid</span>   <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tstrb</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="o">/</span><span class="mi">8-1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+              <span class="k">signal</span> <span class="n">tkeep</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="o">/</span><span class="mi">8-1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+              <span class="k">signal</span> <span class="n">tuser</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tlast</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
+  <span class="p">);</span>
+
+<span class="k">end</span> <span class="k">package</span> <span class="n">soc_sim</span><span class="p">;</span>
+
+<span class="k">package</span> <span class="k">body</span> <span class="n">soc_sim</span> <span class="k">is</span>
+
+  <span class="c1">-- function detail</span>
+
+  <span class="c1">-- procedure detail</span>
+
+  <span class="c1">--</span>
+  <span class="c1">-- AXIS SEND</span>
+  <span class="c1">--</span>
+  <span class="k">procedure</span> <span class="n">AXIS_SEND</span> <span class="p">(</span>
+              <span class="k">signal</span> <span class="n">clk</span>      <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">constant</span> <span class="n">value</span>    <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+              <span class="k">constant</span> <span class="n">nBeats</span>   <span class="p">:</span> <span class="k">in</span> <span class="kt">integer</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">bCounter</span>   <span class="p">:</span> <span class="k">inout</span> <span class="kt">integer</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tready</span>   <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tdata</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tvalid</span>   <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tstrb</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="o">/</span><span class="mi">8-1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+              <span class="k">signal</span> <span class="n">tkeep</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="n">DATA_WIDTH</span><span class="o">/</span><span class="mi">8-1</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+              <span class="k">signal</span> <span class="n">tuser</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+              <span class="k">signal</span> <span class="n">tlast</span>    <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span>
+    <span class="p">)</span> <span class="k">is</span>
+  <span class="k">begin</span>
+    
+    <span class="k">wait</span> <span class="k">until</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">clk</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tready</span> <span class="o">=</span> <span class="sc">'1'</span><span class="p">;</span>
+
+    <span class="n">tdata</span>   <span class="o">&lt;=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="n">tvalid</span>  <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">tstrb</span>   <span class="o">&lt;=</span> <span class="p">(</span><span class="k">OTHERS</span> <span class="o">=&gt;</span> <span class="sc">'1'</span><span class="p">);</span>
+    <span class="n">tkeep</span>   <span class="o">&lt;=</span> <span class="p">(</span><span class="k">OTHERS</span> <span class="o">=&gt;</span> <span class="sc">'1'</span><span class="p">);</span>
+    <span class="n">tuser</span>   <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">bCounter</span> <span class="o">=</span> <span class="n">nBeats</span><span class="p">)</span> <span class="k">then</span>
+      <span class="n">tlast</span>   <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+      <span class="n">bCounter</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span>
+      <span class="n">tlast</span>   <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+      <span class="n">bCounter</span> <span class="o">&lt;=</span> <span class="n">bCounter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+
+  <span class="k">end</span> <span class="k">procedure</span> <span class="n">AXIS_SEND</span><span class="p">;</span>
+
+<span class="k">end</span> <span class="k">package</span> <span class="k">body</span> <span class="n">soc_sim</span><span class="p">;</span></code></pre></figure> <p>In the testbench</p> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="k">library</span> <span class="n">work</span><span class="p">;</span>
+  <span class="k">use</span> <span class="n">work</span><span class="o">.</span><span class="n">soc_sim</span><span class="o">.</span><span class="k">all</span><span class="p">;</span></code></pre></figure> <h2 id="5-practical-examples">5. Practical examples</h2> <h3 id="bus-access-testbench">BUS access (testbench)</h3> <figure class="highlight"><pre><code class="language-vhdl" data-lang="vhdl"><span class="n">p_control</span> <span class="p">:</span> <span class="k">process</span>
+  <span class="k">procedure</span> <span class="n">wait_clk</span><span class="p">(</span><span class="k">signal</span> <span class="n">i_clk</span> <span class="p">:</span> <span class="k">in</span> <span class="kt">std_logic</span><span class="p">;</span> <span class="n">val</span> <span class="p">:</span> <span class="k">in</span> <span class="kt">integer</span><span class="p">)</span> <span class="k">is</span>
+  <span class="k">begin</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span> <span class="k">to</span> <span class="n">val</span> <span class="k">loop</span>
+      <span class="k">wait</span> <span class="k">until</span> <span class="n">rising_edge</span><span class="p">(</span><span class="n">i_clk</span><span class="p">);</span>
+    <span class="k">end</span> <span class="k">loop</span><span class="p">;</span>
+  <span class="k">end</span> <span class="k">procedure</span> <span class="n">wait_clk</span><span class="p">;</span>
+
+  <span class="k">procedure</span> <span class="n">bus_write</span><span class="p">(</span>
+    <span class="n">i_addr</span>             <span class="p">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">i_data</span>             <span class="p">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">i_clk</span>       <span class="p">:</span> <span class="k">in</span>  <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_csb</span>       <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_wrb</span>       <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_rdb</span>       <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_addr</span>      <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">o_data</span>      <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">log_on</span>             <span class="p">:</span> <span class="k">in</span>  <span class="kt">boolean</span> <span class="p">)</span> <span class="k">is</span>
+  <span class="k">variable</span> <span class="n">L</span> <span class="p">:</span> <span class="n">line</span><span class="p">;</span>
+  <span class="k">variable</span> <span class="n">t</span> <span class="p">:</span> <span class="kt">time</span><span class="p">;</span>
+  <span class="k">begin</span>
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">t</span> <span class="p">:</span><span class="o">=</span> <span class="n">now</span><span class="p">;</span>
+    
+    <span class="n">o_csb</span>       <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="n">o_wrb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">o_rdb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">o_addr</span>      <span class="o">&lt;=</span> <span class="n">i_addr</span><span class="p">;</span>
+    <span class="n">o_data</span>      <span class="o">&lt;=</span> <span class="n">i_data</span><span class="p">;</span>
+    
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">o_csb</span>       <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="n">o_wrb</span>       <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="n">o_rdb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="n">o_csb</span>       <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="n">o_wrb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">o_csb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">o_wrb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">now</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">20</span><span class="p">,</span><span class="n">unit</span><span class="o">=&gt;</span><span class="n">ns</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">" &lt;&lt; WRITE BUS  "</span><span class="p">));</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">now</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=&gt;</span><span class="n">ns</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  ADDR 0x"</span><span class="p">));</span>
+    <span class="n">hwrite</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">i_addr</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">left</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  DATA 0x"</span><span class="p">));</span>
+    <span class="n">hwrite</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">i_data</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">left</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  @  "</span><span class="p">));</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">now</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=&gt;</span><span class="n">ns</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  &gt;&gt;"</span><span class="p">));</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">log_on</span><span class="p">)</span> <span class="k">then</span> <span class="n">writeline</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="n">L</span><span class="p">);</span> <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="k">end</span> <span class="k">procedure</span> <span class="n">bus_write</span><span class="p">;</span>
+
+  <span class="k">procedure</span> <span class="n">bus_read</span><span class="p">(</span>
+    <span class="n">i_addr</span>             <span class="p">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">i_clk</span>       <span class="p">:</span> <span class="k">in</span>  <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_csb</span>       <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_wrb</span>       <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_rdb</span>       <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic</span><span class="p">;</span>
+    <span class="k">signal</span> <span class="n">o_addr</span>      <span class="p">:</span> <span class="k">out</span> <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">signal</span> <span class="n">i_data</span>      <span class="p">:</span> <span class="k">in</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">log_on</span>             <span class="p">:</span> <span class="k">in</span>  <span class="kt">boolean</span> <span class="p">)</span> <span class="k">is</span>
+  <span class="k">variable</span> <span class="n">L</span> <span class="p">:</span> <span class="n">line</span><span class="p">;</span>
+  <span class="k">variable</span> <span class="n">t</span> <span class="p">:</span> <span class="kt">time</span><span class="p">;</span>
+  <span class="k">variable</span> <span class="n">v_data</span>      <span class="p">:</span>  <span class="kt">std_logic_vector</span><span class="p">(</span><span class="mi">31</span> <span class="k">downto</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="k">begin</span>
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">t</span> <span class="p">:</span><span class="o">=</span> <span class="n">now</span><span class="p">;</span>
+    
+    <span class="n">o_csb</span>       <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="n">o_wrb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">o_rdb</span>       <span class="o">&lt;=</span> <span class="sc">'0'</span><span class="p">;</span>
+    <span class="n">o_addr</span>      <span class="o">&lt;=</span> <span class="n">i_addr</span><span class="p">;</span>
+    
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+    <span class="n">o_csb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">o_wrb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">o_rdb</span>       <span class="o">&lt;=</span> <span class="sc">'1'</span><span class="p">;</span>
+    <span class="n">v_data</span>      <span class="p">:</span><span class="o">=</span> <span class="n">i_data</span><span class="p">;</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">now</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">20</span><span class="p">,</span><span class="n">unit</span><span class="o">=&gt;</span><span class="n">ns</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">" &lt;&lt; READ BUS  "</span><span class="p">));</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">now</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=&gt;</span><span class="n">ns</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  ADDR 0x"</span><span class="p">));</span>
+    <span class="n">hwrite</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">i_addr</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">left</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  DATA 0x"</span><span class="p">));</span>
+    <span class="n">hwrite</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">v_data</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">left</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">8</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  @  "</span><span class="p">));</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">now</span><span class="p">,</span> <span class="n">justified</span> <span class="o">=&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="n">field</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span><span class="n">unit</span><span class="o">=&gt;</span><span class="n">ns</span><span class="p">);</span>
+    <span class="n">write</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kt">string</span><span class="o">'</span><span class="p">(</span><span class="s1">"  &gt;&gt;"</span><span class="p">));</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">log_on</span><span class="p">)</span> <span class="k">then</span> <span class="n">writeline</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="n">L</span><span class="p">);</span> <span class="k">end</span> <span class="k">if</span><span class="p">;</span>
+    <span class="n">wait_clk</span><span class="p">(</span><span class="n">i_clk</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="k">end</span> <span class="k">procedure</span> <span class="n">bus_read</span><span class="p">;</span>
+
+<span class="k">begin</span>
+
+<span class="n">bus_write</span><span class="p">(</span>
+    <span class="s1">X"11223344"</span><span class="p">,</span>
+    <span class="s1">X"AABBCCDD"</span><span class="p">,</span>
+    <span class="n">clk</span>      <span class="p">,</span>
+    <span class="n">csb</span>      <span class="p">,</span>
+    <span class="n">wrb</span>      <span class="p">,</span>
+    <span class="n">rdb</span>      <span class="p">,</span>
+    <span class="n">addr</span>     <span class="p">,</span>
+    <span class="n">data</span>     <span class="p">,</span>
+    <span class="nb">true</span> <span class="p">);</span>
+<span class="n">bus_read</span><span class="p">(</span>
+    <span class="s1">X"55667788"</span><span class="p">,</span>
+    <span class="n">clk</span>      <span class="p">,</span>
+    <span class="n">csb</span>      <span class="p">,</span>
+    <span class="n">wrb</span>      <span class="p">,</span>
+    <span class="n">rdb</span>      <span class="p">,</span>
+    <span class="n">addr</span>     <span class="p">,</span>
+    <span class="n">data_out</span> <span class="p">,</span>
+    <span class="nb">true</span> <span class="p">);</span>
+    
+<span class="k">wait</span><span class="p">;</span>
+<span class="k">end</span> <span class="k">process</span> <span class="n">p_control</span><span class="p">;</span></code></pre></figure> <h3 id="synthesized-procedure">Synthesized procedure</h3> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Trung Canh Nguyen. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a>. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>. Last updated: November 09, 2023. </div> </footer> <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> </body> </html>

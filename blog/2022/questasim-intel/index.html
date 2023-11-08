@@ -1,0 +1,172 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>RTL simulation with Questasim | Trung Canh Nguyen</title> <meta name="author" content="Trung Canh Nguyen"/> <meta name="description" content="Introduction - how to simulate RTL design with Questa Sim"/> <meta name="keywords" content="catapult, fpga, vhdl, hdl, intel, xilinx"/> <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"/> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="none" id="highlight_theme_light"/> <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚛️</text></svg>"> <link rel="stylesheet" href="/assets/css/main.css"> <link rel="canonical" href="https://bobibo.one/blog/2022/questasim-intel/"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark"/> <script src="/assets/js/theme.js"></script> <script src="/assets/js/dark_mode.js"></script> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script src="/assets/js/distillpub/template.v2.js"></script> <script src="/assets/js/distillpub/transforms.v2.js"></script> <script src="/assets/js/distillpub/overrides.js"></script> <style type="text/css">.fake-img{background:#bbb;border:1px solid rgba(0,0,0,0.1);box-shadow:0 0 4px rgba(0,0,0,0.1);margin-bottom:12px}.fake-img p{font-family:monospace;color:white;text-align:left;margin:12px 0;text-align:center;font-size:16px}</style> </head> <d-front-matter> <script async type="text/json">{
+      "title": "RTL simulation with Questasim",
+      "description": "Introduction - how to simulate RTL design with Questa Sim",
+      "published": "November 23, 2022",
+      "authors": [
+        {
+          "author": "Nguyen Canh Trung",
+          "authorURL": "https://bobibo.one",
+          "affiliations": [
+            {
+              "name": "bobibo.one",
+              "url": ""
+            }
+          ]
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script> </d-front-matter> <body class="fixed-top-nav"> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Trung </span>Canh Nguyen</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">About</a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">Blog<span class="sr-only">(current)</span></a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">Projects</a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">Repositories</a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">Resume</a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Collections</a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item" href="/blog/tag/core/">Fundamental</a> <a class="dropdown-item" href="/blog/tag/hdl/">HDL</a> <a class="dropdown-item" href="/blog/tag/hls/">HLS</a> <div class="dropdown-divider"></div> <a class="dropdown-item" href="/blog/tag/catapult/">Catapult</a> <a class="dropdown-item" href="/blog/tag/intel/">Intel</a> <a class="dropdown-item" href="/blog/tag/xilinx/">Xilinx</a> </div> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> </header> <div class="post distill"> <d-title> <h1>RTL simulation with Questasim</h1> <p>Introduction - how to simulate RTL design with Questa Sim</p> </d-title> <d-byline></d-byline> <d-article> <d-contents> <nav class="l-text figcaption"> <h3>Contents</h3> <div><a href="#1-quick-start">1. Quick Start</a></div> <ul> <li><a href="#installation">Installation</a></li> <li><a href="#important-commands">Important commands</a></li> </ul> <div><a href="#2-what-need-to-run-simulation">2. What need to run simulation</a></div> <ul> <li><a href="#scripting">Scripting</a></li> </ul> <div><a href="#3-design-with-no-third-party-ip-cores">3. Design with no third party IP Cores</a></div> <div><a href="#4-design-with-intel-ip-cores">4. Design with Intel IP Cores</a></div> <div><a href="#examples">Examples</a></div> </nav> </d-contents> <h2 id="1-quick-start">1. Quick Start</h2> <p>Unlike Xilinx EDA tool, Quartus does not provide its own version of simulator, instead users need to use third-party software to do their tasks.</p> <p>When you download Quartus package, it also contains third-party simulators (Mentor Graphic) which are</p> <ul> <li>Modelsim-Intel SE (ver 21.3 and older) or Questasim-Intel FE (version 22.1 and newer) (activated with Quartus license)</li> <li>Modelsim-Intel PE (ver 21.3 and older) or Questasim-Intel FSE (version 22.1 and newer) (extra license needed)</li> </ul> <p>The following sections will describe step-by-step how to use modelsim/questasim.</p> <p>In my case, I am using Questasim-Intel FE version.</p> <h3 id="installation"><ins><strong>INSTALLATION</strong></ins></h3> <p>To run modelsim or questasim in batch mode, the program must be in the path of your shell. You can add these lines into your <code class="language-plaintext highlighter-rouge">~/.bashrc</code> after installing Quartus. Changing <code class="language-plaintext highlighter-rouge">/opt/Intel/22.3/</code> to your installation path.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/opt/Intel/22.3/quartus/linux64:<span class="nv">$LD_LIBRARY_PATH</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/opt/Intel/22.3/quartus/bin:/opt/Intel/22.3/questa_fe/bin:<span class="nv">$PATH</span>
+</code></pre></div></div> <h3 id="important-commands"><ins><strong>IMPORTANT COMMANDS</strong></ins></h3> <p>The section is from <a href="https://vhdlwhiz.com/the-modelsim-commands-you-need-to-know/" target="_blank" rel="noopener noreferrer">this source</a></p> <p><strong>VLIB</strong></p> <p>The <code class="language-plaintext highlighter-rouge">vlib</code> command creates a design library. You’ve probably used libraries like <code class="language-plaintext highlighter-rouge">ieee</code> or <code class="language-plaintext highlighter-rouge">std</code> in your VHDL code before. But the VHDL code you write must also go into a design library.</p> <p>The default library in ModelSim is <code class="language-plaintext highlighter-rouge">work</code>. If you create a new VHDL project in the GUI, it will automatically create it for you.</p> <p>Unless you specify a different location, each design library will appear as a folder in your project folder. For example, the compiled code belonging to the <code class="language-plaintext highlighter-rouge">work</code> library usually resides in a subfolder named <strong>./work</strong>.</p> <p>Let’s create the <code class="language-plaintext highlighter-rouge">work</code> library manually using <code class="language-plaintext highlighter-rouge">vlib</code>:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vlib work
+</code></pre></div></div> <p>And delete it using the <code class="language-plaintext highlighter-rouge">vdel</code> command:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vdel <span class="nt">-all</span> <span class="nt">-lib</span> work
+</code></pre></div></div> <p><strong>VCOM</strong></p> <p>This is the <strong>VHDL compiler</strong> command in ModelSim. It’s easy to compile; type <code class="language-plaintext highlighter-rouge">vcom</code> followed by the path to your VHDL file:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vcom ./my_module.vhd
+</code></pre></div></div> <p>Note that when you call <code class="language-plaintext highlighter-rouge">vcom</code> without other arguments, the module ends up in the default <code class="language-plaintext highlighter-rouge">work</code> library.</p> <p>You can compile it into a different library by giving the <code class="language-plaintext highlighter-rouge">-work</code> switch:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vlib my_lib
+vcom <span class="nt">-quiet</span> <span class="nt">-work</span> my_lib ./my_module.vhd
+</code></pre></div></div> <p>(But then you first have to create <code class="language-plaintext highlighter-rouge">my_lib</code> using the <code class="language-plaintext highlighter-rouge">vlib</code> command)</p> <p>The <code class="language-plaintext highlighter-rouge">vcom</code> command has lots and lots of optional arguments that allow you to control the compilation rules in detail. Check out the ModelSim Reference Manual for a comprehensive list of all the options.</p> <p>Another note: if you want to use <strong>Verilog compiler</strong>, here is the command</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vlog <span class="nt">-vlog01compat</span> <span class="nt">-work</span> work ./dc_fifo.v
+</code></pre></div></div> <p><strong>VMAP</strong></p> <p>Using the <code class="language-plaintext highlighter-rouge">vmap</code> tool, you can view and edit the mapping between the VHDL library name and the path to the compiled VHDL code in your file system (the folder you created with <code class="language-plaintext highlighter-rouge">vlib</code> and compiled into using <code class="language-plaintext highlighter-rouge">vcom</code>).</p> <p>To list all mappings, type <code class="language-plaintext highlighter-rouge">vmap</code> without arguments:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vmap
+</code></pre></div></div> <p>That will print a list of library mappings from which you may recognize some names from. For example, ieee and std. The standard libs are probably located in your ModelSim installation directory as they came with the simulator.</p> <p>Other libraries like <code class="language-plaintext highlighter-rouge">work</code> will probably map to the current working directory “./work”.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>VSIM 2&gt; vmap
+<span class="c"># Questa Intel FPGA Edition-64 vmap 2022.1 Lib Mapping Utility 2022.01 Jan 29 2022</span>
+<span class="c"># vmap </span>
+<span class="c"># Reading modelsim.ini</span>
+<span class="c"># "work" maps to directory ./libraries/work/.</span>
+<span class="c"># "work_lib" maps to directory ./libraries/work/.</span>
+<span class="c"># "fifo_1911" maps to directory ./libraries/fifo_1911/.</span>
+<span class="c"># "dc_fifo" maps to directory ./libraries/dc_fifo/.</span>
+<span class="c"># Reading /opt/Intel/22.3/questa_fe/linux_x86_64/../modelsim.ini</span>
+<span class="c"># "std" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../std.</span>
+<span class="c"># "ieee" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../ieee.</span>
+<span class="c"># "vital2000" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../vital2000.</span>
+<span class="c"># "verilog" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../verilog.</span>
+<span class="c"># "std_developerskit" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../std_developerskit.</span>
+<span class="c"># "synopsys" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../synopsys.</span>
+<span class="c"># "modelsim_lib" maps to directory /opt/Intel/22.3/questa_fe/linux_x86_64/../modelsim_lib.</span>
+</code></pre></div></div> <p>You can add or update a mapping by typing:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vmap lib_name path/to/the/lib/folder
+</code></pre></div></div> <p>Or, you can delete a library mapping by typing:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vmap <span class="nt">-del</span> lib_name
+</code></pre></div></div> <p>Finally, you should know that <code class="language-plaintext highlighter-rouge">vmap</code> modifies your <code class="language-plaintext highlighter-rouge">modelsim.ini</code> file. The location of modelsim.ini may vary. There’s one in the ModelSim installation directory, but it’s often not writable without admin privileges.</p> <p>If you make the INI file writable, <code class="language-plaintext highlighter-rouge">vmap</code> will happily modify it. But a better strategy is to use the system’s modelsim.ini file as a template and copy it to your local folder by using the special “-c” switch:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vmap <span class="nt">-c</span>
+</code></pre></div></div> <p>Then you can set an environment variable pointing to this file:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">set </span><span class="nv">MODELSIM</span><span class="o">=</span>&lt;project_dir&gt;/modelsim.ini
+</code></pre></div></div> <p>When you now call <code class="language-plaintext highlighter-rouge">vmap</code> or any other command that relies on the INI file, it will use the local copy of <code class="language-plaintext highlighter-rouge">modelsim.ini</code>.</p> <p><strong>VSIM</strong></p> <p>This is the command that starts the VHDL simulator (ModelSim). If you call <code class="language-plaintext highlighter-rouge">vsim</code> from a shell without any arguments, the <strong>ModelSim GUI</strong> will open:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vsim
+</code></pre></div></div> <p>Running <strong>batch mode</strong>:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vsim <span class="nt">-c</span>
+</code></pre></div></div> <p>Another useful switch is “-do”, which <ins>lets you specify a command that ModelSim will run when it opens</ins>. Here, we combine it with the “-c” flag to print “Hello World!” to the console and exit:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vsim <span class="nt">-c</span> <span class="nt">-do</span> <span class="s2">"echo Hello World!; exit"</span>
+</code></pre></div></div> <p>And, of course, you can simulate from the command line. Just give the library and entity of the testbench and combine it with the “-do” switch to start the simulation like this:</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vsim <span class="nt">-c</span> my_lib.my_tb <span class="nt">-do</span> <span class="s2">"run -all"</span>
+</code></pre></div></div> <p>If you start a batch mode simulation from a script or a Makefile, you may want to return an exit code that you can pick up in your script. The exit command in ModelSim has a <code class="language-plaintext highlighter-rouge">-code</code> switch that lets you do this.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vcom <span class="nt">-quiet</span> <span class="nt">-2008</span> <span class="nt">-work</span> counter_lib ./counter.vhd
+vcom <span class="nt">-quiet</span> <span class="nt">-2008</span> <span class="nt">-work</span> counter_lib ./counter_tb.vhd
+vsim <span class="nt">-c</span> counter_lib.counter_tb <span class="nt">-do</span> <span class="s2">"run -all; exit -code 0"</span>
+</code></pre></div></div> <p><strong>MODELSIM REFERENCE MANUAL PDF</strong></p> <p>If you want to dig deeper into these and other ModelSim commands, I recommend checking out the <a href="https://www.microsemi.com/document-portal/doc_view/131617-modelsim-reference-manual" target="_blank" rel="noopener noreferrer">ModelSim Reference Manual</a>. It’s 455 pages long and lists all the possible ModelSim commands along with their optional switches.</p> <p>Or you can access it from within ModelSim by clicking: Help -&gt; PDF Documentation -&gt; Reference Manual.</p> <h2 id="2-what-need-to-run-simulation">2. What need to run simulation</h2> <p>In order to run simulation on Model/Questa-sim, you need to prepare 3 things</p> <ul> <li>Unit Under Test (UUT): Includes design source codes</li> <li>Testbench</li> <li>Scripts</li> </ul> <p>For 2 formers, no need to discuss more since it is straight-forward. The later is what you need to study more if you switched from other simulator such as XSIM (Xililnx).</p> <h3 id="scripting"><ins>Scripting</ins></h3> <p>There are 3 important scripts that are used for simulation.</p> <table> <thead> <tr> <th style="text-align: left">Scripts</th> <th style="text-align: left">Description</th> </tr> </thead> <tbody> <tr> <td style="text-align: left"><code class="language-plaintext highlighter-rouge">msim_setup.tcl</code></td> <td style="text-align: left">Generated by Quartus</td> </tr> <tr> <td style="text-align: left"><code class="language-plaintext highlighter-rouge">modelsim_files.tcl</code></td> <td style="text-align: left">Generated by Quartus</td> </tr> <tr> <td style="text-align: left"><code class="language-plaintext highlighter-rouge">*.do</code></td> <td style="text-align: left">Defined by User</td> </tr> </tbody> </table> <p><strong>“modelsim_files.tcl”</strong></p> <p>Design-independent file. It defines:</p> <p> Specific <strong>libraries</strong></p> <p> <strong>Design files</strong> corresponding to these specific libraries</p> <p> <strong>Memory files</strong></p> <p>If your design using IPs from IP Catalog, libraries that those IPs used and its design will be specified in this file. When <code class="language-plaintext highlighter-rouge">"Generate Simulator Setup Script"</code>, this file is generated and includes all needed information.</p> <p>Here is an example of a design using DC_FIFO provided in IP catalog.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>proc get_design_libraries <span class="o">{}</span> <span class="o">{</span>
+  <span class="nb">set </span>libraries <span class="o">[</span>dict create]
+  dict <span class="nb">set </span>libraries fifo_1911 1
+  dict <span class="nb">set </span>libraries dc_fifo   1
+  <span class="k">return</span> <span class="nv">$libraries</span>
+<span class="o">}</span>
+
+proc get_memory_files <span class="o">{</span>QSYS_SIMDIR<span class="o">}</span> <span class="o">{</span>
+  <span class="nb">set </span>memory_files <span class="o">[</span>list]
+  <span class="k">return</span> <span class="nv">$memory_files</span>
+<span class="o">}</span>
+
+proc get_common_design_files <span class="o">{</span>USER_DEFINED_COMPILE_OPTIONS USER_DEFINED_VERILOG_COMPILE_OPTIONS USER_DEFINED_VHDL_COMPILE_OPTIONS QSYS_SIMDIR<span class="o">}</span> <span class="o">{</span>
+  <span class="nb">set </span>design_files <span class="o">[</span>dict create]
+  <span class="k">return</span> <span class="nv">$design_files</span>
+<span class="o">}</span>
+
+proc get_design_files <span class="o">{</span>USER_DEFINED_COMPILE_OPTIONS USER_DEFINED_VERILOG_COMPILE_OPTIONS USER_DEFINED_VHDL_COMPILE_OPTIONS SIM_DIR<span class="o">}</span> <span class="o">{</span>
+  <span class="nb">set </span>design_files <span class="o">[</span>list]
+  lappend design_files <span class="s2">"vcom </span><span class="nv">$USER_DEFINED_VHDL_COMPILE_OPTIONS</span><span class="s2"> </span><span class="nv">$USER_DEFINED_COMPILE_OPTIONS</span><span class="s2">  </span><span class="se">\"</span><span class="s2">[normalize_path "</span><span class="nv">$SIM_DIR</span>/02.uut/01.fw_bm/dc_fifo/fifo_1911/sim/dc_fifo_fifo_1911_nytavei.vhd<span class="s2">"]</span><span class="se">\"</span><span class="s2">  -work fifo_1911"</span>
+  lappend design_files <span class="s2">"vcom </span><span class="nv">$USER_DEFINED_VHDL_COMPILE_OPTIONS</span><span class="s2"> </span><span class="nv">$USER_DEFINED_COMPILE_OPTIONS</span><span class="s2">  </span><span class="se">\"</span><span class="s2">[normalize_path "</span><span class="nv">$SIM_DIR</span>/02.uut/01.fw_bm/dc_fifo/sim/dc_fifo.vhd<span class="s2">"]</span><span class="se">\"</span><span class="s2">  -work dc_fifo"</span>                              
+  <span class="k">return</span> <span class="nv">$design_files</span>
+  <span class="k">return</span> <span class="nv">$design_files</span>
+<span class="o">}</span>
+
+proc get_elab_options <span class="o">{</span>SIMULATOR_TOOL_BITNESS<span class="o">}</span> <span class="o">{</span>
+  <span class="nb">set </span>ELAB_OPTIONS <span class="s2">""</span>
+  <span class="k">if</span> <span class="o">![</span> string match <span class="s2">"bit_64"</span> <span class="nv">$SIMULATOR_TOOL_BITNESS</span> <span class="o">]</span> <span class="o">{</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+  <span class="o">}</span>
+  append ELAB_OPTIONS <span class="o">{</span> <span class="nt">-t</span> fs<span class="o">}</span>
+  <span class="k">return</span> <span class="nv">$ELAB_OPTIONS</span>
+<span class="o">}</span>
+
+
+proc get_sim_options <span class="o">{</span>SIMULATOR_TOOL_BITNESS<span class="o">}</span> <span class="o">{</span>
+  <span class="nb">set </span>SIM_OPTIONS <span class="s2">""</span>
+  <span class="k">if</span> <span class="o">![</span> string match <span class="s2">"bit_64"</span> <span class="nv">$SIMULATOR_TOOL_BITNESS</span> <span class="o">]</span> <span class="o">{</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="nv">$SIM_OPTIONS</span>
+<span class="o">}</span>
+
+
+proc get_env_variables <span class="o">{</span>SIMULATOR_TOOL_BITNESS<span class="o">}</span> <span class="o">{</span>
+  <span class="nb">set </span>ENV_VARIABLES <span class="o">[</span>dict create]
+  <span class="nb">set </span>LD_LIBRARY_PATH <span class="o">[</span>dict create]
+  dict <span class="nb">set </span>ENV_VARIABLES <span class="s2">"LD_LIBRARY_PATH"</span> <span class="nv">$LD_LIBRARY_PATH</span>
+  <span class="k">if</span> <span class="o">![</span> string match <span class="s2">"bit_64"</span> <span class="nv">$SIMULATOR_TOOL_BITNESS</span> <span class="o">]</span> <span class="o">{</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="nv">$ENV_VARIABLES</span>
+<span class="o">}</span>
+
+
+proc normalize_path <span class="o">{</span>FILEPATH<span class="o">}</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">{[</span>catch <span class="o">{</span> package require fileutil <span class="o">}</span> err]<span class="o">}</span> <span class="o">{</span> 
+        <span class="k">return</span> <span class="nv">$FILEPATH</span> 
+    <span class="o">}</span> 
+    <span class="nb">set </span>path <span class="o">[</span>fileutil::lexnormalize <span class="o">[</span>file <span class="nb">join</span> <span class="o">[</span><span class="nb">pwd</span><span class="o">]</span> <span class="nv">$FILEPATH</span><span class="o">]]</span>  
+    <span class="k">if</span> <span class="o">{[</span>file pathtype <span class="nv">$FILEPATH</span><span class="o">]</span> eq <span class="s2">"relative"</span><span class="o">}</span> <span class="o">{</span> 
+        <span class="nb">set </span>path <span class="o">[</span>fileutil::relative <span class="o">[</span><span class="nb">pwd</span><span class="o">]</span> <span class="nv">$path</span><span class="o">]</span> 
+    <span class="o">}</span> 
+    <span class="k">return</span> <span class="nv">$path</span> 
+<span class="o">}</span> 
+
+</code></pre></div></div> <p>In this example, I used 2 libraries which are generated when calling FIFO IP core from IP Catalog: <code class="language-plaintext highlighter-rouge">fifo_1911</code> and <code class="language-plaintext highlighter-rouge">dc_fifo</code></p> <p>Then, you see in <code class="language-plaintext highlighter-rouge">get_design_files</code> is where design added in two libraries with <code class="language-plaintext highlighter-rouge">vcom</code> command.</p> <p>Note that this file is kind of declaration file, it will be used in the later file <code class="language-plaintext highlighter-rouge">msim_setup.tcl</code></p> <p><strong>“msim_setup.tcl”</strong></p> <p>This file sets up the enviroment for simulation run.</p> <p><strong>”*.do”</strong></p> <p>So to do “Standard-Alone” simulation, you just need to copy 3 scripts above along with source codes and testbenches, you will be able to run your simulation in other machine.</p> <h2 id="3-design-with-no-third-party-ip-cores">3. Design with no third party IP Cores</h2> <p>Đối với hệ thống không sử dụng các IP từ Intel thì có thể tạo project, biên dịch và mô phỏng trực tiếp với modelsim theo flow sau đây</p> <p>https://www.intel.com/content/www/us/en/support/programmable/support-resources/design-examples/quartus/simulation-manual-howto.html</p> <h2 id="4-design-with-intel-ip-cores">4. Design with Intel IP Cores</h2> <p>If a design using Intel IP, <strong>Generate Simulator Setup Scrupt for IP</strong> is needed to extract all libraries for simulation.</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Tools <span class="o">&gt;</span> Generate Simulator Setup Script <span class="k">for </span>IP ...
+</code></pre></div></div> <p>One note: If you <strong>generate HDL</strong> from IP Editor, you need to check the “Generate simulation model” option of IP cores. Missing it, script generation will be failed due to miss simulation model.</p> <p>Please following the example <a href="https://www.intel.com/content/www/us/en/docs/programmable/683305/19-4/simulation-quick-start.html" target="_blank" rel="noopener noreferrer"><ins><strong>here</strong></ins></a> to simulate a project using Intel IP Cores</p> <p>The following is a complete <code class="language-plaintext highlighter-rouge">mentor_example.do</code></p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">set </span>QSYS_SIMDIR ../
+<span class="c"># #</span>
+<span class="c"># # Source the generated IP simulation script.</span>
+<span class="nb">source</span> <span class="nv">$QSYS_SIMDIR</span>/mentor/msim_setup.tcl
+<span class="c"># #</span>
+dev_com
+<span class="c"># #</span>
+<span class="c"># # Call command to compile the Quartus-generated IP simulation files.</span>
+com
+<span class="c"># #</span>
+<span class="c"># # Add commands to compile all design files and testbench files, including</span>
+<span class="c"># # the top level. (These are all the files required for simulation other</span>
+<span class="c"># # than the files compiled by the Quartus-generated IP simulation script)</span>
+vcom <span class="nt">-work</span> work ../src/dc_fifo/sim/dc_fifo.vhd
+vcom <span class="nt">-work</span> work ../src/axi_lite_ctrl_S_AXI_LITE.vhd
+vcom <span class="nt">-work</span> work ../src/axi_lite_ctrl.vhd
+vcom <span class="nt">-work</span> work ../src/axis_handler.vhd
+vcom <span class="nt">-work</span> work ../src/adapter.vhd
+vcom <span class="nt">-work</span> work ../src/tb.vhd
+
+<span class="c"># #</span>
+<span class="c"># # Set the top-level simulation or testbench module/entity name, which is</span>
+<span class="c"># # used by the elab command to elaborate the top level.</span>
+<span class="nb">set </span>TOP_LEVEL_NAME tb
+<span class="c"># #</span>
+<span class="c"># # Set any elaboration options you require.</span>
+elab_debug
+<span class="c"># #</span>
+<span class="c"># # Run the simulation.</span>
+<span class="c"># run -a</span>
+add wave <span class="k">*</span>
+
+view structure
+view signals
+<span class="c"># run -all</span>
+run 1 us
+
+</code></pre></div></div> <h2 id="how-to-stop-a-simulator">How to stop a simulator</h2> <p>https://vhdlwhiz.com/how-to-stop-testbench/</p> <h3 id="simulating-nios-ii">Simulating NIOS II</h3> <p>https://www.youtube.com/watch?v=Jw3rr76QEIc</p> <p>[1] https://community.intel.com/t5/Nios-II-Embedded-Design-Suite/update-for-AN351/m-p/1351699#M51062 [2] https://community.intel.com/t5/Nios-II-Embedded-Design-Suite/AN351-really-confused-me/m-p/1351698#M51061 [3] https://community.intel.com/t5/Nios-II-Embedded-Design-Suite/Nios-II-simulation-with-Questa/m-p/1351656#M51059</p> </d-article> <d-appendix> <d-footnote-list></d-footnote-list> <d-citation-list></d-citation-list> </d-appendix> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2023 Trung Canh Nguyen. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a>. Hosted by <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>. Last updated: November 09, 2023. </div> </footer> <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography> <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> </body> </html>
